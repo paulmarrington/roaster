@@ -20,63 +20,39 @@
 #   session: an object common to a single browser conversation set
 #     user: Object containing details for a guest or logged in user
 
-http = require 'http'; url = require 'url'; path = require 'path'
-os = require 'operating-system'; static_driver = require 'http/respond'
-Cookies = require 'cookies'; send = require 'send'
+http = require 'http'; url = require 'url'; respond = require 'http/respond'
+os = require 'system'; Cookies = require 'cookies'
+fs = require 'file-system'; driver = require 'http/driver'
 
 # process the command line
 environment = os.command_line
   port: 9009
   debug: false
   user: 'Guest'
-  base_dir: process.env.uSDLC_base_path
-
-if environment.debug # allow an exception to kill the server - with a stack trace
-  process_request = (action) -> action()
-else # while for production we just log the message and go for a new request
-  process_request = (action) -> 
-    try action() catch error then console.log error
+  base_dir: fs.base ''
 
 # create a server ready to listen
 server = http.createServer (request, response) ->
   try
     console.log request.url
-    request.url = url.parse request.url
-    basename = path.basename(request.url.pathname)
-    dot = basename.indexOf('.') + 1
-    ext = if dot then basename[dot..] else 'html'
-    request.filename = "#{process.env.uSDLC_base_path}#{request.url.pathname}"
+    request.url = url.parse request.url, true
+    request.filename = fs.find request.url.pathname
     
     cookies = new Cookies(request, response)
     user = environment.user if not (user = cookies.get 'usdlc_session_id')
     session = {user}
 
-    driver_module_name = "http/ext/#{ext}"
+    # some drivers cannot set mime type. For these we put it in the query string
+    # as txt or text/plain.
+    if request.url.query.mime_type
+      respond.set_mime_type request.url.query.mime_type, response
 
-    load_driver = (ext, try_next) ->
-      driver_module_name = "http/ext/#{ext}"
-      try
-        return require driver_module_name
-      catch error
-        if error.toString().indexOf("'#{driver_module_name}'") isnt -1
-          return try_next()
-        else
-          throw error
-
-    driver_module = load_driver ext, ->
-      exts = ext.split('.')
-      return null if exts.length < 2
-      response.setHeader "Content-Type", send.mime.lookup exts[0]
-      load_driver exts[1..].join('.'), -> null
-    # default to cached send if no special handling requested
-    driver_module ?= require.cache[driver_module_name] = static_driver
-
-    # all the set up is done, process the request
-    driver_module {request, response, environment, session, cookies}
+    # all the set up is done, process the request based on a driver for file type
+    driver(request.filename)({
+      request, response, environment, session, cookies, reply: respond.static})
   catch error
     console.log error.stack ? error
     response.end(error.toString())
-    
 server.listen environment.port
 
 console.log """

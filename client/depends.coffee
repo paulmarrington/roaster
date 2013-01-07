@@ -39,22 +39,26 @@
 #   counter = 1
 #   return function() {counter++}
 # }
-depends = (url, callback = (dependency) -> return dependency) ->  
+head = null
+
+window.depends = (url, callback = (dependency) -> return dependency) ->  
   # see if we are loaded and ready to go
   return callback dependency if dependency = depends.cache[url]
   # see if we are in the process of loading
   return depends.loading[url].push(callback) if depends.loading[url]
   # ok, we are going to need to kick of a synchronous load
   depends.loading[url] = [callback]
-  globalVar = "_dependency_#{depends.scriptIndex++}"
+  global_var = "_dependency_#{depends.scriptIndex++}"
 
   script = document.createElement("script")
   script.type = "text/javascript"
   script.async = "async"
   onScriptLoaded = ->
-    dependency = depends.cache[url] = window[globalVar]() ? {}
-    delete window[globalVar]
-    callback dependency while callback = depends.loading.pop()
+    window[global_var]?(module = {exports:{}})
+    dependency = depends.cache[url] = module?.exports ? {}
+    delete window[global_var]
+    callbacks = depends.loading[url]
+    callback dependency while callback = callbacks.pop()
     delete depends.loading[url]
 
   if script.readyState # IE
@@ -65,21 +69,22 @@ depends = (url, callback = (dependency) -> return dependency) ->
   else # Other browsers
    script.onload = -> onScriptLoaded()
 
-  script.src = "#{url}.js?globalVar=#{globalVar}"
+  script.src = "/server/http/wrap_client_dependency.coffee?url=#{url}&global_var=#{global_var}"
+  head ?= document.getElementsByTagName("head")[0]
   head.appendChild(script)
 
 depends.scriptIndex = 0
 depends.cache = {}; depends.loading = {}
 
-# Use depends.ready to run a callback when all listed dependencies are loaded.
-# Value added depends will return the dependency if we know it has loaded.
-depends.ready = (urls..., callback) ->
-  unloaded = (url for url in urls when depends.cache[url])
-  to_load = unloaded.length
-  return callback() if to_load is 0
+# # Use depends.ready to run a callback when all listed dependencies are loaded.
+# # Value added depends will return the dependency if we know it has loaded.
+# depends.ready = (urls..., callback) ->
+#   unloaded = (url for url in urls when depends.cache[url])
+#   to_load = unloaded.length
+#   return callback() if to_load is 0
 
-  aggregate_callback = -> callback() if --to_load is 0
-  depends url, aggregate_callback for url in unloaded
+  # aggregate_callback = -> callback() if --to_load is 0
+  # depends url, aggregate_callback for url in unloaded
 
 # Use forceReload if a module source has changed (edited on browser, for example)
 depends.forceReload = (url) -> delete depends.cache[url]

@@ -1,10 +1,11 @@
 /* Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license */
 var fs = require('fs'), path = require('path'), mkdirs = require('mkdirs')
 // all files are cached in /gen under the main project directory
-var base_dir = process.env.uSDLC_base_path, base_length = base_dir.length
+var base_dir = process.env.uSDLC_base_path
+var base_length = base_dir.length
 var gen_dir = base_dir + '/gen'
 
-var build = function (source, target_ext, builder) {
+var morph = function (source, target_ext, builder) {
     var target = source
     if (source.length > base_length && source.substring(0,base_length) == base_dir) {
         // drop base so that we can find out where gen/ starts from
@@ -37,10 +38,10 @@ var build = function (source, target_ext, builder) {
     return target
 }
 
-module.exports = build
+module.exports = morph
 module.exports.extend_require = function (source_ext, builder) {
   require.extensions[source_ext] = function(module, source) {
-    build(source, '.js', function (error, filename, js, next) {
+    morph(source, '.js', function (error, filename, js, next) {
       builder(error, filename, js, next)
       require.extensions['.js'](module, filename)
     })

@@ -1,4 +1,5 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+fs = require 'file-system'
 
 # Load npm module if new, otherwise behave as require does
 module.exports = (name, callback) ->
@@ -6,7 +7,7 @@ module.exports = (name, callback) ->
         required = require name
     catch err
         npm = require("npm")
-        prefix = "#{process.env.uSDLC_node_path}/ext"
+        prefix = fs.node "ext"
         npm.load {prefix: prefix}, (err, npm) ->
             try
                 npm.commands.install [name], -> callback(null, require name)

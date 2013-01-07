@@ -4,5 +4,5 @@ respond = require 'http/respond'
 modules.export = (exchange) ->
   filename = request.url.pathname
   if filename is '/favicon.ico'
-    filename = "#{exchange.environment.base_dir}/client/favicon.ico"
-  respond(request, filename)
+    exchange.request.filename = "#{exchange.environment.base_dir}/client/favicon.ico"
+  exchange.reply exchange

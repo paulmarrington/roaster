@@ -1,30 +1,29 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-path = require 'path'; build = require 'code-builder'
-script_runner = require 'script-runner'; step = require 'step'
-respond = require 'http/respond'
 
-template = (exchange, send_response) ->
-  step(
-    ->
-      build exchange.request.filename, '.js', this
-    (error, filename, content, next) ->
-      throw error if error
-      if content
-        js = coffee.compile content
-        next null, js
-      send_response(filename)
-  )
+# Coffee-script files can be sent to the browser to run, run on the server
+# or spawned off to a separate process. These domains can be specified in
+# more than one way:
+
+# * The path a script is on (i.e. /client/ in the path somewhere)
+# * file name extension (myfile.client.coffee)
+# * explicit in a wrapping script setting exchange.domain
+
+path = require 'path'; coffee_morph = require 'morph/coffee'
+script_runner = require 'script-runner'; respond = require 'http/respond'
+
+domains = 
+  client: require 'http/ext/client.coffee'
+  server: require 'http/ext/server.coffee'
+  node:   require 'http/ext/node.coffee'
 
 module.exports = (exchange) ->
-  template exchange, (filename) ->
+  # domain can be set by wrap_client_dependency for client depends command
+  if not exchange.domain
     if exchange.request.filename.indexOf('/client/') isnt -1
-      # script is to be run on the client - send back compiled version
-      respond(exchange, filename)
+      exchange.domain = 'client'
     else if exchange.request.filename.indexOf('/usdlc/') isnt -1
-      # script is uSDLC instrumentation - fork off a new V8 process to deal
-      script_runner(exchange).fork filename
+      exchange.domain = 'node'
     else
-      # script is to be run on the server, load using require
-      require(filename)(exchange)
+      exchange.domain = 'server'
 
-module.exports.template = template
+  domains[exchange.domain](exchange)

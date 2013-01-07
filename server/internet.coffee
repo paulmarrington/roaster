@@ -1,6 +1,6 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-url = require 'url'; path = require 'path'; os = require 'os'; fs = require 'fs'
-http = require 'http'; https = require 'https'
+url = require 'url'; path = require 'path'; os = require 'os'
+http = require 'http'; https = require 'https'; fs = require 'fs'
 
 class Internet
   constructor: ->

@@ -13,4 +13,11 @@ os.command_line = (defaults) ->
   args[item] ?= defaults[item] for item of defaults
   return args
 
+# Throw an exception if the error arg on a callback is filled. Use it in
+# place of any standardised callback: myfunc args, throw_error callback
+os.throw_error = (next) ->
+  return (error, args...) ->
+    throw error if error
+    next(args...)
+
 module.exports = os

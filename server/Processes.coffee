@@ -9,14 +9,16 @@ class Processes # proc = require('proc')() # sets default streaming and options
       stdio: ['ignore', process.stdout, process.stderr]
       
   # Fork off a separate node process to run the V8 scripts in a separate space
-  fork: (@program, @args..., @next) -> _exec()
-    child.fork(program, args, @options).on 'exit', (@code, @signal) => @do_next()
+  fork: (@program, @args..., @next) -> @_exec(child.fork)
   
   # Spawn off a separate OS process - next(code) provides return code
-  spawn: (@program, args..., @next) ->
-    child.spawn(program, args, @options).on 'exit', (@code, @signal) => @do_next()
+  spawn: (@program, args..., @next) -> @_exec(child.spawn)
 
-  next: ->
-    return @next() if @code
+  _exec: (action) ->
+    proc = action @program, @args, @options
+    proc.on 'exit', (@code, @signal) =>
+      return @next(new Error("return code #{@code}", @program)) if @code
+      return @next(new Error(@signal, @program)) if @signal
+      return @next(null)
 
 module.exports = -> new Processes()
