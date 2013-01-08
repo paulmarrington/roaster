@@ -28,12 +28,9 @@ fs.bases = [process.env.uSDLC_base_path, process.env.uSDLC_node_path]
 # find a file in node or base with (sometimes) implied extensions
 fs.find = (name, next) ->
   find_one = (bases) ->
-    console.log "FIND_ONE #{bases}"
     return next(fs.base name) if bases.length is 0
     full_path = path.join bases.shift(), name
-    console.log "CHECK #{full_path}"
     fs.exists full_path, (exists) ->
-      console.log "EXISTS = #{exists}"
       return next(full_path) if exists
       find_one(bases)
   find_one(fs.bases[0..])
