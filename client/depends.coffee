@@ -43,7 +43,7 @@ head = null
 
 window.depends = (url, callback = (dependency) -> return dependency) ->  
   # see if we are loaded and ready to go
-  return callback dependency if dependency = depends.cache[url]
+  return callback null, dependency if dependency = depends.cache[url]
   # see if we are in the process of loading
   return depends.loading[url].push(callback) if depends.loading[url]
   # ok, we are going to need to kick of a synchronous load
@@ -58,7 +58,7 @@ window.depends = (url, callback = (dependency) -> return dependency) ->
     dependency = depends.cache[url] = module?.exports ? {}
     delete window[global_var]
     callbacks = depends.loading[url]
-    callback dependency while callback = callbacks.pop()
+    callback null, dependency while callback = callbacks.pop()
     delete depends.loading[url]
 
   if script.readyState # IE

@@ -5,6 +5,7 @@
 step = (steps...) ->
   step_index = counter = pending = 0
   results = []
+  lock = false
 
   # Define the main callback that's given as `this` to the steps.
   next = (err, args...) ->
@@ -26,9 +27,9 @@ step = (steps...) ->
       # If parallel() was called, and all parallel branches executed
       # synchronously, go on to the next step immediately.
       next.apply(null, results)
-    else if result isnt undefined
-      # If a synchronous return is used, pass it to the callback
-      next(undefined, result)
+    # else if result isnt undefined
+    #   # If a synchronous return is used, pass it to the callback
+    #   next(undefined, result)
     
     lock = false
 

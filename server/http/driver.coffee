@@ -23,8 +23,7 @@ module.exports = driver = (pathname) ->
   # my_file.view.coffee can have drivers view.coffee or coffee
   possible_drivers = [ext = basename[dot..]]
   while dot = (ext.indexOf('.') + 1)
-    possible_drivers.push ext
-    ext = ext[dot..]
+    possible_drivers.push ext = ext[dot..]
 
   # drivers can be on the same path as the script being run or
   # in [node|base]/server/http/ext. The former is for micro-apps
@@ -39,16 +38,16 @@ module.exports = driver = (pathname) ->
 
   # expand possibilities into a single list and;
   # See if a possibility is already in the requires cache
-  possiblities = []
+  possibilities = []
   for possible_path in possible_paths
     for possible_driver in possible_drivers
       module_name = path.join possible_path, possible_driver
       return cache[module_name] if cache[module_name]
-      possiblities.push module_name
+      possibilities.push module_name
 
   # This modile has never been loaded before. Get require to look
   # on disk and load it if found
-  for possibility in possiblities
+  for possibility in possibilities
     try
       return cache[possibility] = require possibility
     catch error
@@ -56,4 +55,4 @@ module.exports = driver = (pathname) ->
   # There is no driver module for this extension. Default to a static
   # driver. Save it as the first in the cache to make the next time it
   # is asked for very fast.
-  return require.cache[possiblities[0]] = static_driver
+  return require.cache[possibilities[0]] = static_driver
