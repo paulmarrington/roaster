@@ -2,6 +2,9 @@
 # unashamedly cribbed from http://github.com/creationix/step
 # in turn inspired by http://github.com/willconant/flow-js
 
+# @throw_errors = true # throw an exception on an error
+# @throw_errors = false # call next with error parameter set
+# @() # will move a synchronous function to the next step
 step = (steps...) ->
   step_index = counter = pending = 0
   results = []
@@ -9,7 +12,7 @@ step = (steps...) ->
 
   # Define the main callback that's given as `this` to the steps.
   next = (err, args...) ->
-    counter = pending = 0
+    counter = pending = error = 0
     if step_index >= steps.length # all done
       throw err if err # no more steps - throw our error
       return  # all done
@@ -21,6 +24,7 @@ step = (steps...) ->
       lock = true;
       result = fn.apply(next, arguments)
     catch exception
+      throw exception if @throw_errors
       next exception # Pass any exceptions on through the next callback
 
     if counter > 0 and pending is 0
@@ -68,6 +72,18 @@ step = (steps...) ->
         # Send the other results as arguments
         result[index] = args[0];
         check() if not lock
+
+  # a common need is to wait for a stream to finish writing
+  next.drain = (stream, data) ->
+    if not stream.write data
+      stream.once 'drain', @
+    else
+      @()  # synchronous
+
+  # similarly when we pipe we need to wait for it to complate
+  next.pipe = (input, output) ->
+    input.pipe(output, end: false);
+    input.on 'end', @
 
   next() # Start the engine an pass nothing to the first step.
 
