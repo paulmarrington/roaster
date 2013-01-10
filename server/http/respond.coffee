@@ -2,12 +2,18 @@
 send = require 'send'; path = require 'path'; gzip = require 'morph/gzip'
 step = require 'step'; respond = require 'http/respond'
 
+# Default is for browser to cache static files forever. This is unsuitable in development
+# so the server will reset to 1 second if in debug mode. It is here so anyone else
+# can change it if needed.
+maximum_browser_cache_age = Infinity
+
 # http://localhost:9009/server/save?file=/My_Project/usdlc/Development/index.html
 # contents of the file is in the body of the request as a binary stream
 module.exports = respond = 
   static: (exchange) ->
     # by default we send it as static content where the browser caches it forever
-    send(exchange.request, exchange.request.filename).maxage(Infinity).pipe(exchange.response)
+    send(exchange.request, exchange.request.filename).
+      maxage(maximum_browser_cache_age).pipe(exchange.response)
 
   morphed: (exchange, morph, next) ->
     morph exchange.request.filename, (error, filename) ->
@@ -27,7 +33,7 @@ module.exports = respond =
 
   set_mime_type: (name, response) ->
     return if response.getHeader 'Content-Type'
-    slash = name.indexOf '/' + 1
+    slash = name.indexOf('/') + 1
     name = name[slash..] if slash
     name = ".#{name}" if name.indexOf('.') is -1
     type = send.mime.lookup name

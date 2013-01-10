@@ -18,41 +18,52 @@ cache = {}
 module.exports = driver = (pathname) ->
   basename = path.basename pathname
   dot = basename.indexOf('.') + 1
+  # no dots - let static return index.html
   return static_driver if not dot
 
+  # let's shortcut the calculations for already loaded drivers
+  first_driver = ext = basename[dot..]
+  first_path = path.relative process.cwd, path.dirname pathname
+  first_module_name = path.join first_path, first_driver
+  return cache[first_module_name] if cache[first_module_name]
+
   # my_file.view.coffee can have drivers view.coffee or coffee
-  possible_drivers = [ext = basename[dot..]]
+  possible_drivers = [first_driver]
   while dot = (ext.indexOf('.') + 1)
     possible_drivers.push ext = ext[dot..]
 
   # drivers can be on the same path as the script being run or
   # in [node|base]/server/http/ext. The former is for micro-apps
   # while the latter for global drivers.
-  driver = path.relative process.cwd, path.dirname pathname
   possible_paths = []
-  while (slash = (driver.lastIndexOf('/') - 1)) > 0
-    possible_paths.push driver
-    driver = driver[0..slash]
-  possible_paths.push driver
+  while (slash = (first_path.lastIndexOf('/') - 1)) > 0
+    possible_paths.push first_path
+    first_path = first_path[0..slash]
+  possible_paths.push first_path
   possible_paths.push 'http/ext'
 
-  # expand possibilities into a single list and;
-  # See if a possibility is already in the requires cache
-  possibilities = []
-  for possible_path in possible_paths
-    for possible_driver in possible_drivers
+  # search all paths in cache and on disk (require) before
+  # searching for next driver name. Otherwise a cached
+  # more generic driver may be incorrectly returned
+  for possible_driver in possible_drivers
+    # first lets look for cached copies from a previous require
+    module_names = []
+    for possible_path in possible_paths
       module_name = path.join possible_path, possible_driver
       return cache[module_name] if cache[module_name]
-      possibilities.push module_name
+      module_names.push module_name
+    # nothing cached - require until we get it or fail all paths
+    for module_name in module_names
+      try
+        # we can cache it as the first possibility because it doesn't happen otherwuse
+        # and it makes subsequent lookups faster
+        cache[first_module_name] = cache[module_name] = require module_name
+        return cache[module_name]
+  #      return cache[pfirst_module_name] = cache[module_name] = require module_name
 
-  # This modile has never been loaded before. Get require to look
-  # on disk and load it if found
-  for possibility in possibilities
-    try
-      return cache[possibility] = require possibility
-    catch error
+      catch error
 
   # There is no driver module for this extension. Default to a static
   # driver. Save it as the first in the cache to make the next time it
   # is asked for very fast.
-  return require.cache[possibilities[0]] = static_driver
+  return cache[first_module_name] = static_driver

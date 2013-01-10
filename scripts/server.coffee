@@ -31,6 +31,9 @@ environment = os.command_line
   user: 'Guest'
   base_dir: fs.base ''
 
+if environment.debug
+  respond.maximum_browser_cache_age = 1000
+
 # create a server ready to listen
 server = http.createServer (request, response) ->
   console.log request.url
