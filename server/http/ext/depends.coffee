@@ -7,7 +7,9 @@ driver = require 'http/driver'; fs = require 'file-system', step = require 'step
 # mechanism
 module.exports = (exchange) ->
   # fine the input file from the list of bases
-  fs.find exchange.request.url.query.url, (url) ->
+  url = exchange.request.url.pathname.replace '.depends', ''
+  
+  fs.find url, (url) ->
     exchange.request.filename = url
     # make sure the result is sent to the servr
     exchange.domain = 'client'

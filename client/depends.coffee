@@ -69,7 +69,7 @@ window.depends = (url, callback = (dependency) -> return dependency) ->
   else # Other browsers
    script.onload = -> onScriptLoaded()
 
-  script.src = "/server/http/wrap_client_dependency.coffee?url=#{url}&global_var=#{global_var}"
+  script.src = "#{url}.depends?global_var=#{global_var}"
   head ?= document.getElementsByTagName("head")[0]
   head.appendChild(script)
 
