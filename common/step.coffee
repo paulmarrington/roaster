@@ -6,9 +6,9 @@
 # @throw_errors = false # call next with error parameter set
 # @() # will move a synchronous function to the next step
 step = (steps...) ->
+
   step_index = counter = pending = 0
-  results = []
-  lock = false
+  results = []; lock = false
 
   # Define the main callback that's given as `this` to the steps.
   next = (err, args...) ->
@@ -27,15 +27,17 @@ step = (steps...) ->
       throw exception if @throw_errors
       next exception # Pass any exceptions on through the next callback
 
-    if counter > 0 and pending is 0
-      # If parallel() was called, and all parallel branches executed
-      # synchronously, go on to the next step immediately.
-      next.apply(null, results)
+    # if counter > 0 and pending is 0
+    #   # If parallel() was called, and all parallel branches executed
+    #   # synchronously, go on to the next step immediately.
+    #   next.apply(null, results)
     # else if result isnt undefined
     #   # If a synchronous return is used, pass it to the callback
     #   next(undefined, result)
     
     lock = false
+
+  next.throw_errors = true
 
   # Add a special callback generator `this.parallel()` that groups stuff.
   next.parallel = ->
@@ -50,7 +52,7 @@ step = (steps...) ->
       results[parallel_index] = args[0];
       if not lock and pending is 0
         # When all parallel branches done, call the callback
-        next.apply(null, results);
+        next.apply(null, results)
 
   # Generates a callback generator for grouped results
   next.group = ->
@@ -85,17 +87,19 @@ step = (steps...) ->
     input.pipe(output, end: false);
     input.on 'end', @
 
-  next() # Start the engine an pass nothing to the first step.
+  # used to load libraries (such as jQuery) in parallel
+  # this is a shortcut for multiple 'depends 'blah', parallel()
+  next.libraries = (urls...) ->
+    depends url, @parallel() for url in urls
 
-# Tack on leading and tailing steps for input and output and return
-# the whole thing as a function.  Basically turns step calls into function
-# factories.
-# step.fn = (steps...) ->
-#   return (args...) ->
-#     # Insert a first step that primes the data stream
-#     toRun = [-> this.apply(null, args)].concat(steps);
-#     # If the last arg is a function add it as a last step
-#     toRun.push(args[-1]) if typeof args[-1] is 'function'
-#     step.apply(null, toRun)
+  # wrapper for dependencies that have asynchronous actions during
+  # initialisation. Only for client. Contents need to be
+  # module.exports = (error, next) -> init code
+  next.depends = (urls...) ->
+    # after load we call the result with a next action parameter
+    steps[--step_index] = (error, dependencies...) ->
+      dependency null, @parallel() for dependency in dependencies
+    depends url, @parallel() for url in urls
+  next() # Start the engine an pass nothing to the first step.
 
 module.exports = step
