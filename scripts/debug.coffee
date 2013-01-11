@@ -30,6 +30,12 @@ for dir in watch_directories.server
 # kick everything off by starting the server for the first time
 restart()
 
+load_node_inspector = ->
+  nia = []
+  spawn "node-inspector", [], spawn_options
+
+setTimeout load_node_inspector, 2000
+
 # Sublime Text 2 manages to save files without triggering the watcher.
 # Go to menu Tools // Build System // New Build System...
 # make "cmd"=["touch '$file_path'"] and add ,"shell": true
