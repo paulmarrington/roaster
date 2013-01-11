@@ -1,9 +1,8 @@
 /* Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license */
-var fs = require('fs'), path = require('path'), mkdirs = require('mkdirs')
+var fs = require('fs'), path = require('path'), mkdirs = require('dirs').mkdirs
 // all files are cached in /gen under the main project directory
 var base_dir = process.env.uSDLC_base_path
 var base_length = base_dir.length
-var gen_dir = base_dir + '/gen'
 
 var morph = function (source, target_ext, builder) {
     var target = source
@@ -11,7 +10,7 @@ var morph = function (source, target_ext, builder) {
         // drop base so that we can find out where gen/ starts from
         target = source.substring(base_length)
     }
-    var target = path.normalize(gen_dir + target + target_ext)
+    var target = path.join(base_dir, 'gen', (target + target_ext))
 
     // Get modified dates for source and target files
     var stat = fs.statSync(source)
