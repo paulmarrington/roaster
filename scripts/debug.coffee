@@ -1,5 +1,7 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 spawn = require('child_process').spawn; fs = require 'file-system'
+watch_directories = require 'debug-watch-directories'
+
 spawn_options = {cwd:process.cwd(), env:process.env, stdio:'inherit'}
 
 usdlc = node_inspector = null
@@ -20,11 +22,16 @@ restart = ->
 
 # if server code changes, restart server and node-inspector
 watch = require('node-watch')
-for base in [fs.base '', fs.node '']
-  for services in ['scripts', 'server', 'common']
-    try
-      watch "#{base}#{services}", restart
-    catch exception;
+for dir in watch_directories.server
+  try
+    watch dir, restart
+  catch exception;
 
 # kick everything off by starting the server for the first time
 restart()
+
+# Sublime Text 2 manages to save files without triggering the watcher.
+# Go to menu Tools // Build System // New Build System...
+# make "cmd"=["touch '$file_path'"] and add ,"shell": true
+# save it and set it from the same menu
+# Now press <Command>B to save all files and restart your node server
