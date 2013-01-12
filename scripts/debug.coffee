@@ -36,12 +36,11 @@ for dir in watch_directories.server
 
 # kick everything off by starting the server for the first time
 restart()
-
-load_node_inspector = ->
-  nia = []
-  spawn "node-inspector", [], spawn_options
-
-setTimeout load_node_inspector, 2000
+# then waiting a bit before starting the debugger proxy
+require('demand') 'node-inspector', (error) ->
+  throw error if error
+  load_node_inspector = -> spawn "node-inspector", [], spawn_options
+  setTimeout load_node_inspector, 2000
 
 # Sublime Text 2 manages to save files without triggering the watcher.
 # Go to menu Tools // Build System // New Build System...

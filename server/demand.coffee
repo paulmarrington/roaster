@@ -5,7 +5,8 @@ fs = require 'file-system'
 module.exports = (name, callback) ->
     try
         required = require name
-    catch err
+    catch error
+        throw error
         npm = require("npm")
         prefix = fs.node "ext"
         npm.load {prefix: prefix}, (err, npm) ->
