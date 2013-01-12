@@ -95,10 +95,17 @@ step = (steps...) ->
   # wrapper for dependencies that have asynchronous actions during
   # initialisation. Only for client. Contents need to be
   # module.exports = (error, next) -> init code
+  # can include non-asynchronous that return anything, but they
+  # must not return a function with two parameters or it will be
+  # run.
   next.depends = (urls...) ->
     # after load we call the result with a next action parameter
     steps[--step_index] = (error, dependencies...) ->
-      dependency null, @parallel() for dependency in dependencies
+      for dependency in dependencies
+        if typeof dependency is 'function' and dependency.length is 2
+          dependency null, @parallel()
+        else
+          @parallel()(error, dependency)
     depends url, @parallel() for url in urls
   next() # Start the engine an pass nothing to the first step.
 

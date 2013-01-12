@@ -42,8 +42,12 @@ require('demand') 'node-inspector', (error) ->
   load_node_inspector = -> spawn "node-inspector", [], spawn_options
   setTimeout load_node_inspector, 2000
 
-# Sublime Text 2 manages to save files without triggering the watcher.
+#Sublime Text 2 manages to save files without triggering the watcher.
 # Go to menu Tools // Build System // New Build System...
-# make "cmd"=["touch '$file_path'"] and add ,"shell": true
+# Set file content to:
+# {
+#  "cmd": ["touch '$file_path'"],
+#  "shell": true
+# }
 # save it and set it from the same menu
 # Now press <Command>B to save all files and restart your node server
