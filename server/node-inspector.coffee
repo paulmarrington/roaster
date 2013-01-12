@@ -5,4 +5,5 @@ fs = require('file-system')
 # exception if node-inspector is not installed. Otherwise, nothing happens
 # used in debug.coffee to load node-inspector the first time it runs
 # triggering just-in-time loading
-fs.existsSync fs.node 'ext/node_modules/.bin/node-inspector'
+if not fs.existsSync fs.node 'ext/node_modules/.bin/node-inspector'
+  throw "node-inspector not found"
