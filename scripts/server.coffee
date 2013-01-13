@@ -57,6 +57,37 @@ server = http.createServer (request, response) ->
     catch error
       console.log error.stack ? error
       response.end(error.toString())
+
+# Using faye for pubsub.
+
+# client: 
+# step(
+#   () ->
+#     @depends '/client/faye.coffee'
+#   (error, faye) ->
+#     faye.subscribe '/channel', (message) ->
+#       console.log message.text
+#     ...
+#     faye.publish '/channel', text: 'Hello'
+# )
+
+# Same server:
+# environment.faye.subscribe '/channel', (message) ->
+#   console.log message.text
+# ...
+# environment.faye.publish '/channel', text: 'Hello'
+
+# Different server:
+# faye = require('faye')('http://localhost:9009/faye')
+# faye.subscribe '/channel', (message) ->
+#   console.log message.text
+#   ...
+# faye.publish '/channel', text: 'Hello'
+faye = new require('faye').NodeAdapter mount: '/faye', timeout: 45
+faye.attach server
+environment.faye = faye.getClient()
+
+# kick-off
 server.listen environment.port
 
 console.log """
