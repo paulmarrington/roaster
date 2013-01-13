@@ -14,7 +14,7 @@ if [ ! -d "$uSDLC_node_path/ext/node" ]; then
     echo "First time only install of node.js to"
     echo "    $uSDLC_node_path"
     "$uSDLC_node_path/bin/update-node-on-unix"
-    npm --silent install coffee-script send cookies node-watch
+    npm --silent install coffee-script send cookies node-watch faye
 fi
 
 echo "usage: go server|debug|update|node|npm|node-inspector ..."
