@@ -26,16 +26,11 @@ step = (steps...) ->
     catch exception
       throw exception if @throw_errors
       next exception # Pass any exceptions on through the next callback
-
-    # if counter > 0 and pending is 0
-    #   # If parallel() was called, and all parallel branches executed
-    #   # synchronously, go on to the next step immediately.
-    #   next.apply(null, results)
-    # else if result isnt undefined
-    #   # If a synchronous return is used, pass it to the callback
-    #   next(undefined, result)
     
     lock = false
+    # ok, all entries were synchronous so parallel did not get to
+    # process them because the lock above was on
+    next.apply(null, results) if results.length isnt 0 and pending is 0
 
   next.throw_errors = true
 
@@ -87,10 +82,10 @@ step = (steps...) ->
     input.pipe(output, end: false);
     input.on 'end', @
 
-  # used to load libraries (such as jQuery) in parallel
-  # this is a shortcut for multiple 'depends 'blah', parallel()
-  next.libraries = (urls...) ->
-    depends url, @parallel() for url in urls
+  # # used to load libraries (such as jQuery) in parallel
+  # # this is a shortcut for multiple 'depends 'blah', parallel()
+  # next.libraries = (urls...) ->
+  #   depends url, @parallel() for url in urls
 
   # wrapper for dependencies that have asynchronous actions during
   # initialisation. Only for client. Contents need to be

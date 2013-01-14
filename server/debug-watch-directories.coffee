@@ -8,7 +8,7 @@
 # called debug-watch-directories.coffee in it's server directory. It can use the
 # following template:
 
-# fs reqire 'file-system'
+# fs = require 'file-system'
 # module.exports = require fs.node 'server/debug-watch-directories'
 # module.exports.server.concat [
 #   fs.base 'my-server-dir'
