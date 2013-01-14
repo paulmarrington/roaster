@@ -1,6 +1,6 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 demand = require 'demand'; step = require 'step'; morph = require 'morph'
-fs = require 'file-system'
+fs = require 'file-system'; path = require 'path'
 
 module.exports = (source, next) ->
   write_css = null; css_filename = null; less = null
