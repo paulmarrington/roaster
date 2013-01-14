@@ -82,10 +82,10 @@ step = (steps...) ->
     input.pipe(output, end: false);
     input.on 'end', @
 
-  # used to load libraries (such as jQuery) in parallel
-  # this is a shortcut for multiple 'depends 'blah', parallel()
-  next.libraries = (urls...) ->
-    depends url, @parallel() for url in urls
+  # # used to load libraries (such as jQuery) in parallel
+  # # this is a shortcut for multiple 'depends 'blah', parallel()
+  # next.libraries = (urls...) ->
+  #   depends url, @parallel() for url in urls
 
   # wrapper for dependencies that have asynchronous actions during
   # initialisation. Only for client. Contents need to be
