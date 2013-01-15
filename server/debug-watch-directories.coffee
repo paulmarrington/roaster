@@ -28,6 +28,7 @@ module.exports =
     fs.node 'common'
     fs.base 'server'
     fs.base 'common'
+    fs.base 'scratch'
   ]
 
   # Debug mode monitors these directories for client-side files
@@ -35,4 +36,5 @@ module.exports =
   client: [
     fs.node 'client'
     fs.base 'client'
+    fs.base 'scratch'
   ]

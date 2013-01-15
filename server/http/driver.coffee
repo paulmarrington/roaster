@@ -59,8 +59,6 @@ module.exports = driver = (pathname) ->
         # and it makes subsequent lookups faster
         cache[first_module_name] = cache[module_name] = require module_name
         return cache[module_name]
-  #      return cache[pfirst_module_name] = cache[module_name] = require module_name
-
       catch error
 
   # There is no driver module for this extension. Default to a static
