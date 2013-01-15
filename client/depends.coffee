@@ -58,7 +58,7 @@ window.depends = (url, next) ->
     next null, dependency while callback = callbacks.pop()
     delete depends.loading[url]
 
-depends.script_loader = (url, next) ->  
+depends.script_loader = (url, next) ->
   script = document.createElement("script")
   script.type = "text/javascript"
   script.async = "async"
