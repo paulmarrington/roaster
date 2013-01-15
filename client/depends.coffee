@@ -41,35 +41,36 @@
 # }
 head = null
 
-window.depends = (url, callback = (dependency) -> return dependency) ->  
+window.depends = (url, next) ->
   # see if we are loaded and ready to go
-  return callback null, dependency if dependency = depends.cache[url]
+  return next null, dependency if dependency = depends.cache[url]
   # see if we are in the process of loading
-  return depends.loading[url].push(callback) if depends.loading[url]
+  return next.loading[url].push(callback) if depends.loading[url]
   # ok, we are going to need to kick of a synchronous load
-  depends.loading[url] = [callback]
+  depends.loading[url] = [next]
   global_var = "_dependency_#{depends.scriptIndex++}"
 
-  script = document.createElement("script")
-  script.type = "text/javascript"
-  script.async = "async"
-  onScriptLoaded = ->
+  depends.script_loader "#{url}.depends?global_var=#{global_var}", ->
     window[global_var]?(module = {exports:{}})
     dependency = depends.cache[url] = module?.exports ? {}
     delete window[global_var]
     callbacks = depends.loading[url]
-    callback null, dependency while callback = callbacks.pop()
+    next null, dependency while callback = callbacks.pop()
     delete depends.loading[url]
 
+depends.script_loader = (url, next) ->  
+  script = document.createElement("script")
+  script.type = "text/javascript"
+  script.async = "async"
   if script.readyState # IE
     script.onreadystatechange = ->
       if script.readyState == "loaded" || script.readyState == "complete"
         script.onreadystatechange = null;
-        onScriptLoaded();
+        next();
   else # Other browsers
-   script.onload = -> onScriptLoaded()
+    script.onload = -> next()
 
-  script.src = "#{url}.depends?global_var=#{global_var}"
+  script.src = url
   head ?= document.getElementsByTagName("head")[0]
   head.appendChild(script)
 

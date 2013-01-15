@@ -83,9 +83,10 @@ server = http.createServer (request, response) ->
 #   console.log message.text
 #   ...
 # faye.publish '/channel', text: 'Hello'
-faye = new require('faye').NodeAdapter mount: '/faye', timeout: 45
-faye.attach server
-environment.faye = faye.getClient()
+faye = require('ext/node_modules/faye')
+bayeux = new faye.NodeAdapter(mount: '/faye', timeout: 45)
+bayeux.attach server
+environment.faye = bayeux.getClient()
 
 # kick-off
 server.listen environment.port
