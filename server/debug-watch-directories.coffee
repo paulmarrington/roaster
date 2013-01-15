@@ -10,13 +10,12 @@
 
 # fs = require 'file-system'
 # module.exports = require fs.node 'server/debug-watch-directories'
-# module.exports.server.concat [
+# module.exports.server.push [
 #   fs.base 'my-server-dir'
 # ]
-# module.exports.client.concat [
+# module.exports.client.push [
 #   fs.base 'my-client-dir'
 # ]
-
 fs = require 'file-system'; path = require 'path'
 
 module.exports =
