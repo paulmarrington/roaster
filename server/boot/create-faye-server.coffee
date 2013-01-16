@@ -1,5 +1,5 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-
+fs = require 'file-system'
 # Using faye for pubsub.
 
 # client: 
@@ -26,7 +26,7 @@
 #   ...
 # faye.publish '/channel', text: 'Hello'
 module.exports = (environment) ->
-  faye = require('ext/node_modules/faye')
+  faye = require(fs.node 'ext/node_modules/faye')
   bayeux = new faye.NodeAdapter(mount: '/faye', timeout: 45)
   bayeux.attach environment.server
   return environment.faye = bayeux.getClient()
