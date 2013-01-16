@@ -36,14 +36,17 @@ environment = os.command_line
 
 respond.maximum_browser_cache_age = 1000 if environment.debug
 
+# allow project to tweak settings before we commit to action
+project_init.pre environment
+
 # create a server ready to listen
 environment.server = create_http_server environment
 environment.faye = create_faye_server environment
 
 # kick-off
 environment.server.listen environment.port
-# lastly we do project level initialisation
-project_init environment
+# lastly we do more project level initialisation
+project_init.post environment
 
 console.log """
 usage: go server port=#{environment.port} user=#{environment.user} debug=#{environment.debug}
