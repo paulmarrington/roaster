@@ -15,12 +15,15 @@ class Script_Runner
   fork: () -> # require('Script-Runner')(exchange).fork() 
     script = @exchange.request.filename
     process.stdout.pipe @exchange.response, end: false
-    @proc.fork "#{process.env.uSDLC_node_path}/scripts/coffee.js", script, @args..., (error) =>
+    @proc.program = "#{process.env.uSDLC_node_path}/scripts/coffee.js"
+    @proc.fork script, @args..., (error) =>
       @exchange.response.end()
       throw error if error
   
-  # require('Script-Runner')(request, response).spawm(program) # Spawn off a separate OS process
-  spawn: (program) -> @proc.spawn program, @args..., (error) =>
+  # require('Script-Runner')(exchange).spawm(program) # Spawn off a separate OS process
+  spawn: (program) -> 
+    @proc.program = program
+    @proc.spawn @args..., (error) =>
       @exchange.response.end()
       throw error if error
 
