@@ -1,6 +1,7 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 Processes = require 'Processes'; fs = require 'file-system'
-watch_directories = require 'debug-watch-directories'; rmdirs = require('dirs').rmdirs
+watch_directories = require 'boot/debug-watch-directories'
+rmdirs = require('dirs').rmdirs
 
 args = [
   fs.node "scripts/coffee.js"

@@ -9,7 +9,7 @@
 # following template:
 
 # fs = require 'file-system'
-# module.exports = require fs.node 'server/debug-watch-directories'
+# module.exports = require fs.node 'boot/debug-watch-directories'
 # module.exports.server.push [
 #   fs.base 'my-server-dir'
 # ]
