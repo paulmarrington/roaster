@@ -19,10 +19,13 @@
 #     user: Default user if no-one has logged in
 #   session: an object common to a single browser conversation set
 #     user: Object containing details for a guest or logged in user
+#   respond: method to call to send data back to the browser - chaining support
 
-http = require 'http'; url = require 'url'; respond = require 'http/respond'
-os = require 'system'; Cookies = require 'cookies'
-fs = require 'file-system'; driver = require 'http/driver'
+create_http_server = require 'boot/create-http-server'
+create_faye_server = require 'boot/create-faye-server'
+project_init = require 'boot/project-init'
+respond = require 'http/respond'
+os = require 'system'; fs = require 'file-system'
 
 # process the command line
 environment = os.command_line
@@ -31,65 +34,16 @@ environment = os.command_line
   user: 'Guest'
   base_dir: fs.base ''
 
-if environment.debug
-  respond.maximum_browser_cache_age = 1000
+respond.maximum_browser_cache_age = 1000 if environment.debug
 
 # create a server ready to listen
-server = http.createServer (request, response) ->
-  console.log request.url
-  request.url = url.parse request.url, true
-  fs.find request.url.pathname, (filename) ->
-    try
-      request.filename = filename
-      
-      cookies = new Cookies(request, response)
-      user = environment.user if not (user = cookies.get 'usdlc_session_id')
-      session = {user}
-
-      # some drivers cannot set mime type. For these we put it in the query string
-      # as txt or text/plain.
-      if request.url.query.mime_type
-        respond.set_mime_type request.url.query.mime_type, response
-
-      # all the set up is done, process the request based on a driver for file type
-      driver(request.filename)({
-        request, response, environment, session, cookies, reply: respond.static})
-    catch error
-      console.log error.stack ? error
-      response.end(error.toString())
-
-# Using faye for pubsub.
-
-# client: 
-# step(
-#   () ->
-#     @depends '/client/faye.coffee'
-#   (error, faye) ->
-#     faye.subscribe '/channel', (message) ->
-#       console.log message.text
-#     ...
-#     faye.publish '/channel', text: 'Hello'
-# )
-
-# Same server:
-# environment.faye.subscribe '/channel', (message) ->
-#   console.log message.text
-# ...
-# environment.faye.publish '/channel', text: 'Hello'
-
-# Different server:
-# faye = require('faye')('http://localhost:9009/faye')
-# faye.subscribe '/channel', (message) ->
-#   console.log message.text
-#   ...
-# faye.publish '/channel', text: 'Hello'
-faye = require('ext/node_modules/faye')
-bayeux = new faye.NodeAdapter(mount: '/faye', timeout: 45)
-bayeux.attach server
-environment.faye = bayeux.getClient()
+environment.server = create_http_server environment
+environment.faye = create_faye_server environment
 
 # kick-off
-server.listen environment.port
+environment.server.listen environment.port
+# lastly we do project level initialisation
+project_init environment
 
 console.log """
 usage: go server port=#{environment.port} user=#{environment.user} debug=#{environment.debug}
