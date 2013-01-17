@@ -2,5 +2,4 @@
 fs = require 'file-system'
 faye = require(fs.node 'ext/node_modules/faye')
 
-module.exports = (url) ->
-  return new faye.Client url
+module.exports = (url) -> return new faye.Client url

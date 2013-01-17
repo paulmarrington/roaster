@@ -17,7 +17,8 @@ fs = require 'file-system'
 # environment.faye.subscribe '/channel', (message) ->
 #   console.log message.text
 # ...
-# environment.faye.publish '/channel', text: 'Hello'
+# environment.faye.publish '/channel', text: 'Hello' # or
+# require('faye).local_client.publish '/channel', text: 'Hello'
 
 # Different server:
 # faye = require('faye')('http://localhost:9009/faye')
@@ -29,4 +30,5 @@ module.exports = (environment) ->
   faye = require(fs.node 'ext/node_modules/faye')
   bayeux = new faye.NodeAdapter(mount: '/faye', timeout: 45)
   bayeux.attach environment.server
-  return environment.faye = bayeux.getClient()
+  server_client = require 'faye'
+  return environment.faye = server_client.local_client = bayeux.getClient()
