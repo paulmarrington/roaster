@@ -30,7 +30,7 @@ respond = require 'http/respond'
 os = require 'system'; fs = require 'file-system'
 
 # process the command line
-environment = os.command_line
+environment = process.environment = os.command_line
   base_dir: fs.base ''  # convenience path to server base directory
   config: 'base'        # used to load config settings (<name>.config.coffee)
   faye: true            # true to activate pubsub - set to faye.client
