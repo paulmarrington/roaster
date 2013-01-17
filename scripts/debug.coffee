@@ -6,7 +6,7 @@ rmdirs = require('dirs').rmdirs
 args = [
   fs.node "scripts/coffee.js"
   fs.node "scripts/server.coffee"
-  "debug=true"]
+  "config=debug"]
 args = args.concat process.argv[3..-1]
 
 node = Processes('node')
