@@ -2,6 +2,6 @@
 
 module.exports =
   # call before anything is done to initialise the server
-  pre: (environment) ->
+  pre: (environment) -> console.log("No pre call configured")
   # call after server has started listening for connections
-  post: (environment) ->
+  post: (environment) -> console.log("No post call configured")

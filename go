@@ -5,7 +5,7 @@ echo
 export uSDLC_node_path=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 export uSDLC_base_path=$uSDLC_node_path
 # node require statements will look here
-export NODE_PATH=.:uSDLC_base_path/server:uSDLC_base_path/common:$uSDLC_node_path:$uSDLC_node_path/server:$uSDLC_node_path/common:$uSDLC_node_path/ext/node_modules:$uSDLC_node_path/ext/node/lib/node_modules:.:$NODE_PATH
+export NODE_PATH=.:$uSDLC_base_path/server:$uSDLC_base_path/common:$uSDLC_node_path:$uSDLC_node_path/server:$uSDLC_node_path/common:$uSDLC_node_path/ext/node_modules:$uSDLC_node_path/ext/node/lib/node_modules:$NODE_PATH
 # add scripts and node itself to the path for convenience
 export PATH=$uSDLC_node_path/bin:$uSDLC_node_path/ext/node/bin:$PATH
 
