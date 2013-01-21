@@ -6,6 +6,7 @@ respond = require 'http/respond'; fs = require 'file-system'
 module.exports = (environment) ->
   return environment.server = http.createServer (request, response) ->
     console.log request.url
+    request.pause()
     request.url = url.parse request.url, true
     fs.find request.url.pathname, (filename) ->
       try
