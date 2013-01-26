@@ -3,7 +3,11 @@ var fs = require('fs'), path = require('path'), mkdirs = require('dirs').mkdirs
 // all files are cached in /gen under the main project directory
 var base_dir = process.env.uSDLC_base_path
 var base_length = base_dir.length
-
+// check for out-of-date files and recompile on an as-needs basis.
+// morph(source, target-ext, builder)
+//   builder(error, target-file-name, code, saver)
+//     saver(error, code, next)
+//       next(error)
 var morph = function (source, target_ext, builder) {
     var target = source
     if (source.length > base_length && source.substring(0,base_length) == base_dir) {
@@ -36,13 +40,29 @@ var morph = function (source, target_ext, builder) {
     }
     return target
 }
-
 module.exports = morph
-module.exports.extend_require = function (source_ext, builder) {
+// Extend node require() to include a new source file type
+// Has to be synhronous because require() is synchronous
+module.exports.extend_require = function (source_ext, compiler) {
   require.extensions[source_ext] = function(module, source) {
-    morph(source, '.js', function (error, filename, js, next) {
-      builder(error, filename, js, next)
+    morph(source, '.js', function(error, filename, code, save) {
+      compiler(error, filename, code, function(error, js) {
+        save(error, js)
+      })
       require.extensions['.js'](module, filename)
     })
   }
+}
+// Helper for coffee-script derivatives to compile to Javascript
+// Has to be asynchronous because some compilers are asynchronous
+module.exports.compileJavascript = function(source, compiler, next) {
+    morph(source, '.js', function(error, filename, content, save) {
+        if (error) return next(error, filename)
+        if(content) {
+            js = compiler.compile(content, {filename:filename})
+            save(null, js, function(error) {return next(error, filename)})
+        } else {
+            next(null, filename)
+        }
+    })
 }

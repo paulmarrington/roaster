@@ -8,7 +8,7 @@ module.exports = (source, next) ->
     ->
       demand 'less', this
     (error, less_reference) ->
-      throw error if error
+      @throw_errors = false
       less = less_reference
       morph source, '.css', this
     (error, filename, content, save) ->

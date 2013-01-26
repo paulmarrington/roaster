@@ -1,4 +1,4 @@
 #!/bin/bash
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-
-node "$uSDLC_node_path/scripts/app-init.js" "$uSDLC_node_path/scripts/server" $@
+update-node-on-unix
+npm update

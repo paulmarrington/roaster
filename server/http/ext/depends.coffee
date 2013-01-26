@@ -8,15 +8,12 @@ driver = require 'http/driver'; fs = require 'file-system', step = require 'step
 module.exports = (exchange) ->
   # fine the input file from the list of bases
   url = exchange.request.url.pathname.replace '.depends', ''
-  
+
   fs.find url, (url) ->
     exchange.request.filename = url
-    # make sure the result is sent to the servr
-    exchange.domain = 'client'
 
     # wrap the reply so we can send an enclosing function
-    next_reply = exchange.reply
-    exchange.reply = (exchange) ->
+    exchange.reply = ->
       input = fs.createReadStream(exchange.request.filename)
       input.pause() # if we don't pause it disappears while writing header
       exchange.request.filename += '.depends.js'
@@ -32,7 +29,7 @@ module.exports = (exchange) ->
         -> # step 3: closing brace for the function
           @drain output, ";}"
         -> # Step 4: send it back to the browser
-          next_reply exchange
+          respond.static exchange
       )
 
     # kick it all off as if it were directly in the server loop

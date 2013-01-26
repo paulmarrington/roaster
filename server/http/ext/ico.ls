@@ -5,4 +5,4 @@ modules.export = (exchange) ->
   filename = request.url.pathname
   if filename is '/favicon.ico'
     exchange.request.filename = "#{exchange.environment.base_dir}/client/favicon.ico"
-  exchange.reply exchange
+  respond.static exchange

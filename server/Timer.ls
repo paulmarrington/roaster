@@ -2,7 +2,7 @@
 
 class Timer # Use to report elapsed times
   # Timer = require 'timer'; timer = Timer() # creates a new instance and prints current date
-  constructor: ->
+  ~>
     @start = @now = new Date()
     console.log "#{@now} <b>"
   # timer.elapsed() # will print seconds since start or last elapsed
@@ -24,4 +24,4 @@ class Timer # Use to report elapsed times
     hours = if hours then "#{hours}:" else ''
     return "#{hours}#{minutes}:#{seconds}"
 
-module.exports = -> new Timer()
+module.exports = Timer

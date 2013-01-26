@@ -4,7 +4,7 @@ watch_directories = require 'boot/debug-watch-directories'
 rmdirs = require('dirs').rmdirs
 
 args = [
-  fs.node "scripts/coffee.js"
+  fs.node "scripts/app-init.js"
   fs.node "scripts/server.coffee"
   "config=debug"]
 args = args.concat process.argv[3..-1]
@@ -40,7 +40,7 @@ require('demand') 'node-inspector', (error) ->
 # Go to menu Tools // Build System // New Build System...
 # Set file content to:
 # {
-#  "cmd": ["touch '$file_path'"],
+#  "cmd": ["curl 'http://localhost:9009/server/http/terminate.coffee'"],
 #  "shell": true
 # }
 # save it and set it from the same menu

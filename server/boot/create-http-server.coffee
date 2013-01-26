@@ -11,7 +11,7 @@ module.exports = (environment) ->
     fs.find request.url.pathname, (filename) ->
       try
         request.filename = filename
-        
+
         cookies = new Cookies(request, response)
         user = environment.user if not (user = cookies.get 'usdlc_session_id')
         session = {user}
@@ -21,9 +21,12 @@ module.exports = (environment) ->
         if request.url.query.mime_type
           respond.set_mime_type request.url.query.mime_type, response
 
-        # all the set up is done, process the request based on a driver for file type
-        driver(request.filename)({
-          request, response, environment, session, cookies, reply: respond.static})
+        # all the set up is done, process the request based on a driver
+        # for file type
+        exchange = {request, response, environment, session, cookies}
+        exchange.reply = -> respond.static exchange
+        exchange.morph = (name, next) -> next null, name
+        driver(request.filename)(exchange)
       catch error
         console.log error.stack ? error
         response.end(error.toString())

@@ -102,6 +102,6 @@ step = (steps...) ->
         else
           @parallel()(error, dependency)
     depends url, @parallel() for url in urls
-  next() # Start the engine an pass nothing to the first step.
+  next() # Start the engine and pass nothing to the first step.
 
 module.exports = step

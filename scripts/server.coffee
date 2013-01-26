@@ -2,7 +2,7 @@
 
 # Create a HTTP server that processes requests based on the extension (being
 # the characters after the final dot) - defaulting to 'html'. These drivers
-# are modules in server/http/ext with a name that matches the extension. In 
+# are modules in server/http/ext with a name that matches the extension. In
 # other words, html.coffee will be loaded to process index.html. The driver
 # modules return a function that is called on each HTTP request and passed
 # an exchange object consisting of
@@ -22,7 +22,6 @@
 #   respond: method to call to send data back to the browser - chaining support
 #   faye: pubsub server-side client. Set to false for no pubsub on server
 #   config: Configuration file (<config>.config.coffee)
-
 create_http_server = require 'boot/create-http-server'
 create_faye_server = require 'boot/create-faye-server'
 project_init = require 'boot/project-init'
