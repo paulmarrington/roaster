@@ -1,6 +1,7 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 static_driver = require('http/respond').static
 path = require 'path'; fs = require 'file-system'
+server = require('http/drivers/server')
 cache = {}
 
 # Look for drivers to handle files of a specific file type.
@@ -16,7 +17,9 @@ module.exports = driver = (pathname) ->
   # no extension - let static return index.html
   return static_driver if possible_drivers.length is 0
   last_driver = possible_drivers[possible_drivers.length - 1]
-  possible_drivers.push 'index'
+  # any dir can have a drivers sub-dir with index.js
+  # use to assing a directory to running client only code
+  possible_drivers.unshift 'index'
 
   # drivers can be on the same or parent path as the script being run
   # or in [node|base]/server/http/ext.
@@ -41,7 +44,7 @@ module.exports = driver = (pathname) ->
     for possible_path in possible_paths
       module_name = path.join possible_path, 'drivers', possible_driver
       if cache[module_name]
-        found = drivers.push cache[module_name]
+        drivers.push found = cache[module_name]
         cache[inferred] = found for inferred in module_names
         found = module_name
         break
@@ -70,6 +73,13 @@ module.exports = driver = (pathname) ->
       module_name = path.join possible_path, 'drivers', last_driver
       cache[module_name] = static_driver
     return static_driver
+
+  # and the one ring brings them all together
+  drivers.push (exchange) ->
+    # if we don't have a domain from drivers, default to servlet
+    server(exchange) if not exchange.domain
+    # and send a reply based on all the instructions
+    exchange.reply exchange.morph
 
   # returns a function that runs each driver sequentially. If
   # a driver has one parameter (exchange object) then it is
