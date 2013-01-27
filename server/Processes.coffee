@@ -1,16 +1,16 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 child = require 'child_process'
-    
+
 class Processes # proc = require('proc')() # sets default streaming and options
   constructor: (@program) ->
     @options =
       cwd: process.cwd()
       env: process.env
       stdio: ['ignore', process.stdout, process.stderr]
-      
+
   # Fork off a separate node process to run the V8 scripts in a separate space
   fork: (@args..., @next) -> @_exec(child.fork)
-  
+
   # Spawn off a separate OS process - next(code) provides return code
   spawn: (@args..., @next) -> @_exec(child.spawn)
 
@@ -28,7 +28,7 @@ class Processes # proc = require('proc')() # sets default streaming and options
     return @proc
 
   # kill this process if it is currently running
-  kill: -> @proc?.kill()
+  kill: (signal = 'SIGTERM') -> @proc?.kill()
 
   # Event listener - returns @ for chaining
   on: (args...) ->

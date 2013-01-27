@@ -4,10 +4,11 @@ watch_directories = require 'boot/debug-watch-directories'
 rmdirs = require('dirs').rmdirs
 
 args = [
+  '--debug'
   fs.node "scripts/app-init.js"
   fs.node "scripts/server.coffee"
   "config=debug"]
-args = args.concat process.argv[3..-1]
+args = args.concat process.argv.slice(3)
 
 node = Processes('node')
 
@@ -33,8 +34,7 @@ node.on 'exit', ->
 require('demand') 'node-inspector', (error) ->
   throw error if error
   node_inspector = Processes('node-inspector')
-  load_node_inspector = -> node_inspector.spawn ->
-  setTimeout load_node_inspector, 2000
+  setTimeout (-> node_inspector.spawn ->), 2000
 
 #Sublime Text 2 manages to save files without triggering the watcher.
 # Go to menu Tools // Build System // New Build System...
