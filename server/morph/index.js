@@ -60,7 +60,8 @@ module.exports.compileJavascript = function(source, compiler, next) {
         if (error) return next(error, filename)
         if(content) {
             js = compiler.compile(content, {filename:filename})
-            save(null, js, function(error) {return next(error, filename)})
+            save(null, js)
+            next(error, filename)
         } else {
             next(null, filename)
         }

@@ -7,9 +7,6 @@
 # * The path a script is on (i.e. /client/ in the path somewhere)
 # * file name extension (myfile.client.coffee)
 # * explicit in a wrapping script setting exchange.domain
-liveScript_morph = require 'morph/live-script'
-domain = require 'domain'
+require! 'morph/live-script'
 
-module.exports = (exchange) ->
-  domain.set exchange
-  exchange.reply liveScript_morph
+module.exports = (exchange) -> exchange.morph = live-script

@@ -21,6 +21,7 @@ module.exports = respond =
       next error, exchange
   # after morphing create a gzip version for sending ot a browser
   morph_gzip_reply: (exchange, morph) ->
+    exchange.domain = 'client'
     step(
       -> respond.morphed exchange, morph, this
       -> gzip exchange.request.filename, this

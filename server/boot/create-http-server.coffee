@@ -16,16 +16,15 @@ module.exports = (environment) ->
         user = environment.user if not (user = cookies.get 'usdlc_session_id')
         session = {user}
 
-        # some drivers cannot set mime type. For these we put it in the query string
-        # as txt or text/plain.
-        if request.url.query.mime_type
-          respond.set_mime_type request.url.query.mime_type, response
-
         # all the set up is done, process the request based on a driver
         # for file type
         exchange = {request, response, environment, session, cookies}
         exchange.reply = -> respond.static exchange
         exchange.morph = (name, next) -> next null, name
+        # some drivers cannot set mime type. For these we put it in the query string
+        # as txt or text/plain.
+        exchange.response.mimetype = request.url.query.mimetype
+        # kick off exchange
         driver(request.filename)(exchange)
       catch error
         console.log error.stack ? error

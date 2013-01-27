@@ -2,5 +2,5 @@
 respond = require 'http/respond'
 
 module.exports = (exchange) ->
-  exchange.domain = 'client'
+  exchange.response.mimetype ?= 'js'  # most common is script
   exchange.reply = (morph) -> respond.morph_gzip_reply exchange, morph
