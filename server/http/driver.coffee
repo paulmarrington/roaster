@@ -43,26 +43,30 @@ module.exports = driver = (pathname) ->
     module_names = []; found = null
     for possible_path in possible_paths
       module_name = path.join possible_path, 'drivers', possible_driver
-      if cache[module_name]
-        drivers.push found = cache[module_name]
-        cache[inferred] = found for inferred in module_names
+      if module_name of cache
+        if cache[module_name]
+          drivers.push found = cache[module_name]
+          cache[inferred] = found for inferred in module_names
         found = module_name
         break
       module_names.push module_name
     if not found # nothing cached - require until we get it or fail all paths
-      tried = []
+      tried = []; driver_module = null
       for module_name in module_names
         try
           # we can cache it as the first possibility because it doesn't happen otherwuse
           # and it makes subsequent lookups faster
           tried.push module_name
+          console.log "REQUIRE #{module_name}"
           drivers.push driver_module = require module_name
           found = module_name
-          cache[inferred] = driver_module for inferred in tried
           break
         catch error
           throw error if error.code isnt 'MODULE_NOT_FOUND'
           throw error if error.toString().indexOf(possible_driver) is -1
+      # so we never check again on failures
+      cache[inferred] = driver_module for inferred in tried
+    found and= cache[found] # we looked and the driver exists
     core_driver_found = true if found and possible_driver is last_driver
 
   # There is no driver module for this extension. Default to a static
