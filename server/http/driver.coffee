@@ -1,5 +1,5 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-static_driver = require('http/respond').static
+respond = require('http/respond'); static_driver = respond.static
 path = require 'path'; fs = require 'file-system'
 server = require('http/drivers/server')
 cache = {}
@@ -12,10 +12,15 @@ cache = {}
 # the base system or the node server.
 
 # If nothing else matches the file is assumed to be a static resource.
-module.exports = driver = (pathname) ->
+module.exports = driver = (exchange) ->
+  pathname = exchange.request.filename
   possible_drivers = path.basename(pathname).split('.').slice(1)
+  if exchange.request.url.query.domain
+    possible_drivers = possible_drivers.concat(
+      exchange.request.url.query.domain.split(',')
+    )
   # no extension - let static return index.html
-  return static_driver if possible_drivers.length is 0
+  return static_driver(exchange) if possible_drivers.length is 0
   last_driver = possible_drivers[possible_drivers.length - 1]
   # any dir can have a drivers sub-dir with index.js
   # use to assing a directory to running client only code
@@ -76,25 +81,24 @@ module.exports = driver = (pathname) ->
     for possible_path in possible_paths
       module_name = path.join possible_path, 'drivers', last_driver
       cache[module_name] = null
-    return static_driver
+    return static_driver(exchange)
 
   # and the one ring brings them all together
   drivers.push (exchange) ->
+    respond.set_mime_type exchange.response.mimetype ? 'js', exchange.response
     # if we don't have a domain from drivers, default to servlet
     server(exchange) if not exchange.domain
     # and send a reply based on all the instructions
     exchange.reply exchange.morph
 
-  # returns a function that runs each driver sequentially. If
-  # a driver has one parameter (exchange object) then it is
+  # If a driver has one parameter (exchange object) then it is
   # synchronous. Otherwise it is asynchronous and will call the
   # second parameter when done.
-  return (exchange) ->
-    drive = ->
-      while drivers.length isnt 0
-        driver = drivers.shift()
-        if driver.length >= 2
-          return driver(exchange, drive)
-        else
-          driver(exchange)  # sunchronous call
-    drive()
+  drive = ->
+    while drivers.length isnt 0
+      driver = drivers.shift()
+      if driver.length >= 2
+        return driver(exchange, drive)
+      else
+        driver(exchange)  # synchronous call
+  drive()

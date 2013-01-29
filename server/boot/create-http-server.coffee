@@ -19,13 +19,13 @@ module.exports = (environment) ->
         # all the set up is done, process the request based on a driver
         # for file type
         exchange = {request, response, environment, session, cookies}
-        exchange.reply = -> respond.static exchange
+        exchange.reply = (morph) -> respond.morph_gzip_reply exchange, morph
         exchange.morph = (name, next) -> next null, name
         # some drivers cannot set mime type. For these we put it in the query string
         # as txt or text/plain.
         exchange.response.mimetype = request.url.query.mimetype
         # kick off exchange
-        driver(request.filename)(exchange)
+        driver(exchange)
       catch error
         console.log error.stack ? error
         response.end(error.toString())

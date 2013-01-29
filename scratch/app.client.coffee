@@ -1,4 +1,4 @@
-depends '/common/step.coffee', (errror, step) ->
+depends '/common/step.coffee?domain=client', (errror, step) ->
   step(
     # if the dependant does not do anything asynchronous during init
     # then we can call depends directly
@@ -33,11 +33,11 @@ depends '/common/step.coffee', (errror, step) ->
     #   @depends '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
     # () ->
     #   console.log window.libraries_test
-    ()->
+    ->
       @depends '/client/faye.coffee'
-    (error, @faye)->
+    (error, @faye) ->
       depends.script_loader '/scratch/test-faye.server.coffee', @
-    () ->
+    ->
       console.log "Client: subscribe to '/channel/on-client'"
       @faye.subscribe '/channel/on-client', (message) -> console.log message.text
       publish = =>

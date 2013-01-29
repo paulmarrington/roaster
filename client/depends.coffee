@@ -3,7 +3,7 @@
 # Simple effective asynchronous module requirements for the browser.
 
 # Dependencies are only loaded once - the first time they are referenced. Afterwards
-# the same in-memory instance is used. By using 'depends' when the information is 
+# the same in-memory instance is used. By using 'depends' when the information is
 # referenced in a parent module means that code is loaded on demand - giving a responsive
 # UI without resorting to combining script files.
 
@@ -19,10 +19,10 @@
 # depends 'b', (b) ->
 #   console.log b.name
 #   throw 'wrong' if b.value isnt 1
-  
+
 #   depends 'c', (c) ->
 #     throw 'wrong' if c() isnt 2
-    
+
 #     depends.forceReload 'c'
 #     depends 'c', (c) ->
 #       throw 'wrong' if c isnt 1 # reset as c.js is reloaded
@@ -42,20 +42,23 @@
 head = null
 
 window.depends = (url, next) ->
+  [url, query] = url.split '?'
   # see if we are loaded and ready to go
   return next null, dependency if dependency = depends.cache[url]
   # see if we are in the process of loading
-  return next.loading[url].push(callback) if depends.loading[url]
+  return depends.loading[url].push(next) if depends.loading[url]
   # ok, we are going to need to kick of a synchronous load
   depends.loading[url] = [next]
   global_var = "_dependency_#{depends.scriptIndex++}"
 
-  depends.script_loader "#{url}.depends?global_var=#{global_var}", ->
+  query = "#{url}.depends?global_var=#{global_var}&#{query ? ''}"
+  depends.script_loader query, ->
     window[global_var]?(module = {exports:{}})
     dependency = depends.cache[url] = module?.exports ? {}
     delete window[global_var]
     callbacks = depends.loading[url]
-    next null, dependency while callback = callbacks.pop()
+    while callback = callbacks.pop()
+      callback null, dependency if callback
     delete depends.loading[url]
 
 depends.script_loader = (url, next) ->
