@@ -26,7 +26,7 @@ step = (steps...) ->
     catch exception
       throw exception if @throw_errors
       next exception # Pass any exceptions on through the next callback
-    
+
     lock = false
     # ok, all entries were synchronous so parallel did not get to
     # process them because the lock above was on
@@ -103,5 +103,10 @@ step = (steps...) ->
           @parallel()(error, dependency)
     depends url, @parallel() for url in urls
   next() # Start the engine and pass nothing to the first step.
+
+  # library is similar to depends except that it assumes files
+  # are to be run client side.
+  next.library = (urls...) ->
+    @depends ("#{url}?domain=client" for url in urls)...
 
 module.exports = step
