@@ -1,7 +1,6 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-respond = require('http/respond'); static_driver = respond.static
-path = require 'path'; fs = require 'file-system'
-server = require('http/drivers/server')
+require! 'http/respond'; require! 'path'
+require! 'http/drivers/server'; require! 'http/drivers/client'
 cache = {}
 
 # Look for drivers to handle files of a specific file type.
@@ -15,12 +14,11 @@ cache = {}
 module.exports = driver = (exchange) ->
   pathname = exchange.request.filename
   possible_drivers = path.basename(pathname).split('.').slice(1)
-  if exchange.request.url.query.domain
-    possible_drivers = possible_drivers.concat(
-      exchange.request.url.query.domain.split(',')
-    )
+  if domain = exchange.request.url.query.domain
+    possible_drivers = possible_drivers.concat domain.split(',')
   # no extension - let static return index.html
-  return static_driver(exchange) if possible_drivers.length is 0
+  return respond.static(exchange) if possible_drivers.length is 0
+
   last_driver = possible_drivers[possible_drivers.length - 1]
   # any dir can have a drivers sub-dir with index.js
   # use to assing a directory to running client only code
@@ -35,9 +33,8 @@ module.exports = driver = (exchange) ->
     possible_paths = []
     while (slash = (script_path.lastIndexOf('/') - 1)) > 0
       possible_paths.push script_path
-      script_path = script_path[0..slash]
-    possible_paths.push script_path
-    possible_paths.push 'http'
+      script_path = script_path[0 to slash]
+    possible_paths.push script_path, 'http'
 
   # search all paths in cache and on disk (require) before
   # searching for next driver name. Otherwise a cached
@@ -50,8 +47,8 @@ module.exports = driver = (exchange) ->
       module_name = path.join possible_path, 'drivers', possible_driver
       if module_name of cache
         if cache[module_name]
-          drivers.push found = cache[module_name]
-          cache[inferred] = found for inferred in module_names
+          drivers.push that
+          for inferred in module_names then cache[inferred] = that
           found = module_name
         break
       else
@@ -67,10 +64,12 @@ module.exports = driver = (exchange) ->
           found = module_name
           break
         catch error
+          # error can be in required code or because code does not exist
           throw error if error.code isnt 'MODULE_NOT_FOUND'
+          # must check it is the asked for not found, not inner require
           throw error if error.toString().indexOf(possible_driver) is -1
       # so we never check again on failures
-      cache[inferred] = driver_module for inferred in tried
+      for inferred in tried then cache[inferred] = driver_module
     found and= cache[found] # we looked and the driver exists
     core_driver_found = true if found and possible_driver is last_driver
 
@@ -81,13 +80,18 @@ module.exports = driver = (exchange) ->
     for possible_path in possible_paths
       module_name = path.join possible_path, 'drivers', last_driver
       cache[module_name] = null
-    return static_driver(exchange)
+    return respond.static(exchange)
 
   # and the one ring brings them all together
   drivers.push (exchange) ->
     respond.set_mime_type exchange.response.mimetype ? 'js', exchange.response
-    # if we don't have a domain from drivers, default to servlet
-    server(exchange) if not exchange.domain
+    # if we don't have a domain from drivers, default
+    # to a servlet if there is a query, client if empty query string.
+    # over-ride with query domain=(client|server)
+    if not exchange.domain
+      # use search as query dictionary length is expensive to calculate
+      if exchange.request.url.search.length < 2
+        then client exchange else server exchange
     # and send a reply based on all the instructions
     exchange.reply exchange.morph
 
@@ -95,10 +99,11 @@ module.exports = driver = (exchange) ->
   # synchronous. Otherwise it is asynchronous and will call the
   # second parameter when done.
   drive = ->
+    # loop through drivers to end or first asynchronous call
     while drivers.length isnt 0
       driver = drivers.shift()
-      if driver.length >= 2
-        return driver(exchange, drive)
-      else
-        driver(exchange)  # synchronous call
+      # async - run and only continue on completion
+      return driver(exchange, drive) if driver.length >= 2
+      # synd - do it straight away and go on to next one
+      driver(exchange)
   drive()

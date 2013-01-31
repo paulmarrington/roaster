@@ -37,19 +37,20 @@ step(
     # Check async loading of data
     @data '/scratch/run', '/scratch/l1.coffee'
   (error, run, l1) ->
-    console.log "run=#{run}"
-    console.log "l1=#{l1}"
-  #
-  #   @depends '/client/faye.coffee'
-  # (error, @faye) ->
-  #   depends.script_loader '/scratch/test-faye.server.coffee', @
-  # ->
-  #   console.log "Client: subscribe to '/channel/on-client'"
-  #   @faye.subscribe '/channel/on-client', (message) -> console.log message.text
-  #   publish = =>
-  #     console.log "Client: publish to '/channel/on-server'"
-  #     @faye.publish '/channel/on-server', text: 'from client to server'
-  #     console.log "Client: publish to '/channel/on-client'"
-  #     @faye.publish '/channel/on-client', text: 'from client to client'
-  #   setTimeout publish, 1000
+    console.log "error=#{error}"
+    console.log "run=#{run.length}"
+    console.log "l1=#{l1.length}"
+
+    @depends '/client/faye.coffee'
+  (error, @faye) ->
+    depends.script_loader '/scratch/test-faye.server.coffee', @
+  ->
+    console.log "Client: subscribe to '/channel/on-client'"
+    @faye.subscribe '/channel/on-client', (message) -> console.log message.text
+    publish = =>
+      console.log "Client: publish to '/channel/on-server'"
+      @faye.publish '/channel/on-server', text: 'from client to server'
+      console.log "Client: publish to '/channel/on-client'"
+      @faye.publish '/channel/on-client', text: 'from client to client'
+    setTimeout publish, 1000
 )

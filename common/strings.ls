@@ -2,7 +2,7 @@
 
 module.exports =
   csv:
-    split: (strings...) ->
+    split: (...strings) ->
       split = []
-      split.append string.split ',' for string in strings
+      for string in strings => split.append string.split ','
       return split
