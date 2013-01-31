@@ -2,13 +2,13 @@ step(
   # if the dependant does not do anything asynchronous during init
   # then we can call depends directly
   ()->
-    depends '/scratch/dep-sync.client.coffee', @
+    depends '/scratch/dep-sync.coffee', @
   (error, dep_sync) ->
     console.log "dep_sync=#{dep_sync}"
 
     # if a dependency does async stuff during init it needs to be
     # wrapped in a function and that function called
-    depends '/scratch/dep-async.client.coffee', @
+    depends '/scratch/dep-async.coffee', @
   (error, dep_async) ->
     dep_async null, @
 
@@ -18,22 +18,28 @@ step(
     # As a shorthand function use @depends. This approach also has then
     # benefit of loading more than one dependency in parallel - and passing
     # back all the results
-    @depends '/scratch/dep-async.client.coffee', '
-      /scratch/dep-async4.client.coffee', '/scratch/dep-sync.client.coffee'
+    @depends '/scratch/dep-async.coffee', '
+      /scratch/dep-async4.coffee', '/scratch/dep-sync.coffee'
   (error, dep_async3, dep_async4, dep_sync) ->
     console.log "@depends dep_async3=#{dep_async3}, dep_async4=#{dep_async4}, dep_sync=#{dep_sync}"
 
     # test out libraries that are synchronous js files that load in parallel
-    @library '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
+    @depends '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
   () ->
     console.log window.libraries_test
 
     # Now we need to test what happens when we call depends/libraries on
     # previously loaded code
-    @library '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
+    @depends '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
   () ->
     console.log window.libraries_test
-  # ->
+
+    # Check async loading of data
+    @data '/scratch/run', '/scratch/l1.coffee'
+  (error, run, l1) ->
+    console.log "run=#{run}"
+    console.log "l1=#{l1}"
+  #
   #   @depends '/client/faye.coffee'
   # (error, @faye) ->
   #   depends.script_loader '/scratch/test-faye.server.coffee', @
