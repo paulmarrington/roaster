@@ -24,7 +24,7 @@ step = (...steps) ->
       lock := true;
       result = fn.apply(next, arguments)
     catch exception
-      throw exception if @throw_errors
+      throw exception if next.throw_errors
       next exception # Pass any exceptions on through the next callback
 
     lock := false

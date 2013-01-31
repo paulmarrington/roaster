@@ -1,25 +1,25 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-http = require 'http'; url = require 'url'
-Cookies = require 'cookies'; driver = require 'http/driver'
-respond = require 'http/respond'; fs = require 'file-system'
+require! http; require! url; require! cookies; require! 'http/driver'
+require! 'http/respond'; require! 'file-system'
 
 module.exports = (environment) ->
   return environment.server = http.createServer (request, response) ->
     console.log request.url
-    request.pause()
+    request.pause!
     request.url = url.parse request.url, true
-    fs.find request.url.pathname, (filename) ->
+    file-system.find request.url.pathname, (filename) ->
       try
         request.filename = filename
 
-        cookies = new Cookies(request, response)
-        user = environment.user if not (user = cookies.get 'usdlc_session_id')
+        cookie-cutter = new cookies(request, response)
+        user = cookie-cutter.get 'usdlc_session_id'
+        user = environment.user if not user
         session = {user}
 
         # all the set up is done, process the request based on a driver
         # for file type
-        exchange = {request, response, environment, session, cookies}
-        exchange.reply = (morph) -> respond.morph_gzip_reply exchange, morph
+        exchange = {request, response, environment, session, cookies: cookie-cutter}
+        exchange.reply = (morph) -> respond.morph-gzip-reply exchange, morph
         exchange.morph = (name, next) -> next null, name
         # some drivers cannot set mime type. For these we put it in the query string
         # as txt or text/plain.

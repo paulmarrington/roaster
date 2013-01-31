@@ -9,31 +9,29 @@
 # following template:
 
 # fs = require 'file-system'
-# module.exports = require fs.node 'boot/debug-watch-directories'
+# module.exports = require file-system.node 'boot/debug-watch-directories'
 # module.exports.server.push [
-#   fs.base 'my-server-dir'
+#   file-system.base 'my-server-dir'
 # ]
 # module.exports.client.push [
-#   fs.base 'my-client-dir'
+#   file-system.base 'my-client-dir'
 # ]
-fs = require 'file-system'; path = require 'path'
+require! 'file-system'; require! path
 
 module.exports =
   # Debug mode monitors these directories for server-side files
   # When they change the server is rebooted
-  server: [
-    fs.node 'scripts'
-    fs.node 'server'
-    fs.node 'common'
-    fs.base 'server'
-    fs.base 'common'
-    fs.base 'scratch'
-  ]
+  server:
+    file-system.node 'scripts'
+    file-system.node 'server'
+    file-system.node 'common'
+    file-system.base 'server'
+    file-system.base 'common'
+    file-system.base 'scratch'
 
   # Debug mode monitors these directories for client-side files
   # When they change the client will refresh
-  client: [
-    fs.node 'client'
-    fs.base 'client'
-    fs.base 'scratch'
-  ]
+  client:
+    file-system.node 'client'
+    file-system.base 'client'
+    file-system.base 'scratch'

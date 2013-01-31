@@ -5,4 +5,4 @@ module.exports = (exchange) ->
   exchange.domain = 'client'
   exchange.response.mimetype = 'css'  # most common is script
   exchange.morph = less
-  exchange.reply = (morph) -> respond.morph_gzip_reply exchange, morph
+  exchange.reply = (morph) -> respond.morph-gzip-reply exchange, morph

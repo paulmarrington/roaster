@@ -8,8 +8,8 @@ require! 'http/driver'; require! 'file-system'; require! 'step'
 module.exports = (exchange) ->
   wrap = ["#{exchange.request.url.query.global_var}=function(module){", ';}']
   extra = wrap.0.length + wrap.1.length
-
   exchange.request.filename .= replace '.depends', ''
+
   writeHead = exchange.response.writeHead
   bytes = 0
   exchange.response.writeHead = ->
@@ -17,6 +17,7 @@ module.exports = (exchange) ->
       exchange.response.set-header 'content-length', bytes + extra
     writeHead.call exchange.response, &
     exchange.response.write wrap.0 if bytes
+
   end = exchange.response.end
   exchange.response.end = ->
     exchange.response.write ... if &.length isnt 0

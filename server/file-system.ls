@@ -1,20 +1,20 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-fs = require 'fs'; path = require 'path'
+require! 'fs'; require! 'path'
 
-# look in a file for a matching regular expression. 
+# look in a file for a matching regular expression.
 fs.contains = (name, pattern, next) ->
-  fs.readFile name, 'utf8', (error, data) =>
-    match = new RegExp(pattern).exec(data ? '')
-    return next if match.length is 0 then "#{pattern} not found"
+  fs.readFile name, 'utf8', (error, data) ~>
+    matched = new RegExp(pattern).exec(data ? '')
+    return next if matched.length is 0 then "#{pattern} not found"
 
 # run a function with current working directory set - then set back afterwards
-fs.in_directory = (to, action) ->
+fs.in-directory = (to, action) ->
   cwd = process.cwd()
   try
-    process.chdir(to)
+    process.chdir to
     action()
   finally
-    process.chdir(cwd)
+    process.chdir cwd
 
 # return file name relative to the node server directory
 fs.node = (name) -> path.join process.env.uSDLC_node_path, name
@@ -33,6 +33,6 @@ fs.find = (name, next) ->
     fs.exists full_path, (exists) ->
       return next(full_path) if exists
       find_one(bases)
-  find_one(fs.bases[0..])
+  find_one fs.bases.slice 0
 
 module.exports = fs
