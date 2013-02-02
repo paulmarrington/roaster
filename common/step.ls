@@ -36,17 +36,31 @@ step = (...steps) ->
 
   # Add a special callback generator `this.parallel()` that groups stuff.
   next.parallel = ->
-    parallel_index = ++counter
-    pending++
+    if arguments.length
+      # use for @parallel(-> a, -> b, ...)
+      @parallels-setup!
+      for fn in arguments => fn.apply(@parallel())
+    else
+      parallel_index = ++counter
+      pending++
 
-    return (err, ...args) ->
-      pending--
-      # Compress the error from any result to the first argument
-      results[0] = err if err
-      # Send the other results as arguments
-      results[parallel_index] = args[0];
-      # When all parallel branches done, call the callback
-      next.apply(null, results) if not lock and pending is 0
+      return (err, ...args) ->
+        pending--
+        # Compress the error from any result to the first argument
+        results[0] = err if err
+        # Send the other results as arguments
+        results[parallel_index] = args[0];
+        # When all parallel branches done, call the callback
+        next.apply(null, results) if not lock and pending is 0
+
+  # helper for list of actions to parallel
+  next.parallels-setup = ->
+      steps[--step_index] = (error, ...results) ->
+        for cb in results
+          if typeof cb is 'function' and cb.length is 2
+            cb null, @parallel()
+          else
+            @parallel()(error, cb)
 
   # Generates a callback generator for grouped results
   next.group = ->
@@ -92,12 +106,7 @@ step = (...steps) ->
   # run.
   next.depends = (...urls) ->
     # after load we call the result with a next action parameter
-    steps[--step_index] = (error, ...dependencies) ->
-      for dependency in dependencies
-        if typeof dependency is 'function' and dependency.length is 2
-          dependency null, @parallel()
-        else
-          @parallel()(error, dependency)
+    @parallels-setup!
     for url in urls => depends url, @parallel()
   next() # Start the engine and pass nothing to the first step.
 

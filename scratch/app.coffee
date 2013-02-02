@@ -27,14 +27,23 @@ step(
     @depends '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
   () ->
     console.log window.libraries_test
+    @depends '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
 
     # Now we need to test what happens when we call depends/libraries on
     # previously loaded code
-    @depends '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
+    window.libraries_test = []
   () ->
     console.log window.libraries_test
 
-    # Check async loading of data
+    @parallel(
+      -> depends('/scratch/dep-async.coffee', @)
+      -> depends('/scratch/dep-async4.coffee', @))
+  # (error, dep_async5, dep_async6) ->
+  #   dep_async5 null, @parallel()
+  #   dep_async6 null, @parallel()
+  (error, dep_async5, dep_async6) ->
+    console.log "@parallel dep_async5=#{dep_async5}, dep_async6=#{dep_async6}"
+    #Check async loading of data
     @data '/scratch/run', '/scratch/l1.coffee'
   (error, run, l1) ->
     console.log "error=#{error}"
