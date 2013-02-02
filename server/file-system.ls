@@ -17,10 +17,10 @@ fs.in-directory = (to, action) ->
     process.chdir cwd
 
 # return file name relative to the node server directory
-fs.node = (name) -> path.join process.env.uSDLC_node_path, name
+fs.node = (...names) -> path.join process.env.uSDLC_node_path, ...names
 
 # return file name relative to the application base directory
-fs.base = (name) -> path.join process.env.uSDLC_base_path, name
+fs.base = (...names) -> path.join process.env.uSDLC_base_path, ...names
 
 # bases used to find relative address files
 fs.bases = [process.env.uSDLC_base_path, process.env.uSDLC_node_path]

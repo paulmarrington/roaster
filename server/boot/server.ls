@@ -22,26 +22,25 @@
 #   respond: method to call to send data back to the browser - chaining support
 #   faye: pubsub server-side client. Set to false for no pubsub on server
 #   config: Configuration file (<config>.config.coffee)
-create_http_server = require 'boot/create-http-server'
-create_faye_server = require 'boot/create-faye-server'
-project_init = require 'boot/project-init'
-respond = require 'http/respond'
-os = require 'system'; fs = require 'file-system'
+require! 'boot/create-http-server'; require! 'boot/create-faye-server'
+require! 'boot/project-init'; require! 'http/respond'
+require! 'system'; require! 'file-system'
 
 # process the command line
-environment = process.environment = os.command_line
-  base_dir: fs.base ''  # convenience path to server base directory
+environment = process.environment = system.command_line(
+  base-dir: file-system.base ''  # convenience path to server base directory
   config: 'base'        # used to load config settings (<name>.config.coffee)
   faye: true            # true to activate pubsub - set to faye.client
   port: 9009            # port used by both http and pubsub (as /faye)
   user: 'Guest'         # default user if one is not logged in
+)
 
-default_environment = ("#{name}=#{value}" for name, value of environment).sort()
+default-environment = ["#name=#value" for name, value of environment].sort()
 
-respond.maximum_browser_cache_age = 1000 if environment.debug
+respond.maximum-browser-cache-age = 1000 if environment.debug
 
 # allow project to tweak settings before we commit to action
-project_init.pre environment
+project-init.pre environment
 
 # load an environment related config file
 # command-line could have config=debug
@@ -49,19 +48,19 @@ project_init.pre environment
 require("config/#{environment.config}")(environment)
 
 # create a server ready to listen
-environment.server = create_http_server environment
-environment.faye = create_faye_server environment if environment.faye
+environment.server = create-http-server environment
+environment.faye = create-faye-server environment if environment.faye
 
 # kick-off
 environment.server.listen environment.port
 # lastly we do more project level initialisation
-project_init.post environment
+project-init.post environment
 
 console.log """
 
 uSDLC2 running on http://localhost:#{environment.port}
 
 usage: go server [name=value]...
-    #{default_environment.join '\n    '}
+    #{default-environment.join '\n    '}
 
 """

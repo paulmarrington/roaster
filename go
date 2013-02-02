@@ -5,9 +5,9 @@ echo
 export uSDLC_node_path=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 export uSDLC_base_path=$uSDLC_node_path
 # node require statements will look here
-export NODE_PATH=.:$uSDLC_base_path/server:$uSDLC_base_path/common:$uSDLC_node_path:$uSDLC_node_path/server:$uSDLC_node_path/common:$uSDLC_node_path/ext/node_modules:$uSDLC_node_path/ext/node/lib/node_modules:$NODE_PATH
+export NODE_PATH=.:$uSDLC_base_path/server:$uSDLC_base_path/common:$uSDLC_base_path/scripts:$uSDLC_node_path:$uSDLC_node_path/server:$uSDLC_node_path/common:$uSDLC_node_path/ext/node_modules:$uSDLC_node_path/ext/node/lib/node_modules:$uSDLC_node_path/scripts:$NODE_PATH
 # add scripts and node itself to the path for convenience
-export PATH=$uSDLC_node_path/bin:$uSDLC_node_path/ext/node/bin:$PATH
+export PATH=$uSDLC_node_path/ext/node/bin:$PATH
 
 # Is this a first-time run - as will happen after uns-unix-install.sh is run
 if [ ! -d "$uSDLC_node_path/ext/node" ]; then
@@ -16,6 +16,4 @@ if [ ! -d "$uSDLC_node_path/ext/node" ]; then
     "$uSDLC_node_path/bin/update-node-on-unix"
 fi
 
-echo "usage: go server|debug|update|node|npm|node-inspector ..."
-# run node or one of the scripts from uSDLC2/bin
-$@
+node "$uSDLC_node_path/boot/load.js" "boot/run" $@

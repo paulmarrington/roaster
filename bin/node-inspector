@@ -1,3 +1,0 @@
-#!/bin/bash
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-node "$uSDLC_node_path/ext/node_modules/node-inspector/bin/inspector"  --web-host=127.0.0.1 --web-port=9011 --prefix "$uSDLC_node_path/ext" $@
