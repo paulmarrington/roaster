@@ -52,7 +52,7 @@ window.depends = (url, next) ->
   global_var = "_dependency_#{depends.scriptIndex++}"
 
   query = "#{url}.depends?global_var=#{global_var}&#{query ? 'domain=client'}"
-  depends.script_loader query, ->
+  depends.script-loader query, ->
     window[global_var]?(module = {exports:{}})
     dependency = depends.cache[url] = module?.exports ? {}
     delete window[global_var]
@@ -61,7 +61,7 @@ window.depends = (url, next) ->
       callback null, dependency if callback
     delete depends.loading[url]
 
-depends.script_loader = (url, next) ->
+depends.script-loader = (url, next) ->
   script = document.createElement("script")
   script.type = "text/javascript"
   script.async = "async"
@@ -77,6 +77,16 @@ depends.script_loader = (url, next) ->
   head ?= document.getElementsByTagName("head")[0]
   head.appendChild(script)
 
+depends.data-loader = (url, next) ->
+  request = new XMLHttpRequest()
+  request.open 'GET', url, true
+  request.onreadystatechange = (event) ->
+    return if request.readyState isnt 4
+    switch request.status
+      | 200 => next null, request.responseText
+      | otherwise => next request.statusText
+  request.send null
+
 depends.scriptIndex = 0
 depends.cache = {}; depends.loading = {}
 
@@ -91,7 +101,7 @@ depends.cache = {}; depends.loading = {}
   # depends url, aggregate_callback for url in unloaded
 
 # Use forceReload if a module source has changed (edited on browser, for example)
-depends.forceReload = (url) -> delete depends.cache[url]
+depends.force-reload = (url) -> delete depends.cache[url]
 
 # step() is so often used with depends that it makes sense to load it the
 # first time it is called
@@ -99,3 +109,23 @@ window.step = (...steps) ->
   depends '/common/step.ls', (errror, step) ->
     window.step = step
     step ...steps
+
+window.server-status =
+  start-time: 0
+  debug-mode: false
+
+get-server-status = ->
+  depends.data-loader '/server/http/server-status.json.ls', (error, data) ->
+    return setTimeout(get-server-status, 1000) if error or not data
+    last-server-status = window.server-status
+    window.server-status = JSON.parse data
+    if server-status.debug-mode
+      if not last-server-status.start-time
+        request = new XMLHttpRequest()
+        request.open 'GET', '/server/http/server-alive.json.ls?domain=server', true
+        request.onreadystatechange = (event) ->
+          get-server-status!
+        request.send null
+      else if window.server-status.start-time > last-server-status.start-time
+          window.location.href = window.location.href
+get-server-status!

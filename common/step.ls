@@ -103,18 +103,6 @@ step = (...steps) ->
 
   # load static data asynchronously
   next.data = (...urls) ->
-    console.log "DATA: #{urls.length}"
-    for url in urls then do ~>
-      let url = url
-        request = new XMLHttpRequest()
-        request.open 'GET', url, true
-        next = @parallel()
-        request.onreadystatechange = (event) ->
-          return if request.readyState isnt 4
-          console.log "REQUEST: #request"
-          switch request.status
-            | 200 => next null, request.responseText
-            | otherwise => next request.statusText
-        request.send null
+    for url in urls then depends.data-loader url, @parallel()
 
 module.exports = step

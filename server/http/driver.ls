@@ -101,6 +101,7 @@ module.exports = driver = (exchange) ->
     # loop through drivers to end or first asynchronous call
     while drivers.length isnt 0
       driver = drivers.shift()
+      exchange.last-driver = not drivers.length
       # async - run and only continue on completion
       return driver(exchange, drive) if driver.length >= 2
       # synd - do it straight away and go on to next one

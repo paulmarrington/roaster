@@ -5,7 +5,7 @@ require! 'file-system'
 # client:
 # step(
 #   () ->
-#     @depends '/client/faye.coffee'
+#     @depends '/client/faye.ls'
 #   (error, faye) ->
 #     faye.subscribe '/channel', (message) ->
 #       console.log message.text

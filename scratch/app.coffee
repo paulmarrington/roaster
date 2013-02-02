@@ -41,9 +41,9 @@ step(
     console.log "run=#{run.length}"
     console.log "l1=#{l1.length}"
 
-    @depends '/client/faye.coffee'
+    @depends '/client/faye.ls'
   (error, @faye) ->
-    depends.script_loader '/scratch/test-faye.server.coffee', @
+    depends.scriptLoader '/scratch/test-faye.server.coffee', @
   ->
     console.log "Client: subscribe to '/channel/on-client'"
     @faye.subscribe '/channel/on-client', (message) -> console.log message.text

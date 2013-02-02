@@ -9,6 +9,7 @@
     <script type="text/javascript" src="/client/depends.ls"></script>
     <script type="text/javascript">
         function init() {
+            document.getElementById('date').innerHTML = (new Date()).toString()
             depends('/scratch/app.coffee')
         }
     </script>
@@ -16,6 +17,6 @@
     <link rel="stylesheet" type="text/css" href="/scratch/test.less">
 </head>
 <body onload='init()'>
-Hello uSDLC2
+Hello uSDLC2 <span id='date'></span>
 </body>
 </html>

@@ -24,7 +24,7 @@
 #   config: Configuration file (<config>.config.coffee)
 require! 'boot/create-http-server'; require! 'boot/create-faye-server'
 require! 'boot/project-init'; require! 'http/respond'
-require! 'system'; require! 'file-system'
+require! system; require! 'file-system'
 
 # process the command line
 environment = process.environment = system.command_line(
@@ -33,11 +33,10 @@ environment = process.environment = system.command_line(
   faye: true            # true to activate pubsub - set to faye.client
   port: 9009            # port used by both http and pubsub (as /faye)
   user: 'Guest'         # default user if one is not logged in
+  since: new Date!.get-time!
 )
 
 default-environment = ["#name=#value" for name, value of environment].sort()
-
-respond.maximum-browser-cache-age = 1000 if environment.debug
 
 # allow project to tweak settings before we commit to action
 project-init.pre environment
@@ -50,6 +49,10 @@ require("config/#{environment.config}")(environment)
 # create a server ready to listen
 environment.server = create-http-server environment
 environment.faye = create-faye-server environment if environment.faye
+
+# in debug mode we reload pages fresh from server.
+if environment.debug
+  respond.maximum-browser-cache-age = 1000
 
 # kick-off
 environment.server.listen environment.port

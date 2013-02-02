@@ -21,6 +21,7 @@ module.exports = (environment) ->
         exchange = {request, response, environment, session, cookies: cookie-cutter}
         exchange.reply = (morph) -> respond.morph-gzip-reply exchange, morph
         exchange.morph = (name, next) -> next null, name
+        exchange.post = (exchange) ->
         # some drivers cannot set mime type. For these we put it in the query string
         # as txt or text/plain.
         exchange.response.mimetype = request.url.query.mimetype

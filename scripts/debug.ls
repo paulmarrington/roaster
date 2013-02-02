@@ -3,8 +3,8 @@ require! 'file-system'; require! dirs.rmdirs
 
 module.exports = (...args) ->
   rmdirs file-system.base('gen')
-  args = ['--debug', ...args, "config=debug"]
-  node = require(file-system.node 'scripts/server')(args)
+  args = [...args, "config=debug"]
+  node = require(file-system.node 'scripts/server')(args, true)
 
   node.on 'exit', ->
     # flush the generated files. This is because generators

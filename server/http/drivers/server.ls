@@ -7,3 +7,4 @@ module.exports = (exchange) ->
   exchange.reply = (morph) ->
     respond.morphed exchange, morph, throw-error ->
       require(exchange.request.filename)(exchange)
+      exchange.post!
