@@ -23,8 +23,7 @@
 #   faye: pubsub server-side client. Set to false for no pubsub on server
 #   config: Configuration file (<config>.config.coffee)
 require! 'boot/create-http-server'; require! 'boot/create-faye-server'
-require! 'boot/project-init'; require! 'http/respond'
-require! system; require! 'file-system'
+require! 'boot/project-init'; require! system; require! 'file-system'
 
 # process the command line
 environment = process.environment = system.command_line(
@@ -52,7 +51,7 @@ environment.faye = create-faye-server environment if environment.faye
 
 # in debug mode we reload pages fresh from server.
 if environment.debug
-  respond.maximum-browser-cache-age = 1000
+  exchange.respond.maximum-browser-cache-age = 1000
 
 # kick-off
 environment.server.listen environment.port

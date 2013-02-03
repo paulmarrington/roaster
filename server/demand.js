@@ -8,7 +8,7 @@ module.exports = function(name, callback) {
   try {
     required = require(name)
   } catch(error) {
-    var npm = require("npm")
+    var npm = require("ext/node/lib/node_modules/npm")
     npm.load({prefix: prefix}, function(err, npm) {
       try {
         npm.commands.install([name], function() { callback(null, require(name)) })

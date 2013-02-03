@@ -31,7 +31,7 @@ var morph = function (source, target_ext, builder) {
         if (code.charCodeAt(0) === 0xFEFF) {
             code = code.substring(1);
         }
-        mkdirs(path.dirname(target))
+        mkdirsSync(path.dirname(target))
         builder(null, target, code, function(error, built) {
           fs.writeFileSync(target, built, 'utf8')
         })

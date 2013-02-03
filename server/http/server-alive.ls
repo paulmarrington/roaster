@@ -2,3 +2,4 @@
 
 # just don't return - so client can tell if server dies
 module.exports = (exchange) ->
+  setTimeout (-> exchange.response.end()), 120000

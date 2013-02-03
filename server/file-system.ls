@@ -35,4 +35,10 @@ fs.find = (name, next) ->
       find_one(bases)
   find_one fs.bases.slice 0
 
+fs.copy = (source, target, next) ->
+  done = (error = null) -> next error; done = ->
+  input = fs.createReadStream(source).on 'error', done
+  output = fs.createWriteStream(target).on('error', done).on('close', -> done())
+  input.pipe output
+
 module.exports = fs

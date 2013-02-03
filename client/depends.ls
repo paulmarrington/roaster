@@ -111,21 +111,26 @@ window.step = (...steps) ->
     step ...steps
 
 window.server-status =
-  start-time: 0
+  start-time: Number.MAX_VALUE
   debug-mode: false
 
 get-server-status = ->
-  depends.data-loader '/server/http/server-status.json.ls', (error, data) ->
-    return setTimeout(get-server-status, 1000) if error or not data
-    last-server-status = window.server-status
-    window.server-status = JSON.parse data
-    if server-status.debug-mode
-      if not last-server-status.start-time
-        request = new XMLHttpRequest()
-        request.open 'GET', '/server/http/server-alive.json.ls?domain=server', true
-        request.onreadystatechange = (event) ->
-          get-server-status!
-        request.send null
-      else if window.server-status.start-time > last-server-status.start-time
+  depends.data-loader '/server/http/server-status.ls', (error, data) ->
+    # return setTimeout(get-server-status, 5000) if error or not data
+    try
+      last-server-status = window.server-status
+      window.server-status = JSON.parse data
+      if server-status.debug-mode
+        if window.server-status.start-time > last-server-status.start-time
           window.location.href = window.location.href
+          return
+        request = new XMLHttpRequest()
+        request.open 'GET', '/server/http/server-alive.ls?domain=server', true
+        request.onreadystatechange = (event) ->
+          if request.readyState is 4
+            setTimeout get-server-status, 1000
+        request.send null
+    catch
+      setTimeout get-server-status, 1000
+
 get-server-status!

@@ -17,7 +17,7 @@ module.exports = driver = (exchange) ->
   if domain = exchange.request.url.query.domain
     possible-drivers = possible-drivers.concat domain.split(',')
   # no extension - let static return index.html
-  return respond.static(exchange) if possible-drivers.length is 0
+  return exchange.respond.static! if possible-drivers.length is 0
 
   last-driver = possible-drivers[possible-drivers.length - 1]
   # any dir can have a drivers sub-dir with index.js
@@ -79,11 +79,11 @@ module.exports = driver = (exchange) ->
     for possible-path in possible-paths
       module-name = path.join possible-path, 'drivers', last-driver
       cache[module-name] = null
-    return respond.static(exchange)
+    return exchange.respond.static!
 
   # and the one ring brings them all together
   drivers.push (exchange) ->
-    respond.set-mime-type exchange.response.mimetype ? 'js', exchange.response
+    exchange.respond.set-mime-type exchange.response.mimetype ? 'js'
     # if we don't have a domain from drivers, default
     # to a servlet if there is a query, client if empty query string.
     # over-ride with query domain=(client|server)

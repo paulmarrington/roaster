@@ -2,10 +2,27 @@
 var fs = require('fs'), path = require('path')
 var mode = 0777 & (~process.umask());
 
-mkdirs = function (dir) {
+mkdirs = function (dir, next) {
+  paths = []
+  existence = function(exists) {
+    if (exists) {
+      mkdir = function() {
+        if (paths.length == 0) return next(null)
+        fs.mkdir(paths.pop(), mkdir)
+      }
+      mkdir()
+    } else {
+      paths.push(dir)
+      fs.exists(dir = path.dirname(dir), existence)
+    }
+  }
+  fs.exists(dir, existence)
+}
+
+mkdirsSync = function (dir) {
   if (fs.existsSync(dir)) return
   var current = path.resolve(dir), parent = path.dirname(current);
-  mkdirs(parent)
+  mkdirsSync(parent)
   fs.mkdirSync(current)
 }
 
@@ -23,9 +40,10 @@ deleteFolderRecursive = function(path) {
         });
         fs.rmdirSync(path);
     }
-};
+}
 
 module.exports = {
-    mkdirs: mkdirs,
-    rmdirs: deleteFolderRecursive
+  mkdirs: mkdirs,
+  mkdirsSync: mkdirsSync,
+  rmdirs: deleteFolderRecursive
 }
