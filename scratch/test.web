@@ -1,0 +1,2 @@
+ext = <[ .web .client.ls ]>
+console.log "driver mapping turns #{ext.0} into #{ext.1}"

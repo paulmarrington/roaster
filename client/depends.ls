@@ -115,7 +115,7 @@ window.server-status =
   debug-mode: false
 
 get-server-status = ->
-  depends.data-loader '/server/http/server-status.ls', (error, data) ->
+  depends.data-loader '/server/http/status.server.ls', (error, data) ->
     # return setTimeout(get-server-status, 5000) if error or not data
     try
       last-server-status = window.server-status
@@ -125,7 +125,7 @@ get-server-status = ->
           window.location.href = window.location.href
           return
         request = new XMLHttpRequest()
-        request.open 'GET', '/server/http/server-alive.ls?domain=server', true
+        request.open 'GET', '/server/http/alive.server.ls', true
         request.onreadystatechange = (event) ->
           if request.readyState is 4
             setTimeout get-server-status, 1000

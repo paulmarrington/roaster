@@ -2,7 +2,7 @@
 
 # Create a HTTP server that processes requests based on the extension (being
 # the characters after the final dot) - defaulting to 'html'. These drivers
-# are modules in server/http/drivers with a name that matches the extension. In
+# are modules in /drivers with a name that matches the extension. In
 # other words, html.coffee will be loaded to process index.html. The driver
 # modules return a function that is called on each HTTP request and passed
 # an exchange object consisting of
@@ -32,7 +32,8 @@ environment = process.environment = system.command_line(
   faye: true            # true to activate pubsub - set to faye.client
   port: 9009            # port used by both http and pubsub (as /faye)
   user: 'Guest'         # default user if one is not logged in
-  since: new Date!.get-time!
+  since: new Date!.get-time!  # time of server start (epoch time)
+  command-line: process.argv.join ' ' # full command line for identification
 )
 
 default-environment = ["#name=#value" for name, value of environment].sort()

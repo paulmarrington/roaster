@@ -1,5 +1,5 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-require! 'http/drivers/server'
+require! 'drivers/server'
 
 module.exports = (exchange) ->
   exchange.response.mimetype = 'json'

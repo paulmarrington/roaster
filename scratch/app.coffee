@@ -18,8 +18,8 @@ step(
     # As a shorthand function use @depends. This approach also has then
     # benefit of loading more than one dependency in parallel - and passing
     # back all the results
-    @depends '/scratch/dep-async.coffee', '
-      /scratch/dep-async4.coffee', '/scratch/dep-sync.coffee'
+    @depends '/scratch/dep-async.coffee',
+      '/scratch/dep-async4.coffee', '/scratch/dep-sync.coffee'
   (error, dep_async3, dep_async4, dep_sync) ->
     console.log "@depends dep_async3=#{dep_async3}, dep_async4=#{dep_async4}, dep_sync=#{dep_sync}"
 
