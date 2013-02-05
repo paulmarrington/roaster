@@ -51,7 +51,7 @@ window.depends = (url, next) ->
   depends.loading[url] = [next]
   global_var = "_dependency_#{depends.scriptIndex++}"
 
-  query = "#{url}.depends?global_var=#{global_var}&#{query ? 'domain=client'}"
+  query = "#{url}?global_var=#{global_var}&#{query ? 'domain=client.depends'}"
   depends.script-loader query, ->
     window[global_var]?(module = {exports:{}})
     dependency = depends.cache[url] = module?.exports ? {}

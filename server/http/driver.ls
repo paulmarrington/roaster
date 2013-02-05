@@ -15,7 +15,7 @@ module.exports = driver = (exchange) ->
   pathname = exchange.request.filename
   possible-drivers = path.basename(pathname).split('.').slice(1)
   if domain = exchange.request.url.query.domain
-    possible-drivers = possible-drivers.concat domain.split(',')
+    possible-drivers = possible-drivers.concat domain.split('.')
   # no extension - let static return index.html
   return exchange.respond.static! if possible-drivers.length is 0
 
