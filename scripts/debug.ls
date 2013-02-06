@@ -2,7 +2,10 @@
 require! 'file-system'; require! dirs.rmdirs
 
 module.exports = (...args) ->
-  rmdirs file-system.base('gen')
+  clean-gen = ->
+    rmdirs file-system.base('gen')
+    rmdirs file-system.node('gen')
+  clean-gen!
   args = [...args, "config=debug"]
   node = require(file-system.node 'scripts/server')(args, true)
 
@@ -12,7 +15,7 @@ module.exports = (...args) ->
     # up a file change. Note that you will also have to place
     # directories with these files in your local
     # debug-watch-directories.coffee
-    rmdirs file-system.base('gen')
+    clean-gen!
     console.log 'restarting server...'
 
 # then waiting a bit before starting the debugger proxy

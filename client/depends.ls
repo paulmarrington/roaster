@@ -106,7 +106,7 @@ depends.force-reload = (url) -> delete depends.cache[url]
 # step() is so often used with depends that it makes sense to load it the
 # first time it is called
 window.step = (...steps) ->
-  depends '/common/step.ls', (errror, step) ->
+  depends '/common/step.ls', (error, step) ->
     window.step = step
     step ...steps
 

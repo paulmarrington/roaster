@@ -21,10 +21,13 @@ class Processes # proc = require('proc')() # sets default streaming and options
 
   _restart: ->
     @next = ->
+    @start-time = new Date!.get-time!
     @_exec(child_process.spawn)
     @proc.on 'exit', (code, signal) ~>
       @proc = null
-      @_restart()
+      # restarting fails if service ran less than 5 seconds
+      if signal or (new Date!.get-time! - @start-time) > 5000
+        @_restart()
     return @proc
 
   # kill this process if it is currently running
