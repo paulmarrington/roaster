@@ -3,7 +3,4 @@ require 'script-runner'; require! system.throw-error
 
 # script is uSDLC instrumentation - fork off a new V8 process to deal
 module.exports = (exchange) ->
-  exchange.domain = 'node'
-  exchange.reply = (morph) ->
-    exchange.respond.morphed morph, throw-error  ->
-      script-runner(exchange).fork()
+  exchange.reply = (morph) -> script-runner(exchange).fork()

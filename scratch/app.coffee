@@ -24,14 +24,14 @@ step(
     console.log "@depends dep_async3=#{dep_async3}, dep_async4=#{dep_async4}, dep_sync=#{dep_sync}"
 
     # test out libraries that are synchronous js files that load in parallel
-    @depends '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
+    @library '/scratch/l1.js', '/scratch/l2.js','/scratch/l3.js'
   () ->
     console.log window.libraries_test
-    @depends '/scratch/l1.coffee', '/scratch/l2.coffee','/scratch/l3.coffee'
 
     # Now we need to test what happens when we call depends/libraries on
     # previously loaded code
     window.libraries_test = []
+    @library '/scratch/l1.js', '/scratch/l2.js','/scratch/l3.js'
   () ->
     console.log window.libraries_test
 
@@ -44,7 +44,7 @@ step(
   (error, dep_async5, dep_async6) ->
     console.log "@parallel dep_async5=#{dep_async5}, dep_async6=#{dep_async6}"
     #Check async loading of data
-    @data '/scratch/run', '/scratch/l1.coffee'
+    @data '/scratch/run', '/scratch/l1.js'
   (error, run, l1) ->
     console.log "error=#{error}"
     console.log "run=#{run.length}"

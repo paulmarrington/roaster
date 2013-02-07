@@ -6,4 +6,4 @@
 # http://weepy.github.com/kaffeine/index.html
 require! 'morph/kaffeine'
 
-module.exports = (exchange) -> exchange.morph = kaffeine
+module.exports = (exchange, next) -> exchange.respond.morph kaffeine, next

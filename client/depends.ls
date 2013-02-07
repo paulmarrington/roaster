@@ -62,6 +62,7 @@ window.depends = (url, next) ->
     delete depends.loading[url]
 
 depends.script-loader = (url, next) ->
+  return next! if depends.cache[url]
   script = document.createElement("script")
   script.type = "text/javascript"
   script.async = "async"
@@ -69,6 +70,7 @@ depends.script-loader = (url, next) ->
     script.onreadystatechange = ->
       if script.readyState == "loaded" || script.readyState == "complete"
         script.onreadystatechange = null;
+        depends.cache[url] ?= url:url
         next();
   else # Other browsers
     script.onload = -> next()

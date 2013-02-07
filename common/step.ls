@@ -108,6 +108,12 @@ step = (...steps) ->
     # after load we call the result with a next action parameter
     @parallels-setup!
     for url in urls => depends url, @parallel()
+  # wrapper for library JS files that do not work on the global
+  # name-space specifically. It is the same as  <script> tag.
+  next.library = (...urls) ->
+    # after load we call the result with a next action parameter
+    @parallels-setup!
+    for url in urls => depends.script-loader url, @parallel()
   next() # Start the engine and pass nothing to the first step.
 
   # load static data asynchronously

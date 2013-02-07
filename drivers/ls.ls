@@ -9,4 +9,4 @@
 # * explicit in a wrapping script setting exchange.domain
 require! 'morph/live-script'
 
-module.exports = (exchange) -> exchange.morph = live-script
+module.exports = (exchange, next) -> exchange.respond.morph live-script, next

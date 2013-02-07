@@ -9,4 +9,4 @@
 # * explicit in a wrapping script setting exchange.domain
 require! 'morph/coffee'
 
-module.exports = (exchange) -> exchange.morph = coffee
+module.exports = (exchange, next) -> exchange.respond.morph coffee, next
