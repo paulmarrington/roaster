@@ -16,9 +16,9 @@ class Respond
   # can change it if needed.
   maximum-browser-cache-age: Infinity
   # respond to client with some JSON for browser script consumption
-  json: (data) ->
+  json: (data, replacer = null, space = '  ') ->
     @exchange.respond.set-mime-type 'json'
-    json = JSON.stringify data
+    json = JSON.stringify data, replacer, space
     @exchange.response.set-header 'content-length', json.length
     @exchange.response.end json
   # morph (compile) one language to another (usually javascriot or css)

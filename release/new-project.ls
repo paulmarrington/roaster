@@ -24,7 +24,11 @@ module.exports = (exchange) ->
       file = files.pop()
       source = fs.node 'release', file
       target = path.join project-path, file
-      fs.copy source, target, (error) -> copy-one error, files
+      fs.exists target, (exists) ->
+        if not exists
+          fs.copy source, target, (error) -> copy-one error, files
+        else
+          copy-one error, files
     copy-one(null, files.slice 0)
 
   make-project-dirs = (...dirs, next) ->
@@ -36,21 +40,17 @@ module.exports = (exchange) ->
   step(
     ->
       @throw_errors = false
-      fs.exists project-path, @
-    (exists) ->
-      if exists then @("#project-path exists, please move or delete")
-
-      make-project-dirs 'client', 'ext', 'boot', 'config', @
+      make-project-dirs 'client', 'ext', 'boot', 'config', 'scratch', 'scripts', @
     (error) ->
       @(error) if error
-      @parallel(
-        -> copy 'go', 'go.bat', 'index.html', 'app.ls', 'app.stylus',
-                'boot/project-init.ls', 'config/base.ls', 'config/debug.ls',
-                'config/production.ls', 'client/favicon.ico', @
-        -> fs.symlink fs.node(''), path.join(project-path, 'ext/roaster'), 'dir', @
-      )
+      copy 'go', 'go.bat', 'index.html', 'app.ls', 'app.stylus',
+           'boot/project-init.ls', 'config/base.ls', 'config/debug.ls',
+           'config/production.ls', 'client/favicon.ico', @
     (error) ->
       @(error) if error
+      fs.symlink fs.node(''), path.join(project-path, 'ext/uServe'), 'dir', @
+    (error) ->
+      # skip error as it just means destination exists
       @parallel(
         -> fs.chmod path.join(project-path, 'go'), 8~700, @
         -> fs.appendFile path.join(project-path, 'config/base.ls'),
