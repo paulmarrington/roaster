@@ -30,7 +30,6 @@ environment = process.environment = system.command_line(
   base-dir: file-system.base ''  # convenience path to server base directory
   config: 'base'        # used to load config settings (<name>.config.coffee)
   faye: true            # true to activate pubsub - set to faye.client
-  port: 9009            # port used by both http and pubsub (as /faye)
   user: 'Guest'         # default user if one is not logged in
   since: new Date!.get-time!  # time of server start (epoch time)
   command-line: process.argv.join ' ' # full command line for identification

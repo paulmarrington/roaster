@@ -54,7 +54,7 @@ module.exports = (exchange) ->
       @parallel(
         -> fs.chmod path.join(project-path, 'go'), 8~700, @
         -> fs.appendFile path.join(project-path, 'config/base.ls'),
-            "  environment.port=#{config.port}\n", @
+            "  environment.port ?= #{config.port}\n", @
       )
     (error) ->
       return failure(error) if error
