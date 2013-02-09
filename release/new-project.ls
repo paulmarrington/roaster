@@ -48,7 +48,7 @@ module.exports = (exchange) ->
            'config/production.ls', 'client/favicon.ico', @
     (error) ->
       @(error) if error
-      fs.symlink fs.node(''), path.join(project-path, 'ext/uServe'), 'dir', @
+      fs.symlink fs.node(''), path.join(project-path, 'ext/uSDLC_Node_Server'), 'dir', @
     (error) ->
       # skip error as it just means destination exists
       @parallel(
