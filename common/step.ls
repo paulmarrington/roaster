@@ -5,7 +5,7 @@
 # @throw_errors = true # throw an exception on an error
 # @throw_errors = false # call next with error parameter set
 # @() # will move a synchronous function to the next step
-step = (...steps) ->
+step = -> (...steps) ->
 
   step_index = counter = pending = 0
   results = []; lock = false
@@ -114,10 +114,11 @@ step = (...steps) ->
     # after load we call the result with a next action parameter
     @parallels-setup!
     for url in urls => depends.script-loader url, @parallel()
-  next() # Start the engine and pass nothing to the first step.
 
   # load static data asynchronously
   next.data = (...urls) ->
     for url in urls then depends.data-loader url, @parallel()
+
+  next() # Start the engine and pass nothing to the first step.
 
 module.exports = step

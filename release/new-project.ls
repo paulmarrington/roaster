@@ -40,7 +40,8 @@ module.exports = (exchange) ->
   step(
     ->
       @throw_errors = false
-      make-project-dirs 'client', 'ext', 'boot', 'config', 'scratch', 'scripts', @
+      make-project-dirs('client', 'ext', 'boot', 'config',
+                        'scratch', 'scripts', 'server', @
     (error) ->
       @(error) if error
       copy 'go', 'go.bat', 'index.html', 'app.ls', 'app.stylus',

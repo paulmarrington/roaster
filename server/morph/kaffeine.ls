@@ -7,5 +7,5 @@ module.exports = (source, next) ->
     compile: (content, options) ->
       k = new kaffeine()
       # uglify-opts = (uglify|beautify|null)
-      k.compile content, null, options.filename
+      return k.compile content
   morph.compileJavascript source, compiler, next

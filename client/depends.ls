@@ -39,100 +39,99 @@
 #   counter = 1
 #   return function() {counter++}
 # }
-head = null
 
-window.depends = (url, next) ->
-  [url, query] = url.split '?'
-  # see if we are loaded and ready to go
-  return next null, dependency if dependency = depends.cache[url]
-  # see if we are in the process of loading
-  return depends.loading[url].push(next) if depends.loading[url]
-  # ok, we are going to need to kick of a synchronous load
-  depends.loading[url] = [next]
-  global_var = "_dependency_#{depends.scriptIndex++}"
+module.exports = (exchange) ->
+  exchange.respond.js ->
+    window.slice$ = window.__slice = [].slice
+    window.__bind = (fn, me) -> return -> return fn.apply(me, arguments)
+    window.depends = (url, next) ->
+      # see if we are loaded and ready to go
+      return next null, dependency if dependency = depends.cache[url]
+      # see if we are in the process of loading
+      return depends.loading[url].push(next) if depends.loading[url]
+      # ok, we are going to need to kick of a synchronous load
+      depends.loading[url] = [next]
 
-  query = "#{url}?global_var=#{global_var}&#{query ? 'domain=client.depends'}"
-  depends.script-loader query, ->
-    window[global_var]?(module = {exports:{}})
-    dependency = depends.cache[url] = module?.exports ? {}
-    delete window[global_var]
-    callbacks = depends.loading[url]
-    while callback = callbacks.pop()
-      callback null, dependency if callback
-    delete depends.loading[url]
+      depends.script-loader url, ->
+        dependency = depends.cache[url]
+        callbacks = depends.loading[url]
+        while callback = callbacks.pop()
+          callback null, dependency if callback
+        delete depends.loading[url]
 
-depends.script-loader = (url, next) ->
-  return next! if depends.cache[url]
-  script = document.createElement("script")
-  script.type = "text/javascript"
-  script.async = "async"
-  if script.readyState # IE
-    script.onreadystatechange = ->
-      if script.readyState == "loaded" || script.readyState == "complete"
-        script.onreadystatechange = null;
-        depends.cache[url] ?= url:url
-        next();
-  else # Other browsers
-    script.onload = -> next()
+    depends.script-loader = (url, next) ->
+      return next! if depends.cache[url]
+      script = document.createElement("script")
+      script.type = "text/javascript"
+      script.async = "async"
+      if script.readyState # IE
+        script.onreadystatechange = ->
+          if script.readyState == "loaded" || script.readyState == "complete"
+            script.onreadystatechange = null;
+            depends.cache[url] ?= url:url
+            next();
+      else # Other browsers
+        script.onload = ->
+          depends.cache[url] ?= url:url
+          next()
 
-  script.src = url
-  head ?= document.getElementsByTagName("head")[0]
-  head.appendChild(script)
+      script.src = url
+      document.getElementsByTagName("head")[0].appendChild(script)
 
-depends.data-loader = (url, next) ->
-  request = new XMLHttpRequest()
-  request.open 'GET', url, true
-  request.onreadystatechange = (event) ->
-    return if request.readyState isnt 4
-    switch request.status
-      | 200 => next null, request.responseText
-      | otherwise => next request.statusText
-  request.send null
+    depends.data-loader = (url, next) ->
+      request = new XMLHttpRequest()
+      request.open 'GET', url, true
+      request.onreadystatechange = (event) ->
+        return if request.readyState isnt 4
+        switch request.status
+          | 200 => next null, request.responseText
+          | otherwise => next request.statusText
+      request.send null
 
-depends.scriptIndex = 0
-depends.cache = {}; depends.loading = {}
+    depends.scriptIndex = 0
+    depends.cache = {}; depends.loading = {}
 
-# # Use depends.ready to run a callback when all listed dependencies are loaded.
-# # Value added depends will return the dependency if we know it has loaded.
-# depends.ready = (urls..., callback) ->
-#   unloaded = (url for url in urls when depends.cache[url])
-#   to_load = unloaded.length
-#   return callback() if to_load is 0
+    # # Use depends.ready to run a callback when all listed dependencies are loaded.
+    # # Value added depends will return the dependency if we know it has loaded.
+    # depends.ready = (urls..., callback) ->
+    #   unloaded = (url for url in urls when depends.cache[url])
+    #   to_load = unloaded.length
+    #   return callback() if to_load is 0
 
-  # aggregate_callback = -> callback() if --to_load is 0
-  # depends url, aggregate_callback for url in unloaded
+      # aggregate_callback = -> callback() if --to_load is 0
+      # depends url, aggregate_callback for url in unloaded
 
-# Use forceReload if a module source has changed (edited on browser, for example)
-depends.force-reload = (url) -> delete depends.cache[url]
+    # Use forceReload if a module source has changed (edited on browser, for example)
+    depends.force-reload = (url) -> delete depends.cache[url]
 
-# step() is so often used with depends that it makes sense to load it the
-# first time it is called
-window.step = (...steps) ->
-  depends '/common/step.ls', (error, step) ->
-    window.step = step
-    step ...steps
+    # step() is so often used with depends that it makes sense to load it the
+    # first time it is called
+    window.step = (...steps) ->
+      depends '/client/step.ls', (error, step) ->
+        window.step = step
+        step ...steps
 
-window.server-status =
-  start-time: Number.MAX_VALUE
-  debug-mode: false
+    window.server-status =
+      start-time: Number.MAX_VALUE
+      debug-mode: false
 
-get-server-status = ->
-  depends.data-loader '/server/http/status.server.ls', (error, data) ->
-    # return setTimeout(get-server-status, 5000) if error or not data
-    try
-      last-server-status = window.server-status
-      window.server-status = JSON.parse data
-      if server-status.debug-mode
-        if window.server-status.start-time > last-server-status.start-time
-          window.location.href = window.location.href
-          return
-        request = new XMLHttpRequest()
-        request.open 'GET', '/server/http/alive.server.ls', true
-        request.onreadystatechange = (event) ->
-          if request.readyState is 4
-            setTimeout get-server-status, 1000
-        request.send null
-    catch
-      setTimeout get-server-status, 1000
+    get-server-status = ->
+      depends.data-loader '/server/http/status.server.ls', (error, data) ->
+        # return setTimeout(get-server-status, 5000) if error or not data
+        try
+          last-server-status = window.server-status
+          window.server-status = JSON.parse data
+          if server-status.debug-mode
+            if window.server-status.start-time > last-server-status.start-time
+              window.location.href = window.location.href
+              return
+            request = new XMLHttpRequest()
+            request.open 'GET', '/server/http/alive.server.ls', true
+            request.onreadystatechange = (event) ->
+              if request.readyState is 4
+                setTimeout get-server-status, 1000
+            request.send null
+        catch
+          setTimeout get-server-status, 1000
 
-get-server-status!
+    get-server-status!

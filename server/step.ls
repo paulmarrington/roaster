@@ -1,0 +1,4 @@
+# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+require! 'common/step'
+
+module.exports = step()
