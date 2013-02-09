@@ -9,12 +9,8 @@ var base_length = base_dir.length
 //     saver(error, code, next)
 //       next(error)
 var morph = function (source, target_ext, builder) {
-    var target = source
-    if (source.length > base_length && source.substring(0,base_length) == base_dir) {
-        // drop base so that we can find out where gen/ starts from
-        target = source.substring(base_length)
-    }
-    var target = path.join(base_dir, 'gen', (target + target_ext))
+    var target = path.relative(process.cwd, source).replace(/\.\.\//g, '')
+    target = path.join(base_dir, 'gen', (target + target_ext))
 
     // Get modified dates for source and target files
     var stat = fs.statSync(source)
