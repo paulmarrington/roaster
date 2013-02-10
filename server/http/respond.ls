@@ -15,26 +15,32 @@ class Respond
   # Default is for browser to cache static files forever. This is unsuitable in development
   # so the server will reset to 1 second if in debug mode. It is here so anyone else
   # can change it if needed.
-  maximum-browser-cache-age: Infinity
+  maximum-browser-cache-age: 86_400seconds #Infinity
   # respond to client with code to run in a sandbox
   client: (code) ->
     if not ((client = @exchange.request.filename) of clients)
       url = @exchange.request.url.path
       clients[client] = "depends.cache['#url'] = #{code.toString()}()"
-    @text clients[client]
+    @script clients[client]
   # respond to client with code
   js: (code) ->
-    @text "_tmp_=#{code.toString()}()"
-  text: (text) ->
+    @script "_tmp_=#{code.toString()}()"
+  # string representation of a scipt
+  script: (text) ->
+    @exchange.respond.set-mime-type 'js'
     @exchange.response.set-header 'Cache-Control', 'public, max-age=#maximum-browser-cache-age'
     @exchange.response.set-header 'content-length', text.length
     @exchange.response.end text
   # respond to client with some JSON for browser script consumption
   json: (data, replacer = null, space = '  ') ->
-    @exchange.response.mimetype = 'json'
+    @exchange.respond.set-mime-type 'json'
     json = JSON.stringify data, replacer, space
-    @exchange.response.set-header 'content-length', json.length
-    @exchange.response.end json
+    @text json
+  # string representation of data that changes on every request
+  text: (text) ->
+    @exchange.response.set-header 'Cache-Control', 'public, no-cache'
+    @exchange.response.set-header 'content-length', text.length
+    @exchange.response.end text
   # morph (compile) one language to another (usually javascriot or css)
   morph: (morph, next) ->
     morph @exchange.request.filename, (error, filename) ~>

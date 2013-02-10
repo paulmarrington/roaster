@@ -25,7 +25,8 @@ module.exports = (environment) ->
         exchange.respond = respond(exchange)
         # some drivers cannot set mime type. For these we put it in the query string
         # as txt or text/plain.
-        exchange.response.mimetype = request.url.query.mimetype
+        if request.url.query.mimetype
+            exchange.respond.set-mime-type request.url.query.mimetype
         # kick off exchange
         driver(exchange)
       catch error

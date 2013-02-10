@@ -31,9 +31,7 @@ module.exports = (exchange) ->
   # default action is to run it on the server and let bygones be bygones
   exchange.reply = -> require(exchange.request.filename)(exchange)
 
-  next = ->
-    exchange.respond.set-mime-type exchange.response.mimetype ? 'js'
-    exchange.reply()
+  next = -> exchange.reply()
 
   if driver-module.length >= 2
     driver-module(exchange, next)

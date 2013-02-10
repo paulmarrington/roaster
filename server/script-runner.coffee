@@ -5,7 +5,7 @@ class Script_Runner
   constructor: (@exchange) ->
     @proc = Processes()
     # Output will be wiki text as written by stdout and stderr
-    @exchange.response.mimetype = 'plain.txt'
+    @exchange.respond.setMimeType 'txt'
     url = @exchange.request.url
     @args = [url.pathname, url.query, url.hash]
     @proc.options.stdio = ['ignore', @exchange.response, @exchange.response]

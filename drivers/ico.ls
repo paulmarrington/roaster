@@ -2,7 +2,7 @@
 require! 'file-system';
 
 module.exports = (exchange) ->
-  exchange.response.mimetype ?= 'ico'  # most common is script
+  exchange.respond.set-mime-type 'ico'  # most common is script
   if exchange.request.url.pathname is '/favicon.ico'
     exchange.request.filename = file-system.base "client/favicon.ico"
   exchange.respond.static()
