@@ -5,11 +5,10 @@ module.exports = (source, next) ->
   var write_css, css_filename, less
   step(
     ->
-      demand 'less', @
+      demand 'less', @next
     (error, less_reference) ->
-      # @throw_errors = false
       less := less_reference
-      morph source, '.css', @
+      morph source, '.css', @next
     (error, filename, content, save) ->
       # return next(error, filename) if error
       return next(null, filename) if not content  # up to date
@@ -22,7 +21,7 @@ module.exports = (source, next) ->
         paths: [path.dirname source, fs.base()]
         # Specify a filename, for better error messages
         filename: filename
-      ).parse content, @
+      ).parse content, @next
     (error, tree) ->
       return next(error, css_filename) if error
       css = tree.toCSS compress: true

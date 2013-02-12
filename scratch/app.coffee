@@ -4,15 +4,17 @@ module.exports = (exchange) ->
       # if the dependant does not do anything asynchronous during init
       # then we can call depends directly
       ()->
-        depends '/scratch/dep-sync.coffee', @
+        @common = 1
+        depends '/scratch/dep-sync.coffee', @next
       (error, dep_sync) ->
+        @common++
         console.log "dep_sync=#{dep_sync}"
 
         # if a dependency does async stuff during init it needs to be
         # wrapped in a function and that function called
-        depends '/scratch/dep-async.coffee', @
+        depends '/scratch/dep-async.coffee', @next
       (error, dep_async) ->
-        dep_async null, @
+        dep_async null, @next
 
       (error, dep_async2) ->
         console.log "dep_async in-line=#{dep_async2}"
@@ -28,6 +30,7 @@ module.exports = (exchange) ->
         # test out libraries that are synchronous js files that load in parallel
         @library '/scratch/l1.js', '/scratch/l2.js','/scratch/l3.js'
       () ->
+        @common++
         console.log window.libraries_test
 
         # Now we need to test what happens when we call depends/libraries on
@@ -38,8 +41,8 @@ module.exports = (exchange) ->
         console.log window.libraries_test
 
         @parallel(
-          -> depends('/scratch/dep-async.coffee', @)
-          -> depends('/scratch/dep-async4.coffee', @))
+          -> depends('/scratch/dep-async.coffee', @next)
+          -> depends('/scratch/dep-async4.coffee', @next))
       # (error, dep_async5, dep_async6) ->
       #   dep_async5 null, @parallel()
       #   dep_async6 null, @parallel()
@@ -54,7 +57,7 @@ module.exports = (exchange) ->
 
         @depends '/client/faye.ls'
       (error, @faye) ->
-        depends.scriptLoader '/scratch/test-faye.server.coffee', @
+        depends.scriptLoader '/scratch/test-faye.server.coffee', @next
       ->
         console.log "Client: subscribe to '/channel/on-client'"
         @faye.subscribe '/channel/on-client', (message) -> console.log message.text
@@ -64,4 +67,5 @@ module.exports = (exchange) ->
           console.log "Client: publish to '/channel/on-client'"
           @faye.publish '/channel/on-client', text: 'from client to client'
         setTimeout publish, 1000
+        console.log "COMMON=#{@common}"
     )

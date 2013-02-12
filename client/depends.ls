@@ -44,9 +44,12 @@ module.exports = (exchange) ->
   exchange.respond.js ->
     window.slice$ = window.__slice = [].slice
     window.__bind = (fn, me) -> return -> return fn.apply(me, arguments)
+    window.bind$ = (obj, key, target) ->
+      return -> return (target || obj)[key].apply(obj, arguments)
+
     window.depends = (url, next) ->
       # see if we are loaded and ready to go
-      return next null, dependency if dependency = depends.cache[url]
+      return next ...dependency if dependency = depends.cache[url]
       # see if we are in the process of loading
       return depends.loading[url].push(next) if depends.loading[url]
       # ok, we are going to need to kick of a synchronous load
@@ -56,7 +59,7 @@ module.exports = (exchange) ->
         dependency = depends.cache[url]
         callbacks = depends.loading[url]
         while callback = callbacks.pop()
-          callback null, dependency if callback
+          callback ...dependency if callback
         delete depends.loading[url]
 
     depends.script-loader = (url, next) ->
@@ -68,7 +71,7 @@ module.exports = (exchange) ->
         script.onreadystatechange = ->
           if script.readyState == "loaded" || script.readyState == "complete"
             script.onreadystatechange = null;
-            depends.cache[url] ?= url:url
+            depends.cache[url] ?= []
             next();
       else # Other browsers
         script.onload = ->
@@ -107,7 +110,8 @@ module.exports = (exchange) ->
     # step() is so often used with depends that it makes sense to load it the
     # first time it is called
     window.step = (...steps) ->
-      depends '/client/step.ls', (error, step) ->
+      depends '/client/step.ls', (error, step, client-step-update) ->
+        client-step-update step
         window.step = step
         step ...steps
 

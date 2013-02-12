@@ -39,23 +39,23 @@ module.exports = (exchange) ->
 
   step(
     ->
-      @throw_errors = false
+      @throw-errors = false
       make-project-dirs('client', 'ext', 'boot', 'config',
-                        'scratch', 'scripts', 'server', @
+                        'scratch', 'scripts', 'server', @next
     (error) ->
       @(error) if error
       copy 'go', 'go.bat', 'index.html', 'app.ls', 'app.stylus',
            'boot/project-init.ls', 'config/base.ls', 'config/debug.ls',
-           'config/production.ls', 'client/favicon.ico', @
+           'config/production.ls', 'client/favicon.ico', @next
     (error) ->
       @(error) if error
-      fs.symlink fs.node(''), path.join(project-path, 'ext/roaster'), 'dir', @
+      fs.symlink fs.node(''), path.join(project-path, 'ext/roaster'), 'dir', @next
     (error) ->
       # skip error as it just means destination exists
       @parallel(
-        -> fs.chmod path.join(project-path, 'go'), 8~700, @
+        -> fs.chmod path.join(project-path, 'go'), 8~700, @next
         -> fs.appendFile path.join(project-path, 'config/base.ls'),
-            "  environment.port ?= #{config.port}\n", @
+            "  environment.port ?= #{config.port}\n", @next
       )
     (error) ->
       return failure(error) if error

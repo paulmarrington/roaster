@@ -21,10 +21,13 @@ class Respond
   # can change it if needed.
   maximum-browser-cache-age: 86_400seconds #Infinity
   # respond to client with code to run in a sandbox
-  client: (code) ->
+  client: (...functions) ->
     if not ((client = @exchange.request.filename) of clients)
       url = @exchange.request.url.path
-      clients[client] = "depends.cache['#url'] = #{code.toString()}()"
+      functions = ["#{func.toString()}()" for func in functions]
+      functions .= join(',')
+      # null is actally error first paramenter in cliend depends()
+      clients[client] = "depends.cache['#url'] = [null,#functions]"
     @script clients[client]
   # respond to client with code
   js: (code) ->
