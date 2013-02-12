@@ -10,11 +10,11 @@ class Respond
   static: -> @exchange.reply = ~> @send-static()
   send-static: ->
     name = @exchange.request.filename
-    gzip name, (error, zipped-name) ~>
-      @exchange.response.set-header 'Content-Encoding', 'gzip'
-      @set-mime-type name
-      send(@exchange.request, zipped-name).
-        maxage(@maximum-browser-cache-age).pipe(@exchange.response)
+    # gzip name, (error, zipped-name) ~>
+    #   @exchange.response.set-header 'Content-Encoding', 'gzip'
+    #   @set-mime-type name
+    send(@exchange.request, name).
+      maxage(@maximum-browser-cache-age).pipe(@exchange.response)
 
   # Default is for browser to cache static files forever. This is unsuitable in development
   # so the server will reset to 1 second if in debug mode. It is here so anyone else
