@@ -5,14 +5,14 @@ module.exports = (exchange) ->
       # then we can call depends directly
       ()->
         @common = 1
-        depends '/scratch/dep-sync.coffee', @next
+        roaster.depends '/scratch/dep-sync.coffee', @next
       (error, dep_sync) ->
         @common++
         console.log "dep_sync=#{dep_sync}"
 
         # if a dependency does async stuff during init it needs to be
         # wrapped in a function and that function called
-        depends '/scratch/dep-async.coffee', @next
+        roaster.depends '/scratch/dep-async.coffee', @next
       (error, dep_async) ->
         dep_async null, @next
 
@@ -57,7 +57,7 @@ module.exports = (exchange) ->
 
         @depends '/client/faye.ls'
       (error, @faye) ->
-        depends.scriptLoader '/scratch/test-faye.server.coffee', @next
+        roaster.scriptLoader '/scratch/test-faye.server.coffee', @next
       ->
         console.log "Client: subscribe to '/channel/on-client'"
         @faye.subscribe '/channel/on-client', (message) -> console.log message.text

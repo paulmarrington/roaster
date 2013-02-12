@@ -2,5 +2,5 @@
 
 module.exports = (exchange) ->
   exchange.respond.client -> (error, next) ->
-    depends.script-loader '/faye/client.js', ->
+    roaster.script-loader '/faye/client.js', ->
       next null, new Faye.Client '/faye'

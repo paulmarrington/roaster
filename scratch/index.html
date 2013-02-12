@@ -6,11 +6,11 @@
 	<!--
 		Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 	-->
-    <script type="text/javascript" src="/client/depends.ls"></script>
+    <script type="text/javascript" src="/client/roaster.ls"></script>
     <script type="text/javascript">
         function init() {
             document.getElementById('date').innerHTML = (new Date()).toString()
-            depends('/scratch/app.coffee')
+            roaster.depends('/scratch/app.coffee')
         }
     </script>
 

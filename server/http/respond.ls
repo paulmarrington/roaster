@@ -27,7 +27,7 @@ class Respond
       functions = ["#{func.toString()}()" for func in functions]
       functions .= join(',')
       # null is actally error first paramenter in cliend depends()
-      clients[client] = "depends.cache['#url'] = [null,#functions]"
+      clients[client] = "roaster.cache['#url'] = [null,#functions]"
     @script clients[client]
   # respond to client with code
   js: (code) ->
