@@ -59,7 +59,7 @@ module.exports = -> class Step
     @steps[--@step-index] = (error, ...results) ->
       for cb in results
         if typeof cb is 'function' and cb.length is 2
-          cb @, @parallel()
+          cb error, @parallel()
         else
           @parallel()(error, cb)
 

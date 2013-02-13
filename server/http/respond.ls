@@ -6,6 +6,9 @@ clients = {}
 # contents of the file is in the body of the request as a binary stream
 class Respond
   (@exchange) ~>
+    @exchange.response.set-header(
+      'Access-Control-Allow-Origin',
+      exchange.environment.cors_whitelist.join ' ')
   # by default we send it as static content where the browser caches it forever
   static: -> @exchange.reply = ~> @send-static()
   send-static: ->
