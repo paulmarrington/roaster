@@ -5,11 +5,11 @@ class server-step extends step()
   # a common need is to wait for a stream to finish writing
   drain: (stream, data) ->
     if not stream.write data
-      then stream.once 'drain', @ else @! # synchronous
+      then stream.once 'drain', @next else @next! # synchronous
 
   # similarly when we pipe we need to wait for it to complate
   pipe: (input, output) ->
     input.pipe(output, end: false);
-    input.on 'end', @
+    input.on 'end', @next
 
 module.exports = server-step
