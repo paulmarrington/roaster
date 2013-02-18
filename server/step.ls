@@ -12,4 +12,4 @@ class server-step extends step()
     input.pipe(output, end: false);
     input.on 'end', @
 
-module.exports = step()
+module.exports = server-step

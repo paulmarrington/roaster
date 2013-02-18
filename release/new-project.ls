@@ -1,7 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 require! path; require! fs; require! dirs.mkdirs; require! step
 
-# curl 'http://localhost:9009/release/new-project.ls?path=..&name=test&port=9020'
+# curl 'http://localhost:9009/release/new-project.ls?path=..&name=test'
 module.exports = (exchange) ->
   config = exchange.request.url.query
   config.error = false
@@ -15,8 +15,8 @@ module.exports = (exchange) ->
     config.error = true
     done msg
 
-  if not config.path or not config.name or not config.port
-    failure 'path=.. name=MyProjectName port=9009'
+  if not config.path or not config.name
+    failure 'path=.. name=MyProjectName'
 
   copy = (...files, next) ->
     copy-one = (error, files) ->
@@ -40,22 +40,21 @@ module.exports = (exchange) ->
   step(
     ->
       @throw-errors = false
-      make-project-dirs('client', 'ext', 'boot', 'config',
+      make-project-dirs 'client', 'ext', 'boot', 'config',
                         'scratch', 'scripts', 'server', @next
     (error) ->
-      @(error) if error
+      @next(error) if error
       copy 'go', 'go.bat', 'index.html', 'app.ls', 'app.stylus',
            'boot/project-init.ls', 'config/base.ls', 'config/debug.ls',
            'config/production.ls', 'client/favicon.ico', @next
     (error) ->
-      @(error) if error
-      fs.symlink fs.node(''), path.join(project-path, 'ext/roaster'), 'dir', @next
-    (error) ->
-      # skip error as it just means destination exists
+      @next(error) if error
       @parallel(
+        -> fs.writeFile path.join(project-path, 'ext/roaster'),
+          "#!/bin/bash\n#{fs.node 'go'} $@\n", @next
+        -> fs.writeFile path.join(project-path, 'ext/roaster.bat'),
+          "#{fs.node 'go.bat'} %*\n", @next
         -> fs.chmod path.join(project-path, 'go'), 8~700, @next
-        -> fs.appendFile path.join(project-path, 'config/base.ls'),
-            "  environment.port ?= #{config.port}\n", @next
       )
     (error) ->
       return failure(error) if error

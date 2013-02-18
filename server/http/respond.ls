@@ -9,6 +9,8 @@ class Respond
     @exchange.response.set-header(
       'Access-Control-Allow-Origin',
       exchange.environment.cors_whitelist.join ' ')
+    @exchange.response.set-header(
+      'Access-Control-Allow-Headers', 'Content-Type')
   # by default we send it as static content where the browser caches it forever
   static: -> @exchange.reply = ~> @send-static()
   send-static: ->
