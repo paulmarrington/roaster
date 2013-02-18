@@ -1,7 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 require! path; require! fs; require! dirs.mkdirs; require! step
 
-# curl 'http://localhost:9009/release/new-project.ls?path=..&name=test'
+# curl 'http://localhost:9009/release/new-project.ls?path=..&name=test&port=9020'
 module.exports = (exchange) ->
   config = exchange.request.url.query
   config.error = false
@@ -16,7 +16,7 @@ module.exports = (exchange) ->
     done msg
 
   if not config.path or not config.name
-    failure 'path=.. name=MyProjectName'
+    failure 'path=.. name=MyProjectName port=9009'
 
   copy = (...files, next) ->
     copy-one = (error, files) ->
@@ -55,6 +55,10 @@ module.exports = (exchange) ->
         -> fs.writeFile path.join(project-path, 'ext/roaster.bat'),
           "#{fs.node 'go.bat'} %*\n", @next
         -> fs.chmod path.join(project-path, 'go'), 8~700, @next
+        ->
+          if config.port
+            fs.appendFile path.join(project-path, 'config/base.ls'),
+            "  environment.port = #{config.port}\n", @next
       )
     (error) ->
       return failure(error) if error
