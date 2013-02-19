@@ -1,8 +1,8 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-Processes = require 'Processes'
+Processes = require 'processes'
 
  module.exports = (exchange) ->
-    proc = Processes()
+    proc = processes()
     # Output will be wiki text as written by stdout and stderr
     exchange.respond.set-mime-type 'txt'
     url = exchange.request.url

@@ -35,10 +35,11 @@ environment = process.environment = system.command_line(
   command-line: process.argv.join ' ' # full command line for identification
 )
 
-default-environment = ["#name=#value" for name, value of environment].sort()
-
 # allow project to tweak settings before we commit to action
+console.log project-init
 project-init.pre environment
+
+default-environment = ["#name=#value" for name, value of environment].sort()
 
 # load an environment related config file
 # command-line could have config=debug

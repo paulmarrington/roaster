@@ -20,7 +20,7 @@ module.exports = (...args) ->
 
 # then waiting a bit before starting the debugger proxy
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-require! demand; require! Processes; require! 'file-system'
+require! demand; require! processes; require! 'file-system'
 
 node-inspector = (...args) ->
   demand 'node-inspector', (error) ->
@@ -32,7 +32,7 @@ node-inspector = (...args) ->
       "--web-port=9011"
       "--prefix" file-system.node 'ext'
 
-    Processes(cmd).node ...args, ->
+    processes(cmd).node ...args, ->
       console.log "Node Inspector closed"
 # setTimeout require('scripts/node-inspector'), 2000
 setTimeout node-inspector, 2000

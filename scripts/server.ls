@@ -1,8 +1,8 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-require! 'Processes'; require! 'file-system'
+require! 'processes'; require! 'file-system'
 
 module.exports = (...args, debug) ->
-  node = Processes('node')
+  node = processes('node')
   load = file-system.node 'boot/load.js'
   server = file-system.node 'server/boot/server'
   if debug
