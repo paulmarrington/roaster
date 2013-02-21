@@ -9,5 +9,5 @@ publish = ->
 
 module.exports = (exchange) ->
   setTimeout publish, 1000
-  exchange.respond.setMimeType 'js'
+  exchange.respond.set_mime_type 'js'
   exchange.response.end("console.log('test-faye.server.coffee ran')")

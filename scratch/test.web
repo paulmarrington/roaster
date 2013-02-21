@@ -1,4 +1,4 @@
 module.exports = (exchange) ->
   exchange.respond.client ->
-    ext = <[ .web .client.ls ]>
+    ext = <[ .web .client.coffee ]>
     console.log "driver mapping turns #{ext.0} into #{ext.1}"

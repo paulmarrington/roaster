@@ -28,6 +28,7 @@ module.exports = (exchange) ->
         console.log "@depends dep_async3=#{dep_async3}, dep_async4=#{dep_async4}, dep_sync=#{dep_sync}"
 
         # test out libraries that are synchronous js files that load in parallel
+        window.libraries_test = []
         @library '/scratch/l1.js', '/scratch/l2.js','/scratch/l3.js'
       () ->
         @common++
@@ -55,9 +56,9 @@ module.exports = (exchange) ->
         console.log "run=#{run.length}"
         console.log "l1=#{l1.length}"
 
-        @depends '/client/faye.ls'
+        @depends '/client/faye.coffee'
       (error, @faye) ->
-        roaster.scriptLoader '/scratch/test-faye.server.coffee', @next
+        roaster.script_loader '/scratch/test-faye.server.coffee', @next
       ->
         console.log "Client: subscribe to '/channel/on-client'"
         @faye.subscribe '/channel/on-client', (message) -> console.log message.text

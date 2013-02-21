@@ -3,25 +3,25 @@ url = require 'url'; path = require 'path'; os = require 'os'
 http = require 'http'; https = require 'https'; fs = require 'fs'
 
 class Internet
-  constructor: ->
+  ->
     # download a file - pausing the stream while it happens
     @download = # internet.download.to(file_path).from url, => next()
       from: (@from, next) => @download_now(next); return @download
       to: (@to, next) => @download_now(next); return @download
-      
+
   # Abort stream if Internet unavailable - require(internet).available(gwt)
   available: (next) ->
-    http.request({host: 'google.com', path: '/', method: 'HEAD'}, 
+    http.request({host: 'google.com', path: '/', method: 'HEAD'},
       (response) => next(false)).on('error', =>  next(true)).end()
-    
+
   download_now: (next) ->
     return if not next
     href = url.parse @from
     file_name = path.basename href.pathname
     file_path = "#{@to}"
-    
+
     options = {host: href.hostname, path: href.pathname, method: 'GET'}
-    
+
     responder = (response) =>
       response.setEncoding 'binary'
       writer = fs.createWriteStream file_path

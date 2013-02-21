@@ -1,1 +1,1 @@
-libraries_test = ["L1 loaded"]
+libraries_test.push("L1 loaded")
