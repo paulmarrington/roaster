@@ -1,9 +1,11 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 url = require 'url'; path = require 'path'; os = require 'os'
 http = require 'http'; https = require 'https'; fs = require 'fs'
+querystring = require 'querystring'; url = require 'url'
+timer = require 'timer'
 
 class Internet
-  ->
+  constructor: ->
     # download a file - pausing the stream while it happens
     @download = # internet.download.to(file_path).from url, => next()
       from: (@from, next) => @download_now(next); return @download
@@ -11,30 +13,69 @@ class Internet
 
   # Abort stream if Internet unavailable - require(internet).available(gwt)
   available: (next) ->
-    http.request({host: 'google.com', path: '/', method: 'HEAD'},
-      (response) => next(false)).on('error', =>  next(true)).end()
+    head = @request('HEAD', 'http://google.com', {}, => next false)
+    head.on('error', =>  next(true)).end()
 
-  download_now: (next) ->
+  # Post known static data as either a string or url-encoded
+  post: (address, data, on_response) ->
+    data = querystring.stringify data if typeof data isnt 'string'
+    options = headers: 'Content-Length': data.length
+    @request('POST', address, options, on_response).end data
+
+  # prepare to post a stream of data
+  post_stream: (address, on_response) ->
+    return @request('POST', address, {}, on_response)
+
+  # helper for http GET - returns request object
+  get: (address, options..., on_response) ->
+    options = if options.length is 0 then {} else options[0]
+    request = @request('GET', address, options, on_response)
+    request.end()
+    return request
+  # helper for http GET - returns request object
+  get_stream: (address, options..., on_response) ->
+    options = if options.length is 0 then {} else options[0]
+    request = @request('GET', address, options, on_response)
+    return request
+  # set how many seconds we keep retrying
+  retry: (seconds) -> @retry_for = seconds; return @
+
+  download_now: (on_download_complete) ->
     return if not next
-    href = url.parse @from
-    file_name = path.basename href.pathname
-    file_path = "#{@to}"
-
-    options = {host: href.hostname, path: href.pathname, method: 'GET'}
-
-    responder = (response) =>
+    console.log "Downloading //#{@from}//..."
+    to = @to
+    @request 'GET', @from, {}, (response) =>
       response.setEncoding 'binary'
-      writer = fs.createWriteStream file_path
+      writer = fs.createWriteStream to
       response.pipe writer
       response.on 'end', =>
         console.log '...done';
-        next()
-
-    console.log "Downloading //#{file_name}//..."
-    if href.protocol is 'http:'
-      options.port = 80; http.request(options, responder).end()
-    else
-      options.port = 443; https.request(options, responder).end()
+        on_download_complete()
     @from = @to = ''
+
+  request: (method, address, extra_options, on_response) ->
+    address = url.parse address
+    if address.protocol is 'http:'
+      address.port ?= 80; transport = http
+    else
+      address.port ?= 443; transport = https
+    options =
+      method: method
+      host: address.hostname
+      path: address.path
+      port: address.port
+    options[key] = value for key, value of extra_options
+    clock = timer silent:true
+    request = null
+    requesting = =>
+      request?.abort()
+      request = transport.request options, (response) =>
+        on_response(null, response)
+      request.on 'error', (error) =>
+        if error?.code is 'ECONNREFUSED' and clock.total() < @retry_for
+          return setTimeout requesting, 500
+        on_response error
+      return request
+    return requesting()
 
 module.exports = -> new Internet()

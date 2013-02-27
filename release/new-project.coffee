@@ -2,7 +2,7 @@
 path = require 'path'; fs = require 'fs';
 mkdirs = require('dirs').mkdirs; step = require 'step'
 
-# curl 'http://localhost:9009/release/new-project.ls?path=..&name=test&port=9020'
+# curl 'http://localhost:9009/release/new-project.coffee?path=..&name=test&port=9020'
 module.exports = (exchange) ->
   config = exchange.request.url.query
   config.error = false
@@ -33,11 +33,11 @@ module.exports = (exchange) ->
     copy_one(null, files.slice 0)
 
   make_project_dirs = (dirs..., next) ->
-    make-one = (error, dirs) ->
+    make_one = (error, dirs) ->
       return next(error) if error or dirs.length is 0
       mkdirs path.join(project_path, dirs.pop()), (error) ->
-        make-one error, dirs
-    make-one null, dirs.slice 0
+        make_one error, dirs
+    make_one null, dirs.slice 0
 
   step(
     ->
@@ -56,11 +56,13 @@ module.exports = (exchange) ->
           "#!/bin/bash\n#{fs.node 'go'} $@\n", @next
         -> fs.writeFile path.join(project_path, 'ext/roaster.bat'),
           "#{fs.node 'go.bat'} %*\n", @next
-        -> fs.chmod path.join(project_path, 'go'), 8~700, @next
+        -> fs.chmod path.join(project_path, 'go'), 0o700, @next
         ->
           if config.port
             fs.appendFile path.join(project_path, 'config/base.coffee'),
             "  environment.port = #{config.port}\n", @next
+          else
+            @next null
       )
     (error) ->
       return failure(error) if error
