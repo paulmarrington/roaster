@@ -1,40 +1,49 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 fs = require 'file-system'; rmdirs = require('dirs').rmdirs
+processes = require 'processes'
 
 module.exports = (args...) ->
-  clean_gen = ->
-    rmdirs fs.base('gen')
-    rmdirs fs.node('gen')
-  clean_gen()
-  args = [args..., "config=debug"]
-  node = require(fs.node 'scripts/server')(args, true)
+  debugging = 'server'
+  if args[0][0] is '-'
+    [debugging, args...] = args
 
-  node.on 'exit', ->
-    # flush the generated files. This is because generators
-    # that can include sub-files (i.e. less) will not pick
-    # up a file change. Note that you will also have to place
-    # directories with these files in your local
-    # debug-watch-directories.coffee
+  if debugging is 'server'
+    clean_gen = ->
+      rmdirs fs.base('gen')
+      rmdirs fs.node('gen')
     clean_gen()
-    console.log 'restarting server...'
+    args = [args..., "config=debug"]
+    node = require('scripts/server')(args, true)
 
-# then waiting a bit before starting the debugger proxy
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-demand = require 'demand'; processes = require 'processes'
+    node.on 'exit', ->
+      # flush the generated files. This is because generators
+      # that can include sub-files (i.e. less) will not pick
+      # up a file change. Note that you will also have to place
+      # directories with these files in your local
+      # debug-watch-directories.coffee
+      clean_gen()
+      console.log 'restarting server...'
+  else # not server
+    node = processes('node')
+    load = fs.node 'boot/load.js'
+    node.spawn '--debug-brk', load, 'boot/run', debugging[1..], args..., ->
 
-node_inspector = (args...) ->
-  demand 'node-inspector', (error) ->
-    throw error if error
+  # then waiting a bit before starting the debugger proxy
+  # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+  demand = require 'demand'; processes = require 'processes'
 
-    cmd = fs.node "ext/node_modules/node-inspector/bin/inspector.js"
-    args = [
-      "--web-host=127.0.0.1",
-      "--web-port=9011",
-      "--prefix", fs.node 'ext']
+  node_inspector = ->
+    demand 'node-inspector', (error) ->
+      throw error if error
 
-    processes(cmd).node args..., -> console.log "Node Inspector closed"
-# setTimeout require('scripts/node_inspector'), 2000
-setTimeout node_inspector, 2000
+      cmd = fs.node "ext/node_modules/node-inspector/bin/inspector.js"
+      args = [
+        "--web-host=127.0.0.1",
+        "--web-port=9011",
+        "--prefix", fs.node 'ext']
+
+      processes(cmd).node args..., -> console.log "Node Inspector closed"
+  setTimeout node_inspector, 2000
 
 #Sublime Text 2 manages to save files without triggering the watcher.
 # Go to menu Tools // Build System // New Build System...

@@ -17,14 +17,17 @@ class Internet
     head.on('error', =>  next(true)).end()
 
   # Post known static data as either a string or url-encoded
-  post: (address, data, on_response) ->
+  post: (address, data, options..., on_response) ->
+    options = if options.length is 0 then {} else options[0]
     data = querystring.stringify data if typeof data isnt 'string'
-    options = headers: 'Content-Length': data.length
+    options.header ?= {}
+    options.header['Content-Length'] =  data.length
     @request('POST', address, options, on_response).end data
 
   # prepare to post a stream of data
-  post_stream: (address, on_response) ->
-    return @request('POST', address, {}, on_response)
+  post_stream: (address, options..., on_response) ->
+    options = if options.length is 0 then {} else options[0]
+    return @request('POST', address, options, on_response)
 
   # helper for http GET - returns request object
   get: (address, options..., on_response) ->
@@ -35,16 +38,15 @@ class Internet
   # helper for http GET - returns request object
   get_stream: (address, options..., on_response) ->
     options = if options.length is 0 then {} else options[0]
-    request = @request('GET', address, options, on_response)
-    return request
+    return request = @request('GET', address, options, on_response)
   # set how many seconds we keep retrying
   retry: (seconds) -> @retry_for = seconds; return @
 
   download_now: (on_download_complete) ->
-    return if not next
+    return if not on_download_complete
     console.log "Downloading //#{@from}//..."
     to = @to
-    @request 'GET', @from, {}, (response) =>
+    @get @from, (error, response) =>
       response.setEncoding 'binary'
       writer = fs.createWriteStream to
       response.pipe writer

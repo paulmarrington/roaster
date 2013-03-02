@@ -5,6 +5,7 @@ os = require 'os'; querystring = require 'querystring';
 os.expecting = (system) -> # os.expecting('windows|unix|darwin|linux')
   runningOn = os.type().toLowerCase()
   system = system.toLowerCase()
+  system = 'darwin' if system is 'os x'
   return system is runningOn or system is 'unix' and runningOn isnt 'windows'
 
 # process a command line of the form 'a=b c=d' into a map - with defaults
