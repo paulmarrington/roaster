@@ -26,7 +26,10 @@ module.exports = (args...) ->
   else # not server
     node = processes('node')
     load = fs.node 'boot/load.js'
-    node.spawn '--debug-brk', load, 'boot/run', debugging[1..], args..., ->
+    console.log "Debugging - Continue needed before code executes"
+    node.spawn '--debug-brk', load, 'boot/run', debugging[1..], args..., (code) ->
+      console.log "Debug monitor closing"
+      process.exit(code)
 
   # then waiting a bit before starting the debugger proxy
   # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license

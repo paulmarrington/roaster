@@ -1,0 +1,2 @@
+we run 'roaster-unix-install.sh . no-go'
+and confirm a file 'go' now exists

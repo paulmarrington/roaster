@@ -3,4 +3,7 @@ Given_Installation_Script.gwt,changed
 When_Installation_Script.gwt,changed
 Then_Installation_Script.gwt,changed
 Instrument.coffee,changed
+Given_Install_Roaster.gwt,changed
+When_Install_Roaster.gwt,changed
+Then_Install_Roaster.gwt,changed
 ,succeeded

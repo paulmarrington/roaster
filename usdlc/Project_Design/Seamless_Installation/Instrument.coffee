@@ -10,7 +10,7 @@ temp_directory = ''
 file_path = -> path.join temp_directory, file_name
 
 gwt.rules( # Rules used by child pages
-  /An? (.+) operating system/, (all, system) ->
+  /An? (.+) operating system/, (system) ->
     @skip.section("not running on #{system}") if not os.expecting(system)
     @next()
 
@@ -23,11 +23,11 @@ gwt.rules( # Rules used by child pages
     file_name = name
     @next()
 
-  /in a temporary directory ending in '(.*)'/, (all, ending) ->
+  /in a temporary directory ending in '(.*)'/, (ending) ->
     console.log temp_directory = path.join os.tmpDir(), ending
     fs.mkdir temp_directory, @next
 
-  /download from github project '(.*)' at '(.*)'/, (all, project, at) ->
+  /download from github project '(.*)' at '(.*)'/, (project, at) ->
     @maximum_step_time = 120
     internet.download.to(file_path()).
       from "https://raw.github.com/#{project}/#{at}/#{file_name}", @next
@@ -36,22 +36,21 @@ gwt.rules( # Rules used by child pages
     fs.exists file_path(), (exists) =>
       @next(@error "#{file_path()} expected, but does not exist" if not exists)
 
-  /run '(.*)'/, (all, command_line) ->
+  /run '(.*)'/, (command_line) ->
     fs.in_directory temp_directory, =>
-      [program, args...] = command_line.split ' '
-      processes(program).spawn args, @next
-
+      processes().cmd command_line, @next
+      
   /if the file does not exist/, ->
     fs.exists file_path(), (exists) =>
       @skip.statements() if exists
       @next()
 
-  /and confirm a file '(.*)' now exists/, (all, name) ->
+  /and confirm a file '(.*)' now exists/, (name) ->
     fs.exists path.join(temp_directory, name), (exists) =>
       throw "#{name} expected to exist" if not exists
       @next()
 
-  /download from github project '(.*)'/, (all, project) ->
+  /download from github project '(.*)'/, (project) ->
     projectName = project.split('/').pop()
     temp_directory = path.join os.tmpDir(), projectName
     fs.mkdir temp_directory, =>

@@ -54,7 +54,7 @@ class Processes # proc = require('proc')() # sets default streaming and options
 
   # private DRY helper
   _exec: (action) ->
-    @args = @args[0]?.split ' ' if @args.length is 1
+    @args = @args[0]?.split ' ' if @args.length is 1 and typeof @args[0] is 'string'
     @proc = action @program, @args, @options
     @proc.on 'exit', (@code, @signal) =>
       return @next(new Error("return code #{@code}", @program)) if @code
