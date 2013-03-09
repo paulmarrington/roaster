@@ -5,7 +5,7 @@ morph = require 'morph'; path = require 'path'; fs = require 'fs'
 module.exports = (source, next) ->
   step(
     ->
-      demand 'less', @next
+      demand 'less', (ref) => @next(null, ref)
     (error, less_reference) ->
       @less = less_reference
       morph source, '.css', @next

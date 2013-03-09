@@ -21,8 +21,7 @@ extend_for = function(compile, ext) {
 // with processing. Sequential as npm requires that dammit
 var demand = require('demand')
 loader = function(index) {
-  demand(modules[index], function(error) {
-    if (error) throw error
+  demand(modules[index], function() {
     if (++index < modules.length) {
       loader(index)
     } else {

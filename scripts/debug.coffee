@@ -36,9 +36,7 @@ module.exports = (args...) ->
   demand = require 'demand'; processes = require 'processes'
 
   node_inspector = ->
-    demand 'node-inspector', (error) ->
-      throw error if error
-
+    demand 'node-inspector', ->
       cmd = fs.node "ext/node_modules/node-inspector/bin/inspector.js"
       args = [
         "--web-host=127.0.0.1",

@@ -1,9 +1,12 @@
 // Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-var path = require('path')
+var path = require('path'), util = require('util')
 var prefix = path.join(process.env.uSDLC_node_path, "ext")
+var EventEmitter = require('events').EventEmitter
 
 // Load npm module if new, otherwise behave as require does
-module.exports = function(name, callback) {
+
+var Demand = function(name, on_load) {
+  EventEmitter.call(this)
   var required
   try {
     required = require(name)
@@ -11,13 +14,16 @@ module.exports = function(name, callback) {
     var npm = require("ext/node/lib/node_modules/npm")
     npm.load({prefix: prefix}, function(err, npm) {
       try {
-        npm.commands.install([name], function() { callback(null, require(name)) })
+        npm.commands.install([name], 
+          function() { required = require(name) })
       } catch(error) {
-        callback(error)
-      return
+        this.emit('error', error)
+        return
       }
     })
-    return
   }
-  callback(null, required)
+  callback(required)
 }
+util.inherits(Demand, EventEmitter);
+
+module.exports = function(modules) { new Demand(modules) }
