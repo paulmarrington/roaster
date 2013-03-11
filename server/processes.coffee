@@ -1,18 +1,37 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-child_process = require 'child_process'
+child_process = require 'child_process'; fs = require 'file-system'
 
 class Processes # proc = require('proc')() # sets default streaming and options
   constructor: (@program) ->
+    @debug_flag = ''
     @options =
       cwd: process.cwd()
       env: process.env
       stdio: ['ignore', process.stdout, process.stderr]
 
   # Fork off a separate node process to run the V8 scripts in a separate space
-  node: (@args..., @next) -> @_exec(child_process.fork); return @
+  node: (@args..., @next) ->
+    @node_setup()
+    @_exec(child_process.fork)
+    return @
+
+  node_setup: ->
+    @args.unshift 'boot/run' if @program isnt 'server'
+    @args = [@program, @args...]
+    @program = fs.node('boot/load.js')
+
+  # restart runs a node job and restarts it if and when it dies
+  # it can also be used to restart an existing process
+  restart: (@args...) ->
+    return @proc.kill() if @proc
+    @node_setup()
+    @_respawn(child_process.fork, Infinity)
 
   # Spawn off a separate OS process - next(code) provides return code
   spawn: (@args..., @next) -> @_exec(child_process.spawn); return @
+
+  debug: (break_on_start = false) ->
+    @debug_flag = if break_on_start then '--debug-brk' else '--debug'
 
   # exec runs the provided command in a shell (next(error, stdout, stderr))
   exec: (next) -> child_process.exec @program, @options, next; return @
@@ -27,20 +46,21 @@ class Processes # proc = require('proc')() # sets default streaming and options
     return @
 
   # Spawn off a job and keep restarting it if it dies
-  restart: (@args...) ->
+  # it can also be used to respawn an existing process
+  respawn: (@args...) ->
     return @proc.kill() if @proc
-    @_restart()
+    @_respawn(child_process.spawn, 1000)
 
-  _restart: ->
+  _respawn: (action, minimum_run_time) ->
     @next = ->
     @start_time = new Date().getTime()
-    @_exec(child_process.spawn)
+    @_exec(action)
     @proc.on 'exit', (code, signal) =>
       @proc = null
       return if signal is 'SIGKILL'
       # restarting fails if service ran less than 5 seconds
-      if signal or (new Date().getTime() - @start_time) > 1000
-        @_restart()
+      if signal or (new Date().getTime() - @start_time) > minimum_run_time
+        @_respawn(action, minimum_run_time)
     return @proc
 
   # kill this process if it is currently running
@@ -54,11 +74,13 @@ class Processes # proc = require('proc')() # sets default streaming and options
 
   # private DRY helper
   _exec: (action) ->
-    @args = @args[0]?.split ' ' if @args.length is 1 and typeof @args[0] is 'string'
+    if @args.length is 1 and typeof @args[0] is 'string'
+      @args = @args[0]?.split ' '
     @proc = action @program, @args, @options
     @proc.on 'exit', (@code, @signal) =>
-      return @next(new Error("return code #{@code}", @program)) if @code
-      return @next(new Error(@signal, @program)) if @signal
+      if @code
+        return @next(new Error("return code #{@code}", @args))
+      return @next(new Error(@signal, @args)) if @signal
       return @next(null)
     return @proc
 
