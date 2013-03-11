@@ -160,7 +160,7 @@ processes = require 'processes'
 sample_script = processes('Sample_Script').node -> console.log 'sample process complete'
 sample_script.send '5'
 sample_script.on 'message', (message) ->
- global.tap.check -> if message is {result: 50}
+  global.tap.check -> if message is {result: 50}
 </pre>
 <h4>Sample Script</h4>
 <pre class='coffee'>
