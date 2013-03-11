@@ -42,8 +42,8 @@
 
 module.exports = (exchange) ->
   exchange.respond.js ->
-    window.slice$ = window.__slice = [].slice
-    window.__bind = (fn, me) -> return -> return fn.apply(me, arguments)
+    window.slice$ = window['__slice'] = [].slice
+    window['__bind'] = (fn, me) -> return -> return fn.apply(me, arguments)
     window.bind$ = (obj, key, target) ->
       return -> return (target || obj)[key].apply(obj, arguments)
 
@@ -85,7 +85,7 @@ module.exports = (exchange) ->
       data_loader:  (url, next) ->
         request = new XMLHttpRequest()
         request.open 'GET', url, true
-        request.onreadystatechange = (event) ->
+        request.onreadystatechange = ->
           return if request.readyState isnt 4
           switch request.status
             when 200 then next null, request.responseText
@@ -153,7 +153,7 @@ module.exports = (exchange) ->
               return window.location.href = window.location.href
             request = new XMLHttpRequest()
             request.open 'GET', '/server/http/alive.server.coffee', true
-            request.onreadystatechange = (event) ->
+            request.onreadystatechange = ->
               if request.readyState is 4
                 setTimeout get_server_status, 1000
             request.send null
