@@ -4,8 +4,7 @@ processes = require 'processes'
 
 module.exports = (args...) ->
   debugging = 'server'
-  if args[0][0] is '-'
-    [debugging, args...] = args
+  debugging = args.shift()[1..] if args[0]?[0] is '-'
 
   if debugging is 'server'
     clean_gen = ->
@@ -27,7 +26,7 @@ module.exports = (args...) ->
     node = processes('node')
     load = fs.node 'boot/load.js'
     console.log "Debugging - Continue needed before code executes"
-    node.spawn '--debug-brk', load, 'boot/run', debugging[1..], args..., (code) ->
+    node.spawn '--debug-brk', load, 'boot/run', debugging, args..., (code) ->
       console.log "Debug monitor closing"
       process.exit(code)
 
