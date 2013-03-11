@@ -22,8 +22,8 @@ var Demand = function(name, on_load) {
       }
     })
   }
-  callback(required)
+    on_load(required)
 }
 util.inherits(Demand, EventEmitter);
 
-module.exports = function(modules) { new Demand(modules) }
+module.exports = function(module, on_load) { new Demand(module, on_load) }
