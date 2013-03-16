@@ -12,7 +12,7 @@ class Respond
     @exchange.response.setHeader(
       'Access-Control-Allow-Headers', 'Content-Type')
   # by default we send it as static content where the browser caches it forever
-  static: -> @exchange.reply = => @send_static()
+  static_file: -> @exchange.reply = => @send_static()
   send_static: ->
     fs.stat name = @exchange.request.filename, (err, stats) =>
       name += '/' if stats?.isDirectory() and name.slice(-1) != '/'
