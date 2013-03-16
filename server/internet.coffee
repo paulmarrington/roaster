@@ -6,6 +6,7 @@ timer = require 'timer'
 
 class Internet
   constructor: ->
+    @retry_for = 5
     # download a file - pausing the stream while it happens
     @download = # internet.download.to(file_path).from url, => next()
       from: (@from, next) => @download_now(next); return @download
