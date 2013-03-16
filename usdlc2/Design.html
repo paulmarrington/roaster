@@ -1,4 +1,4 @@
-<h1 id="pageTitle">Design</h1>
+<h1 id="page_title">Design</h1>
 <h1>Basic Proxy</h1>
 <h1>On-demand Packages</h1>
 <h2>"Demand" Command</h2>
@@ -12,7 +12,7 @@
 <p>OS X installation involves downloading a single script and running it. In turn Roaster, Node are downloaded. Other
   dependencies download the first time roaster is run.
 </p><h3>Installation Script</h3>
-<pre class='gwt'>
+<pre type='gwt'>
  Given n OS X operating system
  and Internet access
  and that we are working with a file called 'roaster-unix-install.sh'
@@ -23,7 +23,7 @@
  Then the file exists
 </pre>
 <h3>Install Roaster</h3>
-<pre class='gwt'>
+<pre type='gwt'>
 Given an OS X operating system
 and Internet access
 and that we are working with a file called 'roaster-unix-install.sh'
@@ -37,7 +37,7 @@ When we run 'roaster-unix-install.sh . no-go'
 Then we confirm a file 'go' now exists
 </pre>
 <h3>Install Node</h3>
-<pre class="gwt">
+<pre type="gwt">
 A Unix operating system
 and Internet access
 and that we are working with a file called 'go'
@@ -51,7 +51,7 @@ When we run '/bin/bash go pwd'
 Then a file 'ext/node/bin/node' now exists
 </pre>
 <h3>Install Modules</h3>
-<pre class="gwt">
+<pre type="gwt">
 Given a Unix operating system
 and Internet access
 and that we are working with a file called 'go'
@@ -65,12 +65,12 @@ When we run '/bin/bash go update'
 Then and confirm a file 'ext/node_modules/coffee-script/README' now exists
 </pre>
 <h3>Instrumentation</h3>
-<pre class='coffee closed'>
+<pre type='coffee' class='closed'>
        require '../Instrumentation.coffee'
      </pre>
 <h2>Windows Installation</h2>
 <h2>Instrumentation</h2>
-<pre class='coffee closed'>
+<pre type='coffee' class='closed'>
 gwt = global.gwt # set by uSDLC2/scripts/gwt
 
 # Module requirements
@@ -142,7 +142,7 @@ gwt.rules( # Rules used by child pages
 <h1>Scripts</h1>
 <h2>Process Control</h2>
 Roaster extends the node child_process module.
-<pre class='coffee'>
+<pre example='coffee'>
 processes = require 'processes'
 my_program = processes('my_program')
 </pre>
@@ -155,15 +155,15 @@ my_program = processes('my_program')
   will possibly work on a different CPU. Node provides a bidirectional communication channel between the processes. The
   Node manual states that a new process will take about 30ms and use 10Mb of memory.
 </p>
-<pre class='coffee'>
+<pre type='coffee'>
 processes = require 'processes'
 sample_script = processes('Sample_Script').node -> console.log 'sample process complete'
 sample_script.send '5'
 sample_script.on 'message', (message) ->
-  global.tap.check -> if message is {result: 50}
+  gwt.expect message, {result: 50}
 </pre>
 <h4>Sample Script</h4>
-<pre class='coffee'>
+<pre type='coffee'>
 module.exports = (args...) ->
   process.on 'message', (message) ->
     process.send result: +message * 10
