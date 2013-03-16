@@ -13,8 +13,8 @@ Step::pipe = (input, output) ->
   input.pipe(output, end: false);
   input.on 'end', @next
 
-Step::demand = (modules) ->
+Step::demand = (modules...) ->
   @parallels_setup()
-  roaster.depends module, @parallel() for module in modules
+  demand module, @parallel() for module in modules
 
 module.exports = -> new Step(arguments)
