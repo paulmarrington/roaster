@@ -5,6 +5,7 @@ processes = require 'processes'
 module.exports = (args...) ->
   debugging = 'server'
   debugging = args.shift()[1..] if args[0]?[0] is '-'
+  debugging = debugging[1..] if no_node_inspector = (debugging[0] is '-')
 
   if debugging is 'server'
     clean_gen = ->
@@ -12,7 +13,7 @@ module.exports = (args...) ->
       rmdirs fs.node('gen')
     clean_gen()
     args = [args..., "config=debug"]
-    node = require('scripts/server')(args, true)
+    node = require('scripts/server').debug(args...)
 
     node.on 'exit', ->
       # flush the generated files. This is because generators
@@ -43,7 +44,7 @@ module.exports = (args...) ->
         "--prefix", fs.node 'ext']
 
       processes(cmd).node args..., -> console.log "Node Inspector closed"
-  setTimeout node_inspector, 2000
+  setTimeout node_inspector, 2000 if not no_node_inspector
 
 #Sublime Text 2 manages to save files without triggering the watcher.
 # Go to menu Tools // Build System // New Build System...

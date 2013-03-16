@@ -1,12 +1,15 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 processes = require 'processes'; fs = require 'file-system'
 
-module.exports = (args..., debug) ->
+load = fs.node 'boot/load.js'
+server = fs.node 'server/boot/server'
+
+module.exports = (args...) ->
   node = processes('node')
-  load = fs.node 'boot/load.js'
-  server = fs.node 'server/boot/server'
-  if debug
-    node.respawn '--debug', load, server, args...
-  else
-    node.respawn load, server, args...
+  node.respawn load, server, args...
+  return node
+
+module.exports.debug = (args...) ->
+  node = processes('node')
+  node.respawn '--debug', load, server, args...
   return node
