@@ -5,8 +5,9 @@ class Timer # Use to report elapsed times
   # options.silent = true to stop logging of results
   constructor: (@options) ->
     @log = (->) if @options?.silent
+    options.pre ?= ''; options.post ?= ''
     @start = @now = new Date()
-    @log "#{@now} <b>"
+    @log "#{@now}"
   # timer.elapsed() # will print seconds since start or last elapsed
   elapsed: ->
     time = Math.floor((new Date().getTime() - @now.getTime()) / 1000)
@@ -16,7 +17,7 @@ class Timer # Use to report elapsed times
   # timer.total() # will print seconds since timer was instantiated
   total: ->
     time = Math.floor((new Date().getTime() - @start.getTime()) / 1000)
-    @log "#{@hms(time)} seconds total <b>"
+    @log "#{@hms(time)} seconds total"
     return time
   # change seconds into hours, minutes and seconds
   hms: (time) ->
@@ -30,6 +31,6 @@ class Timer # Use to report elapsed times
     hours = if hours then "#{hours}:" else ''
     return "#{hours}#{minutes}:#{seconds}"
   # display results - if needed
-  log: (message) -> console.log message
+  log: (message) -> console.log "#{@options.pre}#{message}#{@options.post}"
 
 module.exports = (options) -> new Timer(options)
