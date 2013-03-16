@@ -14,6 +14,11 @@ os.command_line = (defaults) ->
   args[item] ?= defaults[item] for item of defaults
   return args
 
+os.help = (program, options) ->
+  text = [program]
+  text.push "#{key}=#{value}" for key, value of options
+  console.log "usage: #{text.join(' ')}"
+
 # Throw an exception if the error arg on a callback is filled. Use it in
 # place of any standardised callback: myfunc args, throw_error callback
 os.throwError = (next) ->
