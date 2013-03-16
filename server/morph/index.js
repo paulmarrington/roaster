@@ -1,5 +1,6 @@
 /* Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license */
-var fs = require('fs'), path = require('path'), mkdirs = require('dirs').mkdirs
+var fs = require('fs'), path = require('path')
+var mkdirsSync = require('dirs').mkdirsSync, newer = require('newer')
 // all files are cached in /gen under the main project directory
 var base_dir = process.env.uSDLC_base_path
 var base_length = base_dir.length
@@ -9,20 +10,11 @@ var base_length = base_dir.length
 //     saver(error, code, next)
 //       next(error)
 var morph = function (source, target_ext, builder) {
-    var target = path.relative(process.cwd, source).replace(/\.\.\//g, '')
+    var target = path.relative(process.cwd(), source).replace(/\.\.\//g, '')
     target = path.join(base_dir, 'gen', (target + target_ext))
 
-    // Get modified dates for source and target files
-    var stat = fs.statSync(source)
-    var source_modified = stat.mtime.getTime()
-    var target_modified
-    try {
-        target_modified = fs.statSync(target).mtime.getTime()
-    } catch (exception) {
-        target_modified = 0
-    }
     // we only need to rebuild if source is newer
-    if (source_modified > target_modified) {
+    if (newer(source, target)) {
         var code = fs.readFileSync(source, 'utf8')
         if (code.charCodeAt(0) === 0xFEFF) {
             code = code.substring(1);
