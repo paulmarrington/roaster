@@ -40,8 +40,7 @@ module.exports = ->
       if arguments.length
         # use for @parallel(-> a, -> b, ...)
         @parallels_setup()
-        fn.apply({next:@parallel()}) for fn in arguments
-        return
+        return fn.apply({next:@parallel()}) for fn in arguments
       else
         parallel_index = ++@counter
         @pending++
@@ -64,8 +63,9 @@ module.exports = ->
           else
             @parallel()(error, cb)
 
-    # Generates a callback generator for grouped results
-    group: =>
+    # Generates a callback generator for grouped results - paralell but dynamic list
+    # group = @group(); func ..., group(); repeat...
+    group: ->
       localCallback = @parallel();
       @counter = @pending = 0; result = []; error = null
 
@@ -76,10 +76,10 @@ module.exports = ->
       if process?.nextTick then process.nextTick(check) else setTimeout check, 0
 
       # Generates a callback for the group
-      return (error, args...) ->
+      return (error, args...) =>
         index = @counter++
         @pending++
-        return ->
+        return =>
           @pending--
           # Send the other results as arguments
           result[index] = args[0];
