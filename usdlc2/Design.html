@@ -10,7 +10,7 @@
 <h2>Linux Installation</h2>
 <h2>OS X Installation</h2>
 <p>OS X installation involves downloading a single script and running it. In turn Roaster, Node are downloaded. Other
-  dependencies download the first time roaster is run.
+    dependencies download the first time roaster is run.
 </p><h3>Installation Script</h3>
 <pre type='gwt'>
  Given n OS X operating system
@@ -140,20 +140,42 @@ gwt.rules( # Rules used by child pages
 </pre>
 <h1>Serve Static Files</h1>
 <h1>Scripts</h1>
-<h2>Process Control</h2>
+<h2>Server Support</h2>
+<h3>Date</h3>
+<p>The date module has a formatting method. The format can include:</p>
+<ul>
+    <li><b>YY(YY)</b> - 2 or digit year (as in 13 or 2013)</li>
+    <li><b>M(M)</b> - 1 or 2 digit month (as in 2 or 02)</li>
+    <li><b>D(D)</b> - 1 or 2 digit day of month</li>
+    <li><b>H(H)</b> - 1 or 2 digit hour of day</li>
+    <li><b>m(m)</b> - 1 or 2 digit minute of hour</li>
+    <li><b>S(S)</b> - 1 or 2 digit second if minute</li>
+    <li><b>sss</b> - milliseconds</li>
+</ul>
+<pre type='coffee'>
+gwt = require 'gwt'
+require 'date'
+value = new Date(2013, 2, 6, 19, 7, 25, 345)
+gwt.add(
+  -> gwt.expect value.format('YYYYMMDD-HHmmSSsss'), '20130306-190725345'
+  -> gwt.expect value.format('D/MM/YY H:mm'), '6/03/13 19:07'
+  ).go()
+</pre>
+<h3>Process Control</h3>
 Roaster extends the node child_process module.
 <pre example='coffee'>
 processes = require 'processes'
 my_program = processes('my_program')
 </pre>
 <p>Once you have a program, it can be run quickly as a separate node process, spawned to run as a separate program or
-  run under the operating system shell. In addition you can set the program up to restart every time it exits or
-  crashes, send it signals, communicate with it and work with input and output.</p>
+    run under the operating system shell. In addition you can set the program up to restart every time it exits or
+    crashes, send it signals, communicate with it and work with input and output.</p>
 <h3>Node Processes</h3>
 <p>
-  Node is single-threaded. If you have intensive CPU work to do it makes sense to start a separate node process that
-  will possibly work on a different CPU. Node provides a bidirectional communication channel between the processes. The
-  Node manual states that a new process will take about 30ms and use 10Mb of memory.
+    Node is single-threaded. If you have intensive CPU work to do it makes sense to start a separate node process that
+    will possibly work on a different CPU. Node provides a bidirectional communication channel between the processes.
+    The
+    Node manual states that a new process will take about 30ms and use 10Mb of memory.
 </p>
 <pre type='coffee'>
 processes = require 'processes'
