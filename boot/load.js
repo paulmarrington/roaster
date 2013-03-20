@@ -30,7 +30,7 @@ loader = function(index) {
       // extend_for('typescript', '.ts')
       // extend_for('lispyscript', '.lispy')
       // extend_for('amber', '.amber') //  (Smalltalk)
-      extend_for(require('kaffeine').fn.compile, '.k')
+      // extend_for(require('kaffeine').fn.compile, '.k')
 
       // and lastly, require the main module from the command line to run it
       require(process.argv[2])

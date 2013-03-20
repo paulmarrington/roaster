@@ -22,7 +22,7 @@ class Respond
       send(@exchange.request, name).
       maxage(@maximum_browser_cache_age).pipe(@exchange.response)
 
-  # Default is for browser to cache static files forever. This is unsuitable in development
+  # Default is for browser to cache static files for a day. This is unsuitable in development
   # so the server will reset to 1 second if in debug mode. It is here so anyone else
   # can change it if needed.
   maximum_browser_cache_age: 86400 #Infinity
