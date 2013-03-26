@@ -1,6 +1,7 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 fs = require 'file-system'; rmdirs = require('dirs').rmdirs
-processes = require 'processes'
+processes = require 'processes'; demand = require 'demand'
+path = require 'path'
 
 module.exports = (args...) ->
   debugging = 'server'
@@ -8,9 +9,7 @@ module.exports = (args...) ->
   debugging = debugging[1..] if no_node_inspector = (debugging[0] is '-')
 
   if debugging is 'server'
-    clean_gen = ->
-      rmdirs fs.base('gen')
-      rmdirs fs.node('gen')
+    clean_gen = -> #rmdirs fs.node('gen')
     clean_gen()
     args = [args..., "config=debug"]
     node = require('scripts/server').debug(args...)
@@ -23,6 +22,9 @@ module.exports = (args...) ->
       # debug-watch-directories.coffee
       clean_gen()
       console.log 'restarting server...'
+
+    # monitor files and reboot server/browser on change
+
   else # not server
     node = processes('node')
     load = fs.node 'boot/load.js'
@@ -32,9 +34,6 @@ module.exports = (args...) ->
       process.exit(code)
 
   # then waiting a bit before starting the debugger proxy
-  # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-  demand = require 'demand'; processes = require 'processes'
-
   node_inspector = ->
     demand 'node-inspector', ->
       cmd = fs.node "ext/node_modules/node-inspector/bin/inspector.js"

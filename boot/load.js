@@ -2,8 +2,8 @@
 
 // start by loading modules required for base operation
 var modules = [
-  'send', 'cookies', 'node-watch', 'faye',
-  'coffee-script', 'LiveScript', 'kaffeine'
+  'send', 'cookies', 'faye', 'coffee-script'
+  //,'LiveScript', 'kaffeine'
 ]
 // Now load languages that can be used in node requires()
 // js: javascript comes for free with V8
@@ -26,7 +26,7 @@ loader = function(index) {
       loader(index)
     } else {
       extend_for(require('coffee-script').compile, '.coffee')
-      extend_for(require('LiveScript').compile, '.ls')
+      //extend_for(require('LiveScript').compile, '.ls')
       // extend_for('typescript', '.ts')
       // extend_for('lispyscript', '.lispy')
       // extend_for('amber', '.amber') //  (Smalltalk)

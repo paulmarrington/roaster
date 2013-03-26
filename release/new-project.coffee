@@ -1,6 +1,6 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 path = require 'path'; fs = require 'fs';
-mkdirs = require('dirs').mkdirs; step = require 'step'
+mkdirs = require('dirs').mkdirs; steps = require 'steps'
 
 # curl 'http://localhost:9009/release/new-project.coffee?path=..&name=test&port=9020'
 module.exports = (exchange) ->
@@ -12,59 +12,65 @@ module.exports = (exchange) ->
   done = (msg) ->
     config.result = msg
     exchange.respond.json config
+
   failure = (msg) ->
     config.error = true
-    done msg
+    done error: msg.toString()
 
   if not config.path or not config.name
     failure 'path=.. name=MyProjectName port=9009'
 
-  copy = (files..., next) ->
-    copy_one = (error, files) ->
-      return next(error) if error or files.length is 0
-      file = files.pop()
-      source = fs.node 'release', file
-      target = path.join project_path, file
-      fs.exists target, (exists) ->
-        if not exists
-          fs.copy source, target, (error) -> copy_one error, files
-        else
-          copy_one error, files
-    copy_one(null, files.slice 0)
+  mark_error_as_failure = => @on 'error', (error) -> failure error
 
-  make_project_dirs = (dirs..., next) ->
-    make_one = (error, dirs) ->
-      return next(error) if error or dirs.length is 0
-      mkdirs path.join(project_path, dirs.pop()), (error) ->
-        make_one error, dirs
-    make_one null, dirs.slice 0
+  make_project_dirs = =>
+    dirs = 'client', 'ext', 'boot', 'config', 'scratch', 'scripts', 'server'
+    make_next_project_dir = =>
+      return @next() if dirs.length is 0
+      mkdirs path.join(project_path, dirs.pop()), (error) =>
+        @emit('error', error) if error
+        make_next_project_dir()
+    make_next_project_dir()
+
+  copy_files = =>
+    files = 'go', 'go.bat', 'index.html', 'app.coffee', 'app.css',
+      'boot/project-init.coffee', 'config/base.coffee', 'config/debug.coffee',
+      'config/production.coffee', 'client/favicon.ico'
+    copy_next_file = =>
+      return @next() if files.length is 0
+      source = fs.node 'release', file = files.pop()
+      target = path.join project_path, file
+      fs.exists target, (exists) =>
+        if exists
+          copy_next_file()
+        else
+          fs.copy source, target, (error) =>
+            @emit('error', error) if error
+            copy_next_file()
+    copy_next_file()
+
+  create_roaster_scripts = =>
+    @parallel(
+      -> fs.writeFile path.join(project_path, 'ext/roaster'),
+        "#!/bin/bash\n#{fs.node 'go'} $@\n", @next
+      -> fs.writeFile path.join(project_path, 'ext/roaster.bat'),
+        "#{fs.node 'go.bat'} %*\n", @next
+      -> fs.chmod path.join(project_path, 'go'), 0o700, @next
+      )
+
+  set_server_port = =>
+    if config.port
+      fs.appendFile path.join(project_path, 'config/base.coffee'),
+      "  environment.port = #{config.port}\n", @next
+    else
+      @next()
+
+  completion = => done "Project '#{config.name}' created"
 
   step(
-    ->
-      @throw_errors = false
-      make_project_dirs 'client', 'ext', 'boot', 'config',
-                        'scratch', 'scripts', 'server', @next
-    (error) ->
-      @next(error) if error
-      copy 'go', 'go.bat', 'index.html', 'app.coffee', 'app.css',
-           'boot/project-init.coffee', 'config/base.coffee', 'config/debug.coffee',
-           'config/production.coffee', 'client/favicon.ico', @next
-    (error) ->
-      @next(error) if error
-      @parallel(
-        -> fs.writeFile path.join(project_path, 'ext/roaster'),
-          "#!/bin/bash\n#{fs.node 'go'} $@\n", @next
-        -> fs.writeFile path.join(project_path, 'ext/roaster.bat'),
-          "#{fs.node 'go.bat'} %*\n", @next
-        -> fs.chmod path.join(project_path, 'go'), 0o700, @next
-        ->
-          if config.port
-            fs.appendFile path.join(project_path, 'config/base.coffee'),
-            "  environment.port = #{config.port}\n", @next
-          else
-            @next null
-      )
-    (error) ->
-      return failure(error) if error
-      done "Project '#{config.name}' created"
+    mark_error_as_failure
+    make_project_dirs
+    copy_files
+    create_roaster_scripts
+    set_server_port
+    completion
   )

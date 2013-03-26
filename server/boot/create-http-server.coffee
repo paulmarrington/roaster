@@ -1,7 +1,7 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 http = require 'http'; url = require 'url'; cookies = require 'cookies'
 driver = require 'http/driver'; respond = require 'http/respond'
-fs = require 'file-system'
+fs = require 'file-system'; util = require 'util'
 
 module.exports = (environment) ->
   return environment.server = http.createServer (request, response) ->
@@ -21,7 +21,7 @@ module.exports = (environment) ->
         # for file type
         exchange = {
             request, response, environment, session,
-            cookies: cookie_cutter, drivers: []
+            cookies: cookie_cutter
         }
         exchange.respond = respond(exchange)
         # some drivers cannot set mime type. For these we put it in the query string
@@ -31,5 +31,6 @@ module.exports = (environment) ->
         # kick off exchange
         driver(exchange)
       catch error
-        console.log error.stack ? error
-        response.end error.toString()
+        errmsg = util.inspect error
+        console.log errmsg
+        response.end if environment.debug then errmsg else ''
