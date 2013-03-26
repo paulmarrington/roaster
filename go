@@ -16,4 +16,4 @@ if [ ! -d "$uSDLC_node_path/ext/node" ]; then
     "$uSDLC_node_path/bin/update-node-on-unix"
 fi
 
-node "$uSDLC_node_path/boot/load.js" "boot/run" $@
+node $DEBUG_NODE "$uSDLC_node_path/boot/load.js" "boot/run" $@

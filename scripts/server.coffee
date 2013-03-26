@@ -8,8 +8,3 @@ module.exports = (args...) ->
   node = processes('node')
   node.respawn load, server, args...
   return node
-
-module.exports.debug = (args...) ->
-  node = processes('node')
-  node.respawn '--debug', load, server, args...
-  return node

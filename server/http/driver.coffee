@@ -18,7 +18,6 @@ module.exports = (exchange) ->
   # we had to move the push into a function so that coffee-script
   # did not overwrite the reference to 'driver'
   add_driver = (name) ->
-    console.log "ADD #{name}"
     if not (name of cache)
       try
         cache[name] = require "drivers/#{name}"
@@ -27,7 +26,6 @@ module.exports = (exchange) ->
         demand.check_for_missing_requirement(name, error)
     if driver = cache[name]
       do (driver) ->
-        console.log "PUSH #{name}"
         drivers.push fn = -> driver(exchange, @next)
         fn.notes = "#{exchange.request.filename}: driver '#{name}'"
   # pull drivers from query string key 'domain' and file name extensions
