@@ -35,6 +35,8 @@ environment = process.environment = system.command_line(
   user: 'Guest'         # default user if one is not logged in
   since: new Date().getTime()  # time of server start (epoch time)
   command_line: process.argv.join ' ' # full command line for identification
+  debug: process.env.DEBUG_NODE # is true if running in debug mode
+  maximum_browser_cache_age: 60*60*1000 # 1 hour before statics are reloaded
 )
 
 # allow project to tweak settings before we commit to action
@@ -53,7 +55,7 @@ environment.faye = create_faye_server environment if environment.faye
 
 # in debug mode we reload pages fresh from server.
 if environment.debug
-  exchange.respond.maximum_browser_cache_age = 1000
+  environment.maximum_browser_cache_age = 1000
 
 # kick-off
 environment.server.listen environment.port

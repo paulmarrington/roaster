@@ -3,7 +3,6 @@
 // start by loading modules required for base operation
 var modules = [
   'send', 'cookies', 'faye', 'coffee-script'
-  //,'LiveScript', 'kaffeine'
 ]
 // Now load languages that can be used in node requires()
 // js: javascript comes for free with V8
@@ -11,8 +10,13 @@ extend_require = require('morph').extend_require
 extend_for = function(compile, ext) {
   extend_require(ext, function(error, filename, content, next) {
     if (content) {
+      try {
         js = compile(content, {filename:filename})
-        next(null, js)
+      } catch (error) {
+        console.log("Error compiling "+filename+ ": " + error)
+        js = ''
+      }        
+      next(null, js)
     }
   })
 }
@@ -26,12 +30,6 @@ loader = function(index) {
       loader(index)
     } else {
       extend_for(require('coffee-script').compile, '.coffee')
-      //extend_for(require('LiveScript').compile, '.ls')
-      // extend_for('typescript', '.ts')
-      // extend_for('lispyscript', '.lispy')
-      // extend_for('amber', '.amber') //  (Smalltalk)
-      // extend_for(require('kaffeine').fn.compile, '.k')
-
       // and lastly, require the main module from the command line to run it
       require(process.argv[2])
     }

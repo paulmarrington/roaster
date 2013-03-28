@@ -1,6 +1,6 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
 respond = require 'http/respond'; cache = {}; steps = require 'steps'
-demand = require 'demand'; morph = require 'morph'
+demand = require 'demand'; morph = require 'morph'; path = require 'path'
 
 # Look for drivers to handle files of a specific file type.
 # More than one extension means more than one driver to pipe through.
@@ -15,6 +15,7 @@ module.exports = (exchange) ->
   return exchange.respond.send_static() if parts.length is 1
 
   drivers = []; driver = null
+  exchange.template = ->  # default does nothing
   # we had to move the push into a function so that coffee-script
   # did not overwrite the reference to 'driver'
   add_driver = (name) ->
@@ -33,9 +34,7 @@ module.exports = (exchange) ->
     for driver_name in query_drivers.split(',') then add_driver driver_name
   base_driver_length = drivers.length
   for driver_name in parts[1..] then add_driver driver_name
-  if not driver
-    exchange.respond.static_file()
-    add_driver 'default' if drivers.length
+  exchange.respond.static_file() if not driver
   # default action is to run it on the server and let bygones be bygones
   exchange.reply ?= (next) ->
     try
@@ -52,21 +51,27 @@ module.exports = (exchange) ->
       throw error
   # run each driver in turn then fire off the response
   reply = -> exchange.reply @next
-  reply.notes = "Driver reply for '#{exchange.request.filename}'"
-  steps drivers..., reply
+  template = -> exchange.template.call @
+  steps drivers..., template, reply
 
 module.exports.use_template = (exchange, template, next) ->
-  exchange.template = (file_name, on_completion) ->
-    template = template.replace /\./, '_library.' if exchange.is_library
-    options =
-      script_name: file_name
-      output_name: file_name
-      script: file_name
-      url: exchange.request.url.path
-    steps(
-      -> @requires 'templates', 'fs'
-      -> @fs.find template, @next (found) => options.template_name = found
-      -> @templates.process_file options, @next
-      -> on_completion()
-      )
+  exchange.template = ->
+    apply_template = (source, template_applied) =>
+      template = template.replace /\./, '_library.' if exchange.is_library
+      ext = ".#{path.basename template}"
+      morph source, ext, (error, filename, content, save) =>
+        return next(error, filename) if error
+        if content
+          options =
+            script: content
+            url: exchange.request.url.pathname
+          steps(
+            -> @requires 'templates', 'fs'
+            -> @fs.find template, @next (found) => options.template_name = found
+            -> @templates.process_text options, @next (@merged) =>
+            -> save(null, @merged); template_applied(null, filename, true)
+            )
+        else
+          template_applied(null, filename, false)
+    exchange.respond.morph apply_template, @next
   next()

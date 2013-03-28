@@ -88,9 +88,9 @@ roaster.steps = (steps...) ->
       # possibly asynchronous requires
       Steps::requires = (modules...) -> @depends 'client', modules
       # run server scripts sequentially
-      Step::service = (scripts...) -> @depends 'server', modules
+      Steps::service = (scripts...) -> @depends 'server', modules
       # load static data asynchronously
-      Step::data = (urls...) ->
+      Steps::data = (urls...) ->
         for url in urls
           done = @parallel()
           key = path.basename(url).split('.')[0]

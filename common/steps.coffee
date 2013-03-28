@@ -8,7 +8,7 @@ class Steps extends events.EventEmitter
   constructor: (@steps) ->
     @pending = 0
     @results = []; @lock = false
-    @maximum_time_ms = process.environment.steps_timeout_ms
+    @maximum_time_ms = @steps_timeout_ms
     @total_steps = @steps.length
     # referencing @next will set step to be asynchronous
     Object.defineProperty @, "next", get: =>
@@ -21,6 +21,8 @@ class Steps extends events.EventEmitter
     @on 'error', @log_error
     # lastly we start of the running of steps.
     @_next()
+  
+  steps_timeout_ms: 60000
 
   next_if_unreferenced: -> @_next() if not @next_referenced
 
@@ -29,7 +31,7 @@ class Steps extends events.EventEmitter
     if callback
       step_number = @steps.length
       return =>
-        callback.apply(@, arguments)
+        callback.apply(@)
         # make sure next hasn't been called explicitly
         @_next() if step_number = @steps.length
     # normal next will run the next function in the call argument list.
@@ -97,4 +99,4 @@ class Steps extends events.EventEmitter
         Error: #{error}
             Step: #{error.step ? ''}
             Trace: #{error.trace ? ''}"""
-module.exports = -> return Steps
+module.exports = Steps

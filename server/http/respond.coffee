@@ -22,13 +22,10 @@ class Respond
       #   @exchange.response.setHeader 'Content-Encoding', 'gzip'
       #   @set_mime_type name
       send(@exchange.request, name).
-      maxage(@maximum_browser_cache_age).pipe(@exchange.response)
+        maxage(@exchange.environment.maximum_browser_cache_age).
+        pipe(@exchange.response)
       next() if next
 
-  # Default is for browser to cache static files for a day. This is unsuitable
-  # in development so the server will reset to 1 second if in debug mode.
-  # It is here so anyone else can change it if needed.
-  maximum_browser_cache_age: 86400 #Infinity
   # respond to client with code to run in a sandbox
   client: (code) ->
     client = @exchange.request.filename
@@ -48,7 +45,7 @@ class Respond
     @exchange.reply = (next) -> next()
     @exchange.respond.set_mime_type 'js'
     @exchange.response.setHeader 'Cache-Control',
-      'public, max-age=#{maximum_browser_cache_age}'
+      'public, max-age=#{@exchange.environment.maximum_browser_cache_age}'
     @exchange.response.setHeader 'content-length', text.length
     @exchange.response.end text
   # respond to client with some JSON for browser script consumption
@@ -65,10 +62,7 @@ class Respond
   morph: (morph, next) ->
     morph @exchange.request.filename, (error, filename, changed) =>
       @exchange.request.filename = filename
-      if changed and @exchange.template
-        @exchange.template filename, -> next error, @exchange
-      else
-        next error, @exchange
+      next error, @exchange
   # helper to set the mime-type in a response object based on file name
   set_mime_type: (name) ->
     return if @exchange.response.getHeader 'Content-Type'

@@ -1,5 +1,5 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
-Steps = require('common/steps')(); path = require 'path'
+Steps = require 'common/steps'; path = require 'path'
 demand = require('demand')
 
 # when draining a stream we need to know when to do more
@@ -24,5 +24,8 @@ Steps::requires = (modules...) ->
       demand.load name, (error, module) ->
         if error then @errors.push(error) else @[key] = module
         ready()
+
+# set default timeout based on environment (debug or not)
+#Steps::steps_timeout_ms = process.environment.steps_timeout_ms
 
 module.exports = (steps...) -> new Steps(steps)

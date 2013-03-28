@@ -7,8 +7,8 @@ var mkdirsSync = require('dirs').mkdirsSync, newer = require('newer')
 //     saver(error, code, next)
 //       next(error)
 var morph = function (source, target_ext, builder) {
-    gen = path.join(process.env.uSDLC_base_path, 'gen')
-    target = path.relative(process.cwd(), source).replace(/\.\.\//g, '')
+    var gen = path.join(process.env.uSDLC_base_path, 'gen')
+    var target = path.relative(process.cwd(), source).replace(/\.\.\//g, '')
     target = path.join(gen, target + target_ext)
     // we only need to rebuild if source is newer
     if (newer(source, target)) {
@@ -45,7 +45,7 @@ module.exports.compileJavascript = function(source, compiler, next) {
         if (error) return next(error, filename)
         if (content) {
           try {
-            js = compiler.compile(content, {filename:filename})
+            var js = compiler.compile(content, {filename:filename})
             save(null, js)
           } catch(err) {
             console.log("Error compiling " + source + 
