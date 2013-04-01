@@ -53,19 +53,22 @@ window.roaster =
         else next request.statusText
     request.send null
 
+  require_url: (module_name) ->
+    return "/client/require.coffee?module=#{module_name}"
+
   requireSync: (module_name) ->
     # see if we are loaded and ready to go
     return imports if imports = roaster.cache[module_name]
     console.log "If possible move to async step(->@requires '#{module_name}')"
     request = new XMLHttpRequest()
-    request.open 'GET', "/#{module_name}.client.node", false
+    request.open 'GET', "#{@require_url(module_name)}&domain=client", false
     request.send null
     eval request.responseText
 
-  requireAsync: (module_name, url, next) ->
+  requireAsync: (module_name, next) ->
     # see if we are loaded and ready to go
     return imports if imports = roaster.cache[module_name]
-    @depends url, 'client', (imports) =>
+    @depends @require_url(module_name), 'client', (imports) =>
       roaster.cache[module_name] = imports
       next(imports)
 
