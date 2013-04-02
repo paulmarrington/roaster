@@ -1,7 +1,7 @@
 module.exports = (exchange) ->
   exchange.respond.client ->
     load_requires = ->
-      @requires '/scratch/dep_sync.coffee'
+      @service '/scratch/dep_sync.coffee'
 
     check_requires = ->
       console.log "dep_sync=#{@dep_sync} (should be 'dep-sync result')"
@@ -25,14 +25,14 @@ module.exports = (exchange) ->
         -> @requires '/scratch/dep_async4.coffee')
 
     check_parallel_requires = ->
-      console.log "@parallel dep_async5=#{dep_async}, dep_async6=#{dep_async4}"
+      console.log "@parallel dep_async=#{@dep_async}, dep_async4=#{@dep_async4}"
       console.log "Expecting two x 'dep-async[-n] result"
 
     load_data = ->
       @data '/scratch/run', '/scratch/l1.js'
 
     check_data_load = ->
-      console.log "run=#{run.length}, l1=#{l1.length}"
+      console.log "run=#{@run.length}, l1=#{@l1.length}"
       console.log "Async data load = both should have non-zero lengths"
 
     load_faye = -> @requires '/client/faye.coffee'

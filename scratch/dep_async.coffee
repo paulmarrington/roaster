@@ -1,3 +1,1 @@
-module.exports = (exchange) ->
-  exchange.respond.client ->
-    module.exports  'dep-async-1 result'
+module.exports = 'dep-async-1 result'

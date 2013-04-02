@@ -27,6 +27,8 @@ class Steps extends events.EventEmitter
   next_if_unreferenced: -> @_next() if not @next_referenced
 
   _next: (callback) =>
+    # parallel only nexts when all done
+    return if @contains_parallels and --@pending and not @lock
     # if passed a callback closure, return it with an @next() call if needed
     if callback
       step_number = @steps.length
@@ -68,15 +70,14 @@ class Steps extends events.EventEmitter
   # Add a special callback generator `this.parallel()` that groups stuff.
   parallel: =>
     @contains_parallels = true
+    @asynchronous()
     if arguments.length # use for @parallel(-> a, -> b, ...)
-      return fn.apply(@parallel()) for fn in arguments
-    else
+      for fn in arguments
+        @pending++
+        fn.call(@)
+    else # use for fn, args..., @parallel()
       @pending++
-      @asynchronous()
-      return =>
-        @pending--
-        # When all parallel branches done, call the callback
-        @next() if not @lock and @pending is 0
+      return @next
 
   start_timer: (fn) =>
     step = @total_steps - @steps.length
@@ -95,8 +96,8 @@ class Steps extends events.EventEmitter
       ), @maximum_time_ms
 
   log_error: (error) =>
-      console.log """
-        Error: #{error}
-            Step: #{error.step ? ''}
-            Trace: #{error.trace ? ''}"""
+    console.log """
+      Error: #{error}
+          Step: #{error.step ? ''}
+          Trace: #{error.trace ? ''}"""
 module.exports = Steps

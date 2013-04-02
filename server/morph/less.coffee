@@ -8,7 +8,6 @@ module.exports = (source, css_created) ->
 
   process_less = -> morph source, '.css',
     @next (@error, @css_filename, @content, @write_css) =>
-      console.log "process_less: #{@css_filename}"
 
   convert_to_parse_tree = ->
     return @next() if not @content  # up to date

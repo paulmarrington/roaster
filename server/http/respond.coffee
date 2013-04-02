@@ -26,7 +26,6 @@ class Respond
         maxage(@exchange.environment.maximum_browser_cache_age).
         pipe(@exchange.response)
       next() if next
-
   # respond to client with code to run in a sandbox
   client: (code) ->
     client = @exchange.request.filename
@@ -35,7 +34,7 @@ class Respond
     options =
       template_name: 'templates/client.js'
       script: "(#{code.toString()})()\n"
-      url: @exchange.request.url.path
+      url: @exchange.request.url.pathname
     templates.process_text options, (js) =>
       @script clients[client] = js
   # respond to client with code

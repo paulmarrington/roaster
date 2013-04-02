@@ -35,19 +35,19 @@ environment = process.environment = system.command_line(
   user: 'Guest'         # default user if one is not logged in
   since: new Date().getTime()  # time of server start (epoch time)
   command_line: process.argv.join ' ' # full command line for identification
-  debug: process.env.DEBUG_NODE ? false # is true if running in debug mode
   maximum_browser_cache_age: 60*60*1000 # 1 hour before statics are reloaded
-)
+  )
+environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
+
 
 # allow project to tweak settings before we commit to action
 project_init.pre environment
-
-default_environment = ("#{name}=#{value}" for name, value of environment).sort()
 
 # load an environment related config file
 # command-line could have config=debug
 # related file can be anywhere on the node requires paths + /config/
 require("config/#{environment.config}")(environment)
+default_environment = ("#{name}=#{value}" for name, value of environment).sort()
 
 # create a server ready to listen
 environment.server = create_http_server environment

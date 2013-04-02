@@ -19,8 +19,7 @@ window.roaster =
     roaster.script_loader url, domain, ->
       imports = roaster.cache[url]
       callbacks = roaster.loading[url]
-      while callback = callbacks.pop()
-        callback imports if callback
+      callback imports while callback = callbacks.pop() when callback
       delete roaster.loading[url]
 
   script_loader: (url, domain, next) ->
@@ -53,27 +52,28 @@ window.roaster =
         else next request.statusText
     request.send null
 
-  require_url: (module_name) ->
-    return "/server/http/require.coffee?module=#{module_name}"
-
   requireSync: (module_name) ->
     # see if we are loaded and ready to go
     return imports if imports = roaster.cache[module_name]
     console.log "If possible move to async step(->@requires '#{module_name}')"
     request = new XMLHttpRequest()
-    request.open 'GET', @require_url(module_name), false
+    request.open 'GET', "/#{module_name}.requires.js?domain=client", false
     request.send null
     eval request.responseText
 
-  requireAsync: (module_names, on_loaded) ->
+  requireAsync: (module_names..., on_loaded) ->
     modules = []
-    require_module = ->
+    do require_module = =>
       return on_loaded(modules...) if not module_names.length
       name = module_names.shift()
       if imports = roaster.cache[name]
         return require_module modules.push(imports)
-      @depends @require_url(name), 'server', (imports) =>
+      @depends "/#{name}.require.js", 'client', (imports) =>
         require_module modules.push(roaster.cache[name] = imports)
+
+  process:
+    noDeprecation: true
+    platform: 'browser'
 
   scriptIndex: 0
   cache: {}
@@ -83,7 +83,8 @@ roaster.steps = (steps...) ->
   roaster.requireAsync 'events', 'util', 'path', (events, util, path) ->
     roaster.depends '/common/steps.coffee', 'client', (Steps) ->
       Steps::depends = (domain, modules) ->
-        do depends = ->
+        @asynchronous()
+        do depends = =>
           return @next() if not modules.length
           name = modules.shift()
           key = path.basename(name).split('.')[0]
@@ -93,14 +94,14 @@ roaster.steps = (steps...) ->
       # possibly asynchronous requires
       Steps::requires = (modules...) -> @depends 'client', modules
       # run server scripts sequentially
-      Steps::service = (scripts...) -> @depends 'server', modules
+      Steps::service = (scripts...) -> @depends 'server', scripts
       # load static data asynchronously
       Steps::data = (urls...) ->
         for url in urls
           done = @parallel()
           key = path.basename(url).split('.')[0]
           roaster.data_loader url, (@error, text) =>
-            @[key] = response_text
+            @[key] = text
             done()
       # over-ride loader and run it this first time
       roaster.steps = (steps...) -> new Steps(steps)
