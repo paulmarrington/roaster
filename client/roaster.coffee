@@ -54,31 +54,33 @@ window.roaster =
     request.send null
 
   require_url: (module_name) ->
-    return "/client/require.coffee?module=#{module_name}"
+    return "/server/http/require.coffee?module=#{module_name}"
 
   requireSync: (module_name) ->
     # see if we are loaded and ready to go
     return imports if imports = roaster.cache[module_name]
     console.log "If possible move to async step(->@requires '#{module_name}')"
     request = new XMLHttpRequest()
-    request.open 'GET', "#{@require_url(module_name)}&domain=client", false
+    request.open 'GET', @require_url(module_name), false
     request.send null
     eval request.responseText
 
-  requireAsync: (module_name, next) ->
-    # see if we are loaded and ready to go
-    return imports if imports = roaster.cache[module_name]
-    @depends @require_url(module_name), 'client', (imports) =>
-      roaster.cache[module_name] = imports
-      next(imports)
+  requireAsync: (module_names, on_loaded) ->
+    modules = []
+    require_module = ->
+      return on_loaded(modules...) if not module_names.length
+      name = module_names.shift()
+      if imports = roaster.cache[name]
+        return require_module modules.push(imports)
+      @depends @require_url(name), 'server', (imports) =>
+        require_module modules.push(roaster.cache[name] = imports)
 
   scriptIndex: 0
   cache: {}
   loading: {}
 
 roaster.steps = (steps...) ->
-  roaster.requireAsync 'events', '/client/events.js', (events) ->
-    roaster.events = events
+  roaster.requireAsync 'events', 'util', 'path', (events, util, path) ->
     roaster.depends '/common/steps.coffee', 'client', (Steps) ->
       Steps::depends = (domain, modules) ->
         do depends = ->

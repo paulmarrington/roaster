@@ -9,8 +9,7 @@ load = function(name, on_loaded) {
             npm.commands.install([name], function() {
                 on_loaded(null, require(name)) })
         } catch(error) {
-            on_loaded(error)
-            return
+            return on_loaded(error)
         }
     })
 }
@@ -31,5 +30,6 @@ module.exports = function(name, on_loaded) {
     }
     on_loaded(null, required)
 }
+
 module.exports.load = load
 module.exports.check_for_missing_requirement = check_for_missing_requirement

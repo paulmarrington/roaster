@@ -1,6 +1,6 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
 respond = require 'http/respond'; cache = {}; steps = require 'steps'
-demand = require 'demand'; morph = require 'morph'; path = require 'path'
+npm = require 'npm'; morph = require 'morph'; path = require 'path'
 
 # Look for drivers to handle files of a specific file type.
 # More than one extension means more than one driver to pipe through.
@@ -24,7 +24,7 @@ module.exports = (exchange) ->
         cache[name] = require "drivers/#{name}"
       catch error
         cache[name] = null
-        demand.check_for_missing_requirement(name, error)
+        npm.check_for_missing_requirement(name, error)
     if driver = cache[name]
       do (driver) ->
         drivers.push fn = -> driver(exchange, @next)
@@ -45,7 +45,7 @@ module.exports = (exchange) ->
         driver(exchange) # sync
         next()
     catch error
-      console.log "Script failure: 
+      console.log "Script failure:
         '#{exchange.request.filename}' #{error.toString()}"
       next()
       throw error

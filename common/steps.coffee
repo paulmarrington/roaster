@@ -21,7 +21,7 @@ class Steps extends events.EventEmitter
     @on 'error', @log_error
     # lastly we start of the running of steps.
     @_next()
-  
+
   steps_timeout_ms: 60000
 
   next_if_unreferenced: -> @_next() if not @next_referenced
@@ -31,7 +31,7 @@ class Steps extends events.EventEmitter
     if callback
       step_number = @steps.length
       return =>
-        callback.apply(@)
+        callback.apply(@, arguments)
         # make sure next hasn't been called explicitly
         @_next() if step_number = @steps.length
     # normal next will run the next function in the call argument list.

@@ -1,6 +1,5 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
-Steps = require 'common/steps'; path = require 'path'
-demand = require('demand')
+Steps = require 'common/steps'; path = require 'path'; npm = require 'npm'
 
 # when draining a stream we need to know when to do more
 Steps::drain = (stream, data) ->
@@ -19,9 +18,9 @@ Steps::requires = (modules...) ->
   for name in modules
     key = path.basename(name)
     try @[key] = require(name) catch error
-      demand.check_for_missing_requirement name, error
+      npm.check_for_missing_requirement name, error
       ready = @parallel()
-      demand.load name, (error, module) ->
+      npm.load name, (error, module) ->
         if error then @errors.push(error) else @[key] = module
         ready()
 

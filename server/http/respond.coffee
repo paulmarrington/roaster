@@ -12,7 +12,8 @@ class Respond
     @exchange.response.setHeader(
       'Access-Control-Allow-Headers', 'Content-Type')
   # by default we send it as static content where the browser caches it forever
-  static_file: ->
+  static_file: (file_path) ->
+    @exchange.request.filename = file_path if file_path
     @exchange.domain = 'client'
     @exchange.reply = (next) => @send_static(next)
   send_static: (next) ->

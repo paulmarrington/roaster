@@ -15,7 +15,7 @@ extend_for = function(compile, ext) {
       } catch (error) {
         console.log("Error compiling "+filename+ ": " + error)
         js = ''
-      }        
+      }
       next(null, js)
     }
   })
@@ -23,9 +23,9 @@ extend_for = function(compile, ext) {
 
 // load required modules and when done extend requires and go on
 // with processing. Sequential as npm requires that dammit
-var demand = require('demand')
+var npm = require('npm')
 loader = function(index) {
-  demand(modules[index], function() {
+  npm(modules[index], function() {
     if (++index < modules.length) {
       loader(index)
     } else {

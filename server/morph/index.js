@@ -48,7 +48,7 @@ module.exports.compileJavascript = function(source, compiler, next) {
             var js = compiler.compile(content, {filename:filename})
             save(null, js)
           } catch(err) {
-            console.log("Error compiling " + source + 
+            console.log("Error compiling " + source +
               " to JavaScript\n" + util.inspect(err))
             throw err
           }
