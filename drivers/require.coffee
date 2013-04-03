@@ -9,6 +9,8 @@ module.exports = (exchange, next) ->
     exchange.respond.static_file module_path
     next()
 
+  if lib = process.environment.libraries[module_name]
+    a=0
   if not (module_path = require.resolve module_name)
     npm module_name, (error, module) ->
       if error
