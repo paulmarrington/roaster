@@ -32,13 +32,15 @@ module.exports = (exchange) ->
       @data '/scratch/run', '/scratch/l1.js'
 
     check_data_load = ->
-      console.log "run=#{@run.length}, l1=#{@l1.length}"
+      console.log "run=#{@run?.length}, l1=#{@l1?.length}"
       console.log "Async data load = both should have non-zero lengths"
 
     load_faye = -> @requires '/client/faye.coffee'
 
+    instantiate_faye = -> @faye @next (@faye) =>
+
     start_faye_server_script = ->
-      @requires '/scratch/test_faye.server.coffee'
+      @service '/scratch/test_faye.server.coffee'
       console.log "Expecting 'test-faye.server.coffee ran' on client console"
       console.log "and 3 'Server' type messages on the server console"
 
@@ -72,6 +74,7 @@ module.exports = (exchange) ->
       check_data_load
 
       load_faye
+      instantiate_faye
       start_faye_server_script
       subscribe
       publish

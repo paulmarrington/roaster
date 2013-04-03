@@ -97,7 +97,7 @@ roaster.steps = (steps...) ->
       Steps::service = (scripts...) -> @depends 'server', scripts
       # load static data asynchronously
       Steps::data = (urls...) ->
-        for url in urls
+        for url in urls then do =>
           done = @parallel()
           key = path.basename(url).split('.')[0]
           roaster.data_loader url, (@error, text) =>

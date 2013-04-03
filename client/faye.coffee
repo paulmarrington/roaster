@@ -4,9 +4,9 @@
 client = null
 
 module.exports = (next) ->
+  return next(client) if client
   steps(
     -> @requires '/faye/client.js'            # load faye library
     -> client = new Faye.Client '/faye'       # create a client instance
-    -> module.exports = (next) -> next(client)# next call returns singleton
     -> next(client)                           # callback for this first time
     )
