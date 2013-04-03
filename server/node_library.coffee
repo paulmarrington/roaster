@@ -5,7 +5,7 @@ module.exports =
   # load node built-in modules from github
   resolve_built_in: (module_name, on_resolve) ->
     library_path = 'ext/node_library'
-    local = fs.node(library_path, "#{module_name}.js")
+    local = dirs.node(library_path, "#{module_name}.js")
     url = "https://raw.github.com/joyent/node/master/lib/#{module_name}.js"
 
     steps(

@@ -1,6 +1,6 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see GPL for license
 steps = require 'steps';
-morph = require 'morph'; path = require 'path'; fs = require 'fs'
+morph = require 'morph'; path = require 'path'; dirs = require 'dirs'
 
 module.exports = (source, css_created) ->
 
@@ -13,7 +13,7 @@ module.exports = (source, css_created) ->
     return @next() if not @content  # up to date
     new @less.Parser(
       # Specify search paths for @import directives
-      paths: [path.dirname source, fs.base()]
+      paths: [path.dirname source, dirs.base()]
       # Specify a filename, for better error messages
       filename: @css_filename
     ).parse @content, @next (@error, @tree) =>

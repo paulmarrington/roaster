@@ -1,6 +1,6 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 steps = require 'steps'; EventEmitter = require('events').EventEmitter
-fs = require 'file-system'
+fs = require 'fs'
 
 module.exports = (ready) ->
   parser = new EventEmitter

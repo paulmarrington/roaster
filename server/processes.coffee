@@ -1,5 +1,5 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-child_process = require 'child_process'; fs = require 'file-system'
+child_process = require 'child_process'; fs = require 'fs'; dirs = require 'dirs'
 
 class Processes # proc = require('proc')() # sets default streaming and options
   constructor: (@program) ->
@@ -18,7 +18,7 @@ class Processes # proc = require('proc')() # sets default streaming and options
   node_setup: ->
     @args.unshift 'boot/run' if @program isnt 'server'
     @args = [@program, @args...]
-    @program = fs.node('boot/load.js')
+    @program = dirs.node('boot/load.js')
 
   # restart runs a node job and restarts it if and when it dies
   # it can also be used to restart an existing process

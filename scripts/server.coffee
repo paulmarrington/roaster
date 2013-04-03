@@ -4,9 +4,9 @@ module.exports = (args...) ->
   if process.env.DEBUG_NODE
     require 'server/boot/server'
   else
-    processes = require 'processes'; fs = require 'file-system'
-    load = fs.node 'boot/load.js'
-    server = fs.node 'server/boot/server'
+    processes = require 'processes'; dirs = require 'dirs'
+    load = dirs.node 'boot/load.js'
+    server = dirs.node 'server/boot/server'
 
     node = processes('node')
     node.respawn load, server, args...

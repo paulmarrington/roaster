@@ -1,6 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
-path = require 'path'; fs = require 'fs';
+path = require 'path'; fs = require 'fs'; dirs = require 'dirs'
 mkdirs = require('dirs').mkdirs; steps = require 'steps'
+files = require 'files'
 
 # curl 'http://localhost:9009/release/new-project.coffee?path=..&name=test&port=9020'
 module.exports = (exchange) ->
@@ -37,13 +38,13 @@ module.exports = (exchange) ->
       'config/production.coffee', 'client/favicon.ico'
     copy_next_file = =>
       return @next() if files.length is 0
-      source = fs.node 'release', file = files.pop()
+      source = dirs.node 'release', file = files.pop()
       target = path.join project_path, file
       fs.exists target, (exists) =>
         if exists
           copy_next_file()
         else
-          fs.copy source, target, (error) =>
+          files.copy source, target, (error) =>
             @emit('error', error) if error
             copy_next_file()
     copy_next_file()
@@ -51,9 +52,9 @@ module.exports = (exchange) ->
   create_roaster_scripts = =>
     @parallel(
       -> fs.writeFile path.join(project_path, 'ext/roaster'),
-        "#!/bin/bash\n#{fs.node 'go'} $@\n", @next
+        "#!/bin/bash\n#{dirs.node 'go'} $@\n", @next
       -> fs.writeFile path.join(project_path, 'ext/roaster.bat'),
-        "#{fs.node 'go.bat'} %*\n", @next
+        "#{dirs.node 'go.bat'} %*\n", @next
       -> fs.chmod path.join(project_path, 'go'), 0o700, @next
       )
 

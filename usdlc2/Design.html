@@ -75,7 +75,8 @@ gwt = global.gwt # set by uSDLC2/scripts/gwt
 
 # Module requirements
 internet = require('internet')(); processes = require('processes')
-path = require('path'); os = require('system'); fs = require('file-system')
+path = require('path'); os = require('system'); fs = require('fs')
+dirs = require('dirs')
 
 # Common variable across instrumentation
 file_name = ''
@@ -110,7 +111,7 @@ gwt.rules( # Rules used by child pages
       @next(@error "#{file_path()} expected, but does not exist" if not exists)
 
   /run '(.*)'/, (command_line) ->
-    fs.in_directory temp_directory, =>
+    dirs.in_directory temp_directory, =>
       processes().cmd command_line, @next
 
   /if the file does not exist/, ->
@@ -132,7 +133,7 @@ gwt.rules( # Rules used by child pages
       at = 'master/release'
       internet.download.to(file_path()).
       from "https://raw.github.com/#{project}/#{at}/#{file_name}", =>
-        instrument.in_directory temp_directory, =>
+        dirs.in_directory temp_directory, =>
           processes().cmd file_path(), '.', 'no-go', =>
             file_name = old_file_name
             @next()

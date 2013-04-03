@@ -1,14 +1,15 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 http = require 'http'; url = require 'url'; cookies = require 'cookies'
 driver = require 'http/driver'; respond = require 'http/respond'
-fs = require 'file-system'; util = require 'util'
+fs = require 'fs'; util = require 'util'
+files = require 'files'
 
 module.exports = (environment) ->
   return environment.server = http.createServer (request, response) ->
     console.log request.url
     request.pause()
     request.url = url.parse request.url, true
-    fs.find request.url.pathname, (filename) ->
+    files.find request.url.pathname, (filename) ->
       try
         request.filename = filename
 

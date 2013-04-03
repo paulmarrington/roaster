@@ -1,5 +1,5 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-fs = require 'file-system'; stream = require('stream')
+fs = require 'fs'; stream = require('stream')
 
 # Read lines from a stream - with the same stream pattern of pause and resume.
 class line_reader extends stream.Stream

@@ -41,9 +41,35 @@ deleteFolderRecursive = function(path) {
         fs.rmdirSync(path);
     }
 }
+// run a function with current working directory set - then set back afterwards
+in_directory = function(to, action) {
+  var cwd = process.cwd()
+  try {
+    process.chdir(to)
+    action()
+  } finally {
+    process.chdir(cwd)
+  }
+}
+
+var __slice = [].slice;
+
+node = function() {
+  var names = (1 <= arguments.length) ? __slice.call(arguments, 0) : [];
+  return path.join.apply(path, [process.env.uSDLC_node_path].concat(names));
+};
+
+base = function() {
+  var names = (1 <= arguments.length) ? __slice.call(arguments, 0) : [];
+  return path.join.apply(path, [process.env.uSDLC_base_path].concat(names));
+};
+// bases used to find relative address files
+bases = [process.env.uSDLC_base_path, process.env.uSDLC_node_path]
 
 module.exports = {
   mkdirs: mkdirs,
   mkdirsSync: mkdirsSync,
-  rmdirs: deleteFolderRecursive
+  rmdirs: deleteFolderRecursive,
+  in_directory: in_directory,
+  node: node, base:base, bases: bases
 }

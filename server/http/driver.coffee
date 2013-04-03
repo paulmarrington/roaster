@@ -66,8 +66,8 @@ module.exports.use_template = (exchange, template, next) ->
             script: content
             url: exchange.request.url.pathname
           steps(
-            -> @requires 'templates', 'fs'
-            -> @fs.find template, @next (found) => options.template_name = found
+            -> @requires 'templates', 'files'
+            -> @files.find template, @next (found) => options.template_name = found
             -> @templates.process_text options, @next (@merged) =>
             -> save(null, @merged); template_applied(null, filename, true)
             )

@@ -25,11 +25,11 @@
 create_http_server = require 'boot/create-http-server'
 create_faye_server = require 'boot/create-faye-server'
 project_init = require 'boot/project-init'
-system = require 'system'; fs = require 'file-system'
+system = require 'system'; dirs = require 'dirs'
 
 # process the command line
 environment = process.environment = system.command_line(
-  base_dir: fs.base ''  # convenience path to server base directory
+  base_dir: dirs.base ''# convenience path to server base directory
   config: 'base'        # used to load config settings (<name>.config.coffee)
   faye: true            # true to activate pubsub - set to faye.client
   user: 'Guest'         # default user if one is not logged in
