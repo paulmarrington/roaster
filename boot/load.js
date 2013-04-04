@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license */
+/* Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license */
 
 // start by loading modules required for base operation
 var modules = [
@@ -35,4 +35,4 @@ loader = function(index) {
     }
   })
 }
-loader(0) // kick off the module loading
+loader(0) // kick off the module loadingls

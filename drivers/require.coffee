@@ -10,7 +10,7 @@ module.exports = (exchange, next) ->
     next()
 
   if lib = process.environment.libraries[module_name]
-    a=0
+    console.log "#{module_name} loading not implemented"
   if not (module_path = require.resolve module_name)
     npm module_name, (error, module) ->
       if error

@@ -28,7 +28,7 @@ project_init = require 'boot/project-init'
 system = require 'system'; dirs = require 'dirs'
 
 # process the command line
-environment = process.environment = system.command_line(
+environment = process.environment =
   base_dir: dirs.base ''# convenience path to server base directory
   config: 'base'        # used to load config settings (<name>.config.coffee)
   faye: true            # true to activate pubsub - set to faye.client
@@ -36,7 +36,6 @@ environment = process.environment = system.command_line(
   since: new Date().getTime()  # time of server start (epoch time)
   command_line: process.argv.join ' ' # full command line for identification
   maximum_browser_cache_age: 60*60*1000 # 1 hour before statics are reloaded
-  )
 environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
 
 
@@ -47,6 +46,7 @@ project_init.pre environment
 # command-line could have config=debug
 # related file can be anywhere on the node requires paths + /config/
 require("config/#{environment.config}")(environment)
+system.add_command_line(environment)
 default_environment = ("#{name}=#{value}" for name, value of environment).sort()
 
 # create a server ready to listen
