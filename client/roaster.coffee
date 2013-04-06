@@ -1,4 +1,4 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see GPL for license
+# Copyright (C) 2012 Paul Marrington (paul@marrington.net), see GPL for license
 
 # Simple effective asynchronous module requirements for the browser.
 
@@ -8,6 +8,13 @@ window.bind$ = (obj, key, target) ->
   return -> return (target || obj)[key].apply(obj, arguments)
 
 window.roaster =
+  # run code sequentially once roaster is ready
+  on_ready: []
+  ready: (func) ->
+    return func(->) if not roaster.on_ready
+    return roaster.on_ready.push(func) if func.length
+    roaster.on_ready.push (next) -> func(); next()
+  # Basic dependency loading for scripts
   depends: (url, domain, next) ->
     # see if we are loaded and ready to go
     return next imports if imports = roaster.cache[url]
@@ -42,90 +49,25 @@ window.roaster =
     script.src = "#{url}#{sep}domain=#{domain}"
     document.getElementsByTagName("head")[0].appendChild(script)
 
-  data_loader:  (url, next) ->
-    request = new XMLHttpRequest()
-    request.open 'GET', url, true
-    request.onreadystatechange = ->
-      return if request.readyState isnt 4
-      switch request.status
-        when 200 then next null, request.responseText
-        else next request.statusText
-    request.send null
-
-  requireSync: (module_name) ->
-    # see if we are loaded and ready to go
-    return imports if imports = roaster.cache[module_name]
-    console.log "If possible move to async step(->@requires '#{module_name}')"
-    request = new XMLHttpRequest()
-    request.open 'GET', "/#{module_name}.requires.js?domain=client", false
-    request.send null
-    eval request.responseText
-
-  requireAsync: (module_names..., on_loaded) ->
-    modules = []
-    do require_module = =>
-      return on_loaded(modules...) if not module_names.length
-      name = module_names.shift()
-      if imports = roaster.cache[name]
-        return require_module modules.push(imports)
-      @depends "/#{name}.require.js", 'client', (imports) =>
-        require_module modules.push(roaster.cache[name] = imports)
-
   process:
     noDeprecation: true
     platform: 'browser'
 
-  scriptIndex: 0
   cache: {}
   loading: {}
+  request: {}
 
-roaster.steps = (steps...) ->
-  roaster.requireAsync 'events', 'util', 'path', (events, util, path) ->
-    roaster.depends '/common/steps.coffee', 'client', (Steps) ->
-      Steps::depends = (domain, modules) ->
-        @asynchronous()
-        do depends = =>
-          return @next() if not modules.length
-          name = modules.shift()
-          key = path.basename(name).split('.')[0]
-          roaster.depends name, domain, (imports) =>
-            @[key] = imports
-            depends()
-      # possibly asynchronous requires
-      Steps::requires = (modules...) -> @depends 'client', modules
-      # run server scripts sequentially
-      Steps::service = (scripts...) -> @depends 'server', scripts
-      # load static data asynchronously
-      Steps::data = (urls...) ->
-        for url in urls then do =>
-          done = @parallel()
-          key = path.basename(url).split('.')[0]
-          roaster.data_loader url, (@error, text) =>
-            @[key] = text
-            done()
-      # over-ride loader and run it this first time
-      roaster.steps = (steps...) -> new Steps(steps)
-      new Steps(steps)
+roaster_loaded = ->
+  do on_ready = ->
+    return roaster.on_ready = null if not roaster.on_ready.length
+    roaster.on_ready.shift()(on_ready)
 
-window.server_status =
-  start_time: Number.MAX_VALUE
-  debug_mode: false
-
-roaster.data_loader '/server/http/status.server.coffee', (error, data) ->
-  return if error or not data
-  try
-    last_server_status = window.server_status
-    window.server_status = JSON.parse data
-    last_focus_time = new Date()
-    if server_status.debug_mode
-      window.onfocus = ->
-        now = new Date
-        time = Math.floor((now.getTime() - last_focus_time.getTime()) / 1000)
-        last_focus_time = now
-        if time > 10 and window.confirm("Restart?")
-          roaster.script_loader '
-            /server/http/terminate.coffee?key=yestermorrow', 'server', ->
-              refresh = -> window.location.href = window.location.href
-              setTimeout refresh, 2000
-          last_focus_time = now
-  catch error
+roaster.depends '/client/roaster/request.coffee', 'client', (request) ->
+  roaster.request = request
+  roaster.depends '/client/roaster/steps.coffee', 'client', (steps) ->
+    steps(
+      ->  @requires '/client/roaster/server_status.coffee'
+      ->  roaster.server_status = @server_status
+      ->  @requires '/app.coffee'
+      ->  roaster_loaded()
+    )
