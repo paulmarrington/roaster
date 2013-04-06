@@ -1,4 +1,4 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2012 Paul Marrington (paul@marrington.net), see GPL for license
 fs = require 'fs'; path = require 'path'; dirs = require 'dirs'
 
 # http://localhost:9009/server/save?file=/My_Project/usdlc/Development/index.html

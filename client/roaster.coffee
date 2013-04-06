@@ -45,9 +45,13 @@ window.roaster =
         roaster.cache[url] ?= {}
         next()
 
-    sep = if url.indexOf('?') is -1 then '?' else '&'
-    script.src = "#{url}#{sep}domain=#{domain}"
+    script.src = roaster.add_command_line url, domain: domain
     document.getElementsByTagName("head")[0].appendChild(script)
+
+  add_command_line: (url, args) ->
+    sep = if url.indexOf('?') is -1 then '?' else '&'
+    items = ("#{key}=#{value}" for key, value of args)
+    return "#{url}#{sep}#{items.join('&')}"
 
   process:
     noDeprecation: true
@@ -56,6 +60,8 @@ window.roaster =
   cache: {}
   loading: {}
   request: {}
+
+window.process = roaster.process
 
 roaster_loaded = ->
   do on_ready = ->
@@ -66,8 +72,7 @@ roaster.depends '/client/roaster/request.coffee', 'client', (request) ->
   roaster.request = request
   roaster.depends '/client/roaster/steps.coffee', 'client', (steps) ->
     steps(
-      ->  @requires '/client/roaster/server_status.coffee'
-      ->  roaster.server_status = @server_status
-      ->  @requires '/app.coffee'
+      ->  @requires '/client/roaster/environment.coffee', '/app.coffee'
+      ->  @call @environment.load
       ->  roaster_loaded()
     )

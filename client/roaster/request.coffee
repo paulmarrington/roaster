@@ -1,7 +1,7 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
 
 module.exports =
-  data_loader: (url, next) ->
+  data: (url, next) ->
     request = new XMLHttpRequest()
     request.open 'GET', url, true
     request.onreadystatechange = ->
@@ -11,8 +11,18 @@ module.exports =
         else next request.statusText
     request.send null
 
-  json:(url, data, next) ->
-    blahblahblah
+  css: (url) ->
+    #<link rel="stylesheet" type="text/css" href="/scratch/test.less">
+    link = document.createElement("link")
+    link.type = "text/css"
+    link.rel = 'stylesheet'
+    link.href = url
+    document.getElementsByTagName("head")[0].appendChild(link)
+
+  json: (url, next) ->
+    roaster.request.data url, (error, text) ->
+      next(error) if error
+      next null, JSON.parse text
 
   requireSync: (module_name) ->
     # see if we are loaded and ready to go

@@ -36,26 +36,29 @@ environment = process.environment =
   since: new Date().getTime()  # time of server start (epoch time)
   command_line: process.argv.join ' ' # full command line for identification
   maximum_browser_cache_age: 60*60*1000 # 1 hour before statics are reloaded
-environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
-
-
 # allow project to tweak settings before we commit to action
 project_init.pre environment
+args = system.command_line(environment)
 
 # load an environment related config file
-# command-line could have config=debug
 # related file can be anywhere on the node requires paths + /config/
-require("config/#{environment.config}")(environment)
-system.add_command_line(environment)
-default_environment = ("#{name}=#{value}" for name, value of environment).sort()
+config = args.config ? environment.config
+require("config/#{config}")(environment)
+# lastly over-ride with anything from the command line
+environment[key] = value for key, value of args
+environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
+# prepare copies for client and display
+default_environment = []
+configuration = {}
+for name, value of environment
+  default_environment.push "#{name}=#{value}"
+  configuration[name] = value
+default_environment.sort()
+environment.configuration = configuration
 
 # create a server ready to listen
 environment.server = create_http_server environment
 environment.faye = create_faye_server environment if environment.faye
-
-# in debug mode we reload pages fresh from server.
-if environment.debug
-  environment.maximum_browser_cache_age = 1000
 
 # kick-off
 environment.server.listen environment.port

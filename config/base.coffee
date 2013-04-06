@@ -4,4 +4,4 @@ module.exports = (environment) ->
   environment.cors_whitelist = []
   environment.steps_timeout_ms = 60000
 
-  environment.libraries = {}
+  environment.extensions = css:'css', less:'css', scss: 'css', styl: 'css'

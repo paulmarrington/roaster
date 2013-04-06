@@ -9,9 +9,8 @@ os.expecting = (system) -> # os.expecting('windows|unix|darwin|linux')
   return system is runningOn or system is 'unix' and runningOn isnt 'windows'
 
 # process a command line of the form 'a=b c=d' into a map - with defaults
-os.add_command_line = (environment) ->
-  args = querystring.parse(process.argv[3..].join('&'))
-  environment[item] = args[item] for item of args
+os.command_line = (environment) ->
+  return querystring.parse(process.argv[3..].join('&'))
 
 os.help = (program, options) ->
   text = [program]

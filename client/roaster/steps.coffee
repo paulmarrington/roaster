@@ -8,10 +8,16 @@ module.exports = roaster.steps = (steps...) ->
         do depends = =>
           return @next() if not modules.length
           name = modules.shift()
-          key = path.basename(name).split('.')[0]
-          roaster.depends name, domain, (imports) =>
-            @[key] = imports
+          parts = path.basename(name).split(/\W/)
+          key = parts[0]
+          type = parts.slice(-1)[0]
+          if roaster.server_status?.extensions?[type] is 'css'
+            roaster.request.css name
             depends()
+          else
+            roaster.depends name, domain, (imports) =>
+              @[key] = imports
+              depends()
       # possibly asynchronous requires
       Steps::requires = (modules...) -> @depends 'client', modules
       # run server scripts sequentially
@@ -21,12 +27,13 @@ module.exports = roaster.steps = (steps...) ->
         for url in urls then do =>
           done = @parallel()
           key = path.basename(url).split('.')[0]
-          roaster.request.data_loader url, (@error, text) =>
+          roaster.request.data url, (@error, text) =>
             @[key] = text
             done()
       # Check with server to make sure dependencies are available
       Steps::dependency = (packages) ->
-        roaster.json '/server/http/dependency.coffee', packages, @next (data) =>
+        url = roaster.add_command_line '/server/http/dependency.coffee', packages
+        roaster.request.json url,@next (data) =>
           for key, value of data
             @error = "No package #{packages[key]}" if not value
       # over-ride loader and run it this first time
