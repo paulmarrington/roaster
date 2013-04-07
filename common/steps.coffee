@@ -61,8 +61,10 @@ class Steps extends events.EventEmitter
     # process them because the lock above was on
     @next() if @pending is 0 and @contains_parallels
   # @call -> actions - call with steps as this so you can use @next, etc
+  skip: => @steps.shift() if @steps.length
   call: (func) => func.apply(@, arguments)
-  abort: (error) => @steps = []; @error error
+  abort: (error) => @steps = []; @error = error; clearTimeout @step_timer
+  long_operation: (seconds = 300) => @maximum_time_ms = seconds * 1000
 
   asynchronous: => @next_referenced = true
 

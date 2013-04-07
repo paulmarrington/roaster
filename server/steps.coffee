@@ -16,12 +16,12 @@ Steps::pipe = (input, output) ->
 # possibly asynchronous requires
 Steps::requires = (modules...) ->
   for name in modules
-    key = path.basename(name)
+    key = path.basename(name).replace /\W/g, '_'
     try @[key] = require(name) catch error
       npm.check_for_missing_requirement name, error
       ready = @parallel()
       npm.load name, (error, module) ->
-        if error then @errors.push(error) else @[key] = module
+        if error then @errors = error else @[key] = module
         ready()
 
 # set default timeout based on environment (debug or not)

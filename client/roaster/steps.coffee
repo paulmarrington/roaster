@@ -11,7 +11,7 @@ module.exports = roaster.steps = (steps...) ->
           parts = path.basename(name).split(/\W/)
           key = parts[0]
           type = parts.slice(-1)[0]
-          if roaster.server_status?.extensions?[type] is 'css'
+          if roaster.environment?.extensions?[type] is 'css'
             roaster.request.css name
             depends()
           else
@@ -20,6 +20,8 @@ module.exports = roaster.steps = (steps...) ->
               depends()
       # possibly asynchronous requires
       Steps::requires = (modules...) -> @depends 'client', modules
+      # load client code unwrapped for external libraries
+      Steps::libraries = (libraries...) -> @depends 'client,library', libraries
       # run server scripts sequentially
       Steps::service = (scripts...) -> @depends 'server', scripts
       # load static data asynchronously

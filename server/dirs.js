@@ -26,20 +26,25 @@ mkdirsSync = function (dir) {
   fs.mkdirSync(current)
 }
 
-deleteFolderRecursive = function(path) {
-    var files = [];
-    if( fs.existsSync(path) ) {
-        files = fs.readdirSync(path);
-        files.forEach(function(file,index){
-            var curPath = path + "/" + file;
-            if(fs.statSync(curPath).isDirectory()) { // recurse
-                deleteFolderRecursive(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
-    }
+deleteFolderRecursive = function(path, next) {
+  fs.readdir(path, function(err, files) {
+    if (err) return next()
+    var delete_one = function() {
+      if (files.length === 0) {
+        return fs.rmdir(path, next);
+      }
+      var curPath = path + "/" + files.pop();
+      fs.stat('curPath', function(err, stats) {
+        if (err) return
+        if (stats.isDirectory()) { // recurse
+          deleteFolderRecursive(curPath, delete_one);
+        } else { // delete file
+          fs.unlink(curPath, delete_one);
+        }
+      })
+    };
+    delete_one()
+  });
 }
 // run a function with current working directory set - then set back afterwards
 in_directory = function(to, action) {

@@ -48,7 +48,6 @@ class Internet
     console.log "Downloading //#{@from}//..."
     to = @to
     @get @from, (error, response) =>
-      response.setEncoding 'binary'
       writer = fs.createWriteStream to
       response.pipe writer
       response.on 'end', =>
