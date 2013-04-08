@@ -9,6 +9,14 @@ module.exports = (environment) ->
     console.log request.url
     request.pause()
     request.url = url.parse request.url, true
+    # addresses can start with /!domains/absolute-path
+    if request.url.pathname[1] == '!'
+      slash = request.url.pathname.indexOf('/', 2)
+      # query string domain takes precedence over /! source
+      if not request.url.query.domain
+        request.url.query.domain = request.url.pathname.slice 2, slash
+      request.url.pathname = request.url.pathname.slice slash
+
     files.find request.url.pathname, (filename) ->
       try
         request.filename = filename

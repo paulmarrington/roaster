@@ -34,6 +34,12 @@ window.roaster =
     script = document.createElement("script")
     script.type = "text/javascript"
     script.async = "async"
+
+    [src, attributes] = url.split('#')
+    if attributes
+      for key, value of roaster.parse_query_string attributes ? ''
+        script.setAttribute(key, value)
+
     if script.readyState # IE
       script.onreadystatechange = ->
         if script.readyState == "loaded" || script.readyState == "complete"
@@ -45,13 +51,30 @@ window.roaster =
         roaster.cache[url] ?= {}
         next()
 
-    script.src = roaster.add_command_line url, domain: domain
+    if domain?.length
+      if src[0] == '/' # absolute
+        src = src.slice src.indexOf('/', 2) + 1 if src[1] is '!'
+        src = "/!#{domain}#{src}"
+      else # relative, use query form of domain
+        src = roaster.add_command_line src, domain: domain
+
+    script.src = src
     document.getElementsByTagName("head")[0].appendChild(script)
 
   add_command_line: (url, args) ->
     sep = if url.indexOf('?') is -1 then '?' else '&'
     items = ("#{key}=#{value}" for key, value of args)
     return "#{url}#{sep}#{items.join('&')}"
+
+  parse_query_string: (qs) ->
+    result = {}
+    for key in qs.split '&'
+      value = ''
+      if equals = key.indexOf '='
+        value = key.substr equals + 1
+        key = key.substr 0, equals
+      result[key] = value
+    return result
 
   process:
     noDeprecation: true
