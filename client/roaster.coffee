@@ -53,8 +53,10 @@ window.roaster =
 
     if domain?.length
       if src[0] == '/' # absolute
+        # domain in command over-rides one from earlier reference
         src = src.slice src.indexOf('/', 2) + 1 if src[1] is '!'
-        src = "/!#{domain}#{src}"
+        # domain in query string takes precedence
+        src = "/!#{domain}#{src}" if src.indexOf('domain=') == -1
       else # relative, use query form of domain
         src = roaster.add_command_line src, domain: domain
 

@@ -6,7 +6,7 @@ client = null
 module.exports = (next) ->
   return next(client) if client
   steps(
-    -> @requires '/faye/client.js'            # load faye library
+    -> @requires '/faye/client.js?domain=client' # load faye library
     -> client = new Faye.Client '/faye'       # create a client instance
     -> next(client)                           # callback for this first time
     )
