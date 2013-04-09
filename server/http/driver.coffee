@@ -57,6 +57,9 @@ module.exports = (exchange) ->
 module.exports.use_template = (exchange, template, next) ->
   exchange.template = ->
     apply_template = (source, template_applied) =>
+      # templates only valid if domain matches source types
+      if path.extname(source) isnt path.extname(template)
+        return template_applied(null, source, false)
       template = template.replace /\./, '_library.' if exchange.is_library
       ext = ".#{path.basename template}"
       morph source, ext, (error, filename, content, save) =>
