@@ -20,7 +20,7 @@ Steps::requires = (modules...) ->
     try @[key] = require(name) catch error
       npm.check_for_missing_requirement name, error
       ready = @parallel()
-      npm.load name, (error, module) ->
+      npm.load name, (error, module) =>
         if error then @errors = error else @[key] = module
         ready()
 

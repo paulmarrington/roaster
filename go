@@ -13,7 +13,7 @@ export PATH=$uSDLC_node_path/ext/node/bin:$PATH
 if [ ! -d "$uSDLC_node_path/ext/node" ]; then
     echo "First time only install of node.js to"
     echo "    $uSDLC_node_path"
-    "$uSDLC_node_path/bin/update-node-on-unix"
+    "$uSDLC_node_path/release/update-node-on-unix"
 fi
 
 node $DEBUG_NODE "$uSDLC_node_path/boot/load.js" "boot/run" $@
