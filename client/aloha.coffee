@@ -10,7 +10,7 @@ extra/formatlesspaste,extra/headerids,extra/linkbrowser,
 extra/metaview,extra/numerated-headers,extra/ribbon,extra/toc"
 #common/dom-to-xml,extra/browser,extra/comments,extra/draganddropfiles,extra/validation,extra/sourceview
 
-aloha = require('dependency')(
+aloha = roaster.dependency(
   aloha:
     'http://aloha-editor.org/builds/stable/alohaeditor-0.23.3-cdn.zip'
   'aloha/plugins/community/colorselector':

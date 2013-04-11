@@ -4,7 +4,7 @@
 # then load files from them into the browser. Both processes are cached.
 # Used like:
 
-# jqueryUI = require('dependency')(
+# jqueryUI = roaster.dependency(
 #   jquery: 'http://jqueryui.com/resources/download/jquery-ui-1.10.2.zip'
 #   '/ext/jquery/jquery-1.9.1.js', '/ext/jquery/ui/jquery-ui.js'
 #   )
@@ -17,7 +17,7 @@
 
 class loader
   constructor: (packages, libraries) ->
-    @waiting = []
+    @waiting = waiting = []
     steps(
       ->  @dependency packages
       ->  @libraries libraries

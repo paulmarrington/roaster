@@ -97,7 +97,8 @@ roaster.depends '/client/roaster/request.coffee', 'client', (request) ->
   roaster.request = request
   roaster.depends '/client/roaster/steps.coffee', 'client', (steps) ->
     steps(
-      ->  @requires '/client/roaster/environment.coffee', '/app.coffee'
-      ->  @call @environment.load
+      ->  @requires '/client/roaster/environment.coffee', '/app.coffee',
+          '/client/dependency.coffee'
+      ->  roaster.dependency = @dependency; @call @environment.load
       ->  roaster_loaded()
     )

@@ -1,5 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
-silk = require('dependency')(
+silk = roaster.dependency(
   silk: 'http://www.famfamfam.com/lab/icons/silk/famfamfam_silk_icons_v013.zip'
   )
 # Load silk icons.

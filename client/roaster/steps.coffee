@@ -8,6 +8,10 @@ module.exports = roaster.steps = (steps...) ->
         do depends = =>
           return @next() if not modules.length
           name = modules.shift()
+          # no extension means load with node require on server
+          if name.indexOf('.') is -1
+            return roaster.requireAsync name, depends
+          # See if it is script or style
           parts = path.basename(name).split(/\W/)
           key = parts[0]
           type = parts.slice(-1)[0]
@@ -16,7 +20,8 @@ module.exports = roaster.steps = (steps...) ->
             depends()
           else
             roaster.depends name, domain, (imports) =>
-              @[key] = imports
+              name = name.substring(0, -(type.length))
+              @[key] = roaster.cache[name] = imports
               depends()
       # possibly asynchronous requires
       Steps::requires = (modules...) -> @depends 'client', modules
