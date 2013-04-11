@@ -33,7 +33,7 @@ module.exports = (exchange) ->
     make_next_project_dir()
 
   copy_files = =>
-    files = 'go', 'go.bat', 'index.html', 'app.coffee', 'app.css',
+    files = 'go', 'go.bat', 'debug', 'debug.bat', 'index.html', 'app.coffee',
       'boot/project-init.coffee', 'config/base.coffee', 'config/debug.coffee',
       'config/production.coffee', 'client/favicon.ico'
     copy_next_file = =>

@@ -10,8 +10,7 @@ Steps::drain = (stream, data) ->
 
 # similarly when we pipe we need to wait for it to complate
 Steps::pipe = (input, output) ->
-  input.pipe(output, end: false);
-  input.on 'end', @next
+  input.pipe(output, end: false).on 'end', @next
 
 # possibly asynchronous requires
 Steps::requires = (modules...) ->
