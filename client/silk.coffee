@@ -4,4 +4,4 @@ silk = roaster.dependency(
   )
 # Load silk icons.
 # require('client/silk') (path-to-icons) -> do-something()
-module.exports = (next) -> silk.get(-> next('/ext/silk/icons'))
+module.exports = (next) -> silk -> next '/ext/silk/icons'

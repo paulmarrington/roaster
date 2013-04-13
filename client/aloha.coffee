@@ -10,7 +10,7 @@ extra/formatlesspaste,extra/headerids,extra/linkbrowser,
 extra/metaview,extra/numerated-headers,extra/ribbon,extra/toc"
 #common/dom-to-xml,extra/browser,extra/comments,extra/draganddropfiles,extra/validation,extra/sourceview
 
-aloha = roaster.dependency(
+module.exports = roaster.dependency(
   aloha:
     'http://aloha-editor.org/builds/stable/alohaeditor-0.23.3-cdn.zip'
   'aloha/plugins/community/colorselector':
@@ -20,6 +20,3 @@ aloha = roaster.dependency(
   '/ext/aloha/lib/vendor/jquery-1.7.2.js'
   "/ext/aloha/lib/aloha.js#data-aloha-plugins=#{plugins}"
   )
-# Load html5 wysiwig editor.
-# require('client/aloha')() -> do-something()
-module.exports = (next) -> aloha.get(next)

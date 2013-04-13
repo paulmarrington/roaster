@@ -27,8 +27,8 @@ class line_reader extends stream.Stream
 
 module.exports = (reader) -> new line_reader(reader)
 module.exports.for_file = (name, action_per_line) ->
-    @reader = new line_reader(fs.createReadStream(name))
-    @reader.on 'data', action_per_line
-    @reader.on 'end', => @reader.destroy();
-    return @reader
+  @reader = new line_reader(fs.createReadStream(name))
+  @reader.on 'data', action_per_line
+  @reader.on 'end', => @reader.destroy()
+  return @reader
 module.exports.for_text = (text) -> lines = text.split(/\r?\n/)

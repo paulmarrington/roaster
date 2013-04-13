@@ -1,14 +1,14 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
 steps = require 'steps'; EventEmitter = require('events').EventEmitter
 fs = require 'fs'
 
 module.exports = (ready) ->
   parser = new EventEmitter
 
-  load_Libraries = -> @require 'htmlparser2'
+  load_Libraries = -> @requires 'htmlparser2'
 
   convert_parser_to_event_emitter = ->
-    parser.stream = new @html_parser2.Parser(
+    parser.stream = new @htmlparser2.Parser(
       onopentag: (name, attributes) -> parser.emit('open', name, attributes)
       ontext: (text) -> parser.emit('text', text)
       onclosetag: (name) -> parser.emit('close', name)
@@ -32,6 +32,7 @@ module.exports = (ready) ->
   parser_ready_for_use = -> ready parser
 
   steps(
+    load_Libraries
     convert_parser_to_event_emitter
     set_file_parser
     parser_ready_for_use

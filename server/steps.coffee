@@ -1,5 +1,6 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
 Steps = require 'common/steps'; path = require 'path'; npm = require 'npm'
+wait_for = require('common/wait_for'); loading = {}
 
 # when draining a stream we need to know when to do more
 Steps::drain = (stream, data) ->
@@ -18,10 +19,16 @@ Steps::requires = (modules...) ->
     key = path.basename(name).replace /\W/g, '_'
     try @[key] = require(name) catch error
       npm.check_for_missing_requirement name, error
-      ready = @parallel()
-      npm.load name, (error, module) =>
-        if error then @errors = error else @[key] = module
-        ready()
+      if not loading[name]
+        load = (name, key, ready) =>
+          npm.load name, (error, module) =>
+            if error then @errors = error else @[key] = module
+            ready()
+        loading[name] = wait_for((next) -> load(name, key, next))
+      parallel = @parallel()
+      loading[name] =>
+        @[key] ?= require(name)
+        parallel()
 
 # set default timeout based on environment (debug or not)
 #Steps::steps_timeout_ms = process.environment.steps_timeout_ms

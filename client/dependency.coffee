@@ -14,16 +14,12 @@
 # a new browser session needs modules they are uploaded from roaster.
 # modules can be css, js or any of the derived types such as coffee-script
 # or less.
+wait_for = require 'common/wait_for'
 
-class loader
-  constructor: (packages, libraries) ->
-    @waiting = waiting = []
+module.exports = (packages, libraries...) ->
+  return wait_for (on_complete) ->
     steps(
       ->  @dependency packages
       ->  @libraries libraries
-      ->  @get = (next) -> next()
-      ->  next() for next in waiting
+      ->  on_complete()
     )
-  get: (next) -> @waiting.push next
-
-module.exports = (packages, libraries...) -> new Loader packages, libraries
