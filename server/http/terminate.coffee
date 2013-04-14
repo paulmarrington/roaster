@@ -3,7 +3,6 @@
 # curl http://localhost:9009/server/http/terminate?exit_code=1&key=yestermorrow
 # add &signal=SIGKILL if you don't want the server to restart
 module.exports = (exchange) ->
-  console.log exchange.request.url.query.key
   exchange.response.end()
   if exchange.environment.config is 'production' or
     exchange.request.url.query.key isnt 'yestermorrow'

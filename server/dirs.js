@@ -1,4 +1,4 @@
-/* Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license */
+/* Copyright (C) 2012 paul@marrington.net, see GPL for license */
 var fs = require('fs'), path = require('path')
 var mode = 0777 & (~process.umask());
 
@@ -52,6 +52,9 @@ in_directory = function(to, action) {
   try {
     process.chdir(to)
     action()
+  } catch(e) {
+    console.log("Error: can't change to "+to)
+    throw e
   } finally {
     process.chdir(cwd)
   }

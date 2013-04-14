@@ -71,13 +71,19 @@ class Internet
     request = null
     requesting = =>
       request?.abort()
-      request = transport.request options, (response) =>
-        on_response(null, response)
+      request = transport.request options, (@response) =>
+        on_response(null, @response)
       request.on 'error', (error) =>
         if error?.code is 'ECONNREFUSED' and clock.total() < @retry_for
           return setTimeout requesting, 500
         on_response error
       return request
     return requesting()
+
+  # read response into a string for further processing
+  read_response: (next) ->
+    data = []
+    @response.on 'data', (chunk) -> data.push chunk
+    @response.on 'end', -> next data.join ''
 
 module.exports = -> new Internet()
