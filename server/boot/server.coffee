@@ -51,7 +51,7 @@ environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
 default_environment = []
 configuration = {}
 for name, value of environment
-  default_environment.push "#{name}=#{value}"
+  default_environment.push "#{name}=#{value}" if not (value instanceof Object)
   configuration[name] = value
 default_environment.sort()
 environment.configuration = configuration
