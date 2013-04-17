@@ -1,5 +1,11 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
 
+domains =
+  library: 'client,library'
+  client: 'client'
+  server: 'server'
+  package: 'package'
+
 module.exports = roaster.steps = (steps...) ->
   roaster.request.requireAsync 'events', 'util', 'path', (events, util, path) ->
     roaster.depends '/common/steps.coffee', 'client', (Steps) ->
@@ -8,9 +14,15 @@ module.exports = roaster.steps = (steps...) ->
         do depends = =>
           return @next() if not modules.length
           name = modules.shift()
+          # switch domains on the fly
+          if domains[name]
+            domain = name;
+            depends()
           # no extension means load with node require on server
-          if name.indexOf('.') is -1
+          if name.indexOf('.') is -1 and domain is 'client'
             return roaster.request.requireAsync name, depends
+          # allocate more time to download
+          @long_operation()
           # See if it is script or style
           parts = path.basename(name).split(/\W/)
           key = parts[0]
@@ -18,6 +30,8 @@ module.exports = roaster.steps = (steps...) ->
           if roaster.environment?.extensions?[type] is 'css'
             roaster.request.css name
             depends()
+          else if domain is 'package'
+            roaster.load name, depends
           else
             roaster.depends name, domain, (imports) =>
               from = if name[0] is '/' then 1 else 0
