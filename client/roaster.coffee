@@ -29,6 +29,19 @@ window.roaster =
       callback imports while callback = callbacks.pop() when callback
       delete roaster.loading[url]
 
+  load: (packages..., next) ->
+    roaster.ready ->
+      files = ("/client/packages/#{pkg}.coffee" for pkg in packages)
+      loader = (step, next) ->
+        return next() if not packages.length
+        pkg = packages.shift()
+        step[pkg](-> loader(step, next))
+      roaster.steps(
+        ->  @requires files...
+        ->  loader(@, @next)
+        ->  next()
+        )
+
   script_loader: (url, domain, next) ->
     return next() if roaster.cache[url]
     script = document.createElement("script")
@@ -97,8 +110,8 @@ roaster.depends '/client/roaster/request.coffee', 'client', (request) ->
   roaster.request = request
   roaster.depends '/client/roaster/steps.coffee', 'client', (steps) ->
     steps(
-      ->  @requires '/client/roaster/environment.coffee', '/app.coffee',
-          '/client/dependency.coffee'
+      ->  @requires '/client/roaster/environment.coffee',
+          '/common/wait_for.coffee', '/client/dependency.coffee', '/app.coffee'
       ->  roaster.dependency = @dependency; @call @environment.load
       ->  roaster_loaded()
     )

@@ -14,6 +14,7 @@ module.exports = (source, css_created) ->
     new @less.Parser(
       # Specify search paths for @import directives
       paths: [path.dirname source, dirs.base()]
+      relativeUrls: true
       # Specify a filename, for better error messages
       filename: @css_filename
     ).parse @content, @next (@error, @tree) =>

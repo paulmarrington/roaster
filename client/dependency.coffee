@@ -8,7 +8,7 @@
 #   jquery: 'http://jqueryui.com/resources/download/jquery-ui-1.10.2.zip'
 #   '/ext/jquery/jquery-1.9.1.js', '/ext/jquery/ui/jquery-ui.js'
 #   )
-# module.exports = (next) -> jqueryUI.get(next)
+# module.exports = (next) -> jqueryUI(next)
 
 # The first time a package is needed it is downloaded. The first time
 # a new browser session needs modules they are uploaded from roaster.
@@ -20,6 +20,6 @@ module.exports = (packages, libraries...) ->
   return wait_for (on_complete) ->
     steps(
       ->  @dependency packages
-      ->  @libraries libraries
+      ->  @libraries libraries...
       ->  on_complete()
     )
