@@ -6,8 +6,8 @@ module.exports = (next) ->
   steps(
     ->  @requires '/client/jquery.coffee'
     ->  roaster.dependency(
-          sceditor: 'https://github.com/samclarke/SCEditor/archive/v1.4.2.zip'
-          '/ext/sceditor/jscripts/src/themes/default.less'
-          '/ext/sceditor/jscripts/src/jquery.sceditor.js'
-          ) @next
+          sceditor: 'https://codeload.github.com/samclarke/SCEditor/zip/v1.4.2'
+          '/ext/sceditor/SCEditor-1.4.2/minified/themes/default.min.css'
+          '/ext/sceditor/SCEditor-1.4.2/minified/jquery.sceditor.xhtml.min.js'
+          )(next)
     )

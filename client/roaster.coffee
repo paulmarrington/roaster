@@ -31,13 +31,13 @@ window.roaster =
 
   load: (packages..., next) ->
     roaster.ready ->
-      files = "/client/packages/#{pkg}.coffee" for pkg in packages
+      files = ("/client/packages/#{pkg}.coffee" for pkg in packages)
       loader = (step, next) ->
         return next() if not packages.length
         pkg = packages.shift()
         step[pkg](-> loader(step, next))
       roaster.steps(
-        ->  @requires files
+        ->  @requires files...
         ->  loader(@, @next)
         ->  next()
         )
@@ -110,8 +110,8 @@ roaster.depends '/client/roaster/request.coffee', 'client', (request) ->
   roaster.request = request
   roaster.depends '/client/roaster/steps.coffee', 'client', (steps) ->
     steps(
-      ->  @requires '/client/roaster/environment.coffee', '/app.coffee',
-          '/common/wait_for.coffee', '/client/dependency.coffee'
+      ->  @requires '/client/roaster/environment.coffee',
+          '/common/wait_for.coffee', '/client/dependency.coffee', '/app.coffee'
       ->  roaster.dependency = @dependency; @call @environment.load
       ->  roaster_loaded()
     )

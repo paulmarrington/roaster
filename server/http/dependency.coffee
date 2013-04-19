@@ -5,8 +5,10 @@ fs = require 'fs'; steps = require 'steps'; files = require 'files'
 module.exports = (exchange) ->
   results = {}
 
-  download = (url, next) ->
-    file = dirs.base 'ext', path.basename url
+  download = (key, url, next) ->
+    file = path.basename url
+    file = "#{key}.#{file}" if file.indexOf(key) is -1
+    file = dirs.base 'ext', file
     steps(
       ->  @long_operation()
       ->  fs.exists file, @next (exists) -> if exists then @abort(); next(null)
@@ -28,10 +30,10 @@ module.exports = (exchange) ->
     files.copy file, name_to_use, next
 
   load = (key, url, next) ->
-    download url, (file) ->
+    download key, url, (file) ->
       return next() if not file
       results[key] = true
-      if path.extname(url) is '.zip'
+      if path.extname(url) is '.zip' or url.indexOf('/zip/') isnt -1
         process_archive key, file, next
       else
         process_file key, file, next
