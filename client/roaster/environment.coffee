@@ -2,11 +2,11 @@
 
 roaster.environment = roaster.process.environment = {}
 
-refresh = -> window.location.href = window.location.href
+reload = -> window.location.href = window.location.href
 
 roaster.restart = ->
   roaster.script_loader '/server/http/terminate.coffee?key=yestermorrow',
-    'server', -> setTimeout refresh, 2000
+    'server', -> setTimeout reload, 2000
 
 key_time = 0
 
@@ -14,9 +14,10 @@ add_restart_link = ->
   a = document.createElement("a")
   a.href = "javascript:roaster.restart()"
   a.innerHTML = "restart"
-  a.setAttribute 'style', "position:absolute;right:2;top:0"
+  a.setAttribute 'style', "position:absolute;right:2;top:0;z-index:10000"
+  a.setAttribute 'title', "Or press <esc><esc>"
   document.body.appendChild(a)
-  document.onkeydown = ->
+  window.onkeydown = ->
     if event.keyCode is 27
       time = new Date().getTime()
       if time - key_time < 500
@@ -24,12 +25,11 @@ add_restart_link = ->
       else
         key_time = time
 
-module.exports.load = ->
-  @asynchronous()
+module.exports.load = (next) ->
   roaster.request.data '/server/http/environment.coffee?domain=server',
     (@error, data) =>
       try
         roaster.environment = JSON.parse data
         add_restart_link() if roaster.environment.debug
       catch error
-      @next()
+      next()
