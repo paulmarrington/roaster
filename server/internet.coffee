@@ -15,8 +15,7 @@ class Internet
   # Abort stream if Internet unavailable - require(internet).available(gwt)
   available: (next) ->
     @send_request 'HEAD', 'http://google.com', {}, (err, req, resp) =>
-      req.end() if err
-      next not err
+      if err then req.end() else next()
 
   # Post known static data as either a string or url-encoded
   post: (address, data, options..., on_response) ->
@@ -47,12 +46,13 @@ class Internet
     return if not on_download_complete
     console.log "Downloading //#{@from}//..."
     to = @to
-    @get @from, (error, response) =>
+    @get @from, (error, request, response) =>
       writer = fs.createWriteStream to
-      response.pipe writer
       response.on 'end', =>
         console.log '...done';
+        writer.end()
         on_download_complete()
+      response.pipe writer
     @from = @to = ''
 
   send_request: (method, address, extra_options, on_connection) ->

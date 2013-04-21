@@ -3,6 +3,6 @@
 # Load html5 wysiwig editor.
 # require('client/tinymce')() -> do-something()
 module.exports = roaster.dependency(
-  jquery: 'http://code.jquery.com/jquery-1.9.1.js'
+  jquery: 'http://code.jquery.com/jquery-2.0.0.js'
   '/ext/jquery.js'
   )

@@ -40,6 +40,10 @@ module.exports = roaster.steps = (steps...) ->
               depends()
       # possibly asynchronous requires
       Steps::requires = (modules...) -> @depends 'client', modules
+      # for packages that may be downloaded from other sites
+      Steps::package = (modules...) ->
+        @long_operation()
+        @depends 'package', modules
       # load client code unwrapped for external libraries
       Steps::libraries = (libraries...) -> @depends 'client,library', libraries
       # run server scripts sequentially

@@ -4,7 +4,7 @@
 # require('client/sceditor')() -> do-something()
 module.exports = (next) ->
   steps(
-    ->  @requires '/client/jquery.coffee'
+    ->  @package 'jquery'
     ->  roaster.dependency(
           sceditor: 'https://codeload.github.com/samclarke/SCEditor/zip/v1.4.2'
           '/ext/sceditor/SCEditor-1.4.2/minified/themes/default.min.css'
