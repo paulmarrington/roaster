@@ -29,11 +29,14 @@ class Steps extends events.EventEmitter
     return if @contains_parallels and --@pending and not @lock
     # if passed a callback closure, return it with an @next() call if needed
     if callback
-      step_number = @steps.length
+      step_number_for_this_callback = @steps.length
       return =>
+        if @tracing then console.log """
+          Callback for step #{step_number_for_this_callback}:
+          #{callback.toString()}"""
         callback.apply(@, arguments)
         # make sure next hasn't been called explicitly
-        @_next() if step_number = @steps.length
+        @_next() if step_number_for_this_callback is @steps.length
     # normal next will run the next function in the call argument list.
     clearTimeout @step_timer
     @next_referenced = false
@@ -47,6 +50,9 @@ class Steps extends events.EventEmitter
       if fn instanceof Array
         @parallel fn
       else # normally synchronous, but checks @next access to be sure
+        if @tracing then console.log """
+          Step #{@steps.length + 1}:
+          #{fn.toString()}"""
         fn.call(@, @_next)
         @next_if_unreferenced()
     catch exception
@@ -101,4 +107,6 @@ class Steps extends events.EventEmitter
       Error: #{error}
           Step: #{error.step ? ''}
           Trace: #{error.trace ? ''}"""
+  # Display each step before running it
+  trace: (tracing = true) -> @tracing = tracing
 module.exports = Steps

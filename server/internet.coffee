@@ -2,7 +2,7 @@
 url = require 'url'; path = require 'path'; os = require 'os'
 http = require 'http'; https = require 'https'; fs = require 'fs'
 querystring = require 'querystring'; url = require 'url'
-timer = require 'timer'
+timer = require 'common/timer'
 
 class Internet
   constructor: ->
@@ -23,7 +23,8 @@ class Internet
     data = querystring.stringify data if typeof data isnt 'string'
     options.header ?= {}
     options.header['Content-Length'] =  data.length
-    @send_request('POST', address, options, on_response).end data
+    options.on_request = => @request.end data
+    @send_request('POST', address, options, on_response)
 
   # prepare to post a stream of data
   post_stream: (address, options..., on_response) ->

@@ -1,7 +1,7 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 
 class Timer # Use to report elapsed times
-  # Timer = require 'timer'; timer = Timer() # creates a new instance and prints current date
+  # Timer = require 'common/timer'; timer = Timer() # creates a new instance and prints current date
   # options.silent = true to stop logging of results
   constructor: (@options) ->
     @log = (->) if @options?.silent

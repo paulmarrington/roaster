@@ -1,7 +1,7 @@
-# Copyright (C) 2012 paul@marrington.net, see GPL for license
-less = require 'morph/less'
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
+stylus = require 'morph/stylus'
 
 module.exports = (exchange, next) ->
   exchange.respond.set_mime_type 'css'  # most common is script
   exchange.respond.static_file()
-  exchange.respond.morph less, next
+  exchange.respond.morph stylus, next
