@@ -1,5 +1,8 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 
+secondsFrom = (start) ->
+   return Math.floor((new Date().getTime() - start.getTime()) / 1000)
+
 class Timer # Use to report elapsed times
   # Timer = require 'common/timer'; timer = Timer() # creates a new instance and prints current date
   # options.silent = true to stop logging of results
@@ -10,13 +13,13 @@ class Timer # Use to report elapsed times
     @log "#{@now}"
   # timer.elapsed() # will print seconds since start or last elapsed
   elapsed: ->
-    time = Math.floor((new Date().getTime() - @now.getTime()) / 1000)
+    time = secondsFrom @now
     @log "#{@hms(time)} elapsed" if time > 0
-    now = new Date()
+    @now = new Date()
     return time
   # timer.total() # will print seconds since timer was instantiated
   total: ->
-    time = Math.floor((new Date().getTime() - @start.getTime()) / 1000)
+    time = secondsFrom @start
     @log "#{@hms(time)} seconds total"
     return time
   # change seconds into hours, minutes and seconds

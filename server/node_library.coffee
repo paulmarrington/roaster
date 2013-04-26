@@ -10,7 +10,7 @@ module.exports =
 
     steps(
       -> dirs.mkdirs library_path, @next
-      -> fs.exists local, @next (exists) => @steps.shift() if exists
+      -> fs.exists local, @next (exists) => @skip() if exists
       -> internet.download.from(url).to(local, @next)
       -> on_resolve(local)
       )

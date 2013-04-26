@@ -30,6 +30,7 @@ window.roaster =
       delete roaster.loading[url]
 
   load: (packages..., next) ->
+    packages = packages[0].split(',') if packages.length is 1
     roaster.ready ->
       files = ("/client/packages/#{pkg}.coffee" for pkg in packages)
       loader = (step, next) ->
@@ -110,8 +111,10 @@ roaster.depends '/client/roaster/request.coffee', 'client', (request) ->
   roaster.request = request
   roaster.depends '/client/roaster/steps.coffee', 'client', (steps) ->
     steps(
-      ->  @requires '/client/roaster/environment.coffee',
-          '/common/wait_for.coffee', '/client/dependency.coffee', '/app.coffee'
-      ->  roaster.dependency = @dependency; @environment.load @next
+      ->  @requires '/ext/node_modules/underscore/underscore.js',
+          '/client/roaster/environment.coffee', '/common/wait_for.coffee',
+          '/client/dependency.coffee', '/app.coffee'
+      ->  roaster.dependency = @dependency; window._ = @underscore
+      ->  @environment.load @next
       ->  roaster_loaded()
     )

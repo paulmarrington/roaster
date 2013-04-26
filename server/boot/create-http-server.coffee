@@ -9,6 +9,11 @@ module.exports = (environment) ->
     console.log request.url
     request.pause()
     request.url = url.parse request.url, true
+    # see if we want to restart in debug mode
+    if request.url.query.restart and environment.debug
+      if (new Date().getTime() - process.environment.since) > 10000
+        response.end "<script>setTimeout('window.location.href = window.location.href', 2000)</script>"
+        process.exit(0)
     # addresses can start with /!domains/absolute-path
     if request.url.pathname[1] == '!'
       slash = request.url.pathname.indexOf('/', 2)

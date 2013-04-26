@@ -14,7 +14,7 @@ add_restart_link = ->
   a = document.createElement("a")
   a.href = "javascript:roaster.restart()"
   a.innerHTML = "restart"
-  a.setAttribute 'style', "position:absolute;right:2;top:0;z-index:10000"
+  a.setAttribute 'style', "position:absolute;right:2;top:0;z-index:1000000"
   a.setAttribute 'title', "Or press <esc><esc>"
   document.body.appendChild(a)
   window.onkeydown = ->

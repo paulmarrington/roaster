@@ -34,7 +34,8 @@ deleteFolderRecursive = function(path, next) {
         return fs.rmdir(path, next);
       }
       var curPath = path + "/" + files.pop();
-      fs.stat('curPath', function(err, stats) {
+      fs.stat(curPath, function(err, stats) {
+        if(err)console.log(err)
         if (err) return
         if (stats.isDirectory()) { // recurse
           deleteFolderRecursive(curPath, delete_one);

@@ -10,7 +10,7 @@ module.exports = (source, css_created) ->
     @next (@error, @css_filename, @content, @write_css) =>
 
   render_css = ->
-    if not @content then @skip(); return @next()  # up to date
+    return @skip() if not @content  # up to date
     @stylus(@content).set('filename', @css_filename).
       set('paths', [path.dirname source, dirs.base()]).
         render @next (@error, @css) =>
