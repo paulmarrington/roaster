@@ -16,27 +16,37 @@ module.exports = (exchange) ->
       ->  next(file)
       )
 
-  process_archive = (key, file, next) ->
-    base = dirs.base 'ext', key
+  process_zip = (file, to, next) ->
+    console.log "UNZIP '#{file}' to '#{to}'"
+    base = dirs.base 'ext', to
     steps(
-      ->  dirs.rmdirs base, @next
       ->  @requires 'adm-zip'
       ->  new @adm_zip(file).extractAllTo base, true
       ->  next()
       )
 
-  process_file = (key, file, next) ->
-    name_to_use = dirs.base 'ext', "#{key}#{path.extname(file)}"
-    files.copy file, name_to_use, next
+  process_file = (file, to, next) ->
+    name_to_use = dirs.base 'ext', "#{to}#{path.extname(file)}"
+    steps(
+      ->  dirs.mkdirs path.dirname(name_to_use), @next
+      ->  files.copy file, name_to_use, next
+    )
 
   load = (key, url, next) ->
+    [url, to, rename] = url.split '|'; to ?= key
     download key, url, (file) ->
       return next() if not file
       results[key] = true
       if path.extname(url) is '.zip' or url.indexOf('/zip/') isnt -1
-        process_archive key, file, next
+        action = process_zip
       else
-        process_file key, file, next
+        action = process_file
+      action file, to, ->
+        if rename
+          [from, to] = rename.split '='
+          fs.rename from, to, next
+        else
+          next()
 
   steps(
     ->  @long_operation()

@@ -3,6 +3,12 @@
 version = "4.1.1"
 pkg = "full"
 base = "http://download.cksource.com/CKEditor/CKEditor/CKEditor "
+ckurl = "http://download.ckeditor.com"
+plugin_dir = "ckeditor/plugins/"
+packages =
+  ckeditor: "#{base}#{version}/ckeditor_#{version}_#{pkg}.zip|."
+  tableresize: "#{ckurl}/tableresize/releases/tableresize_4.1.1.zip|#{plugin_dir}"
+  placeholder: "#{ckurl}/placeholder/releases/placeholder_4.1.1.zip|#{plugin_dir}"
 
 toolbarGroups = [
   { name: 'document' }
@@ -22,7 +28,7 @@ toolbarGroups = [
   { name: 'about' }
 ]
 toolbarViews =
-  Document: 'document,paragraph,insert'
+  Document: 'document,paragraph,align,insert'
   Edit: 'basicstyles,links,styles,colors'
   Form: 'forms,styles,colors'
   View: 'doctools,tools,others,about'
@@ -37,6 +43,7 @@ default_options =
   toolbarGroups: toolbarGroups
   toolbarViews: toolbarViews
   maximize: true
+  extraPlugins: 'tableresize,placeholder'
 
 open = (id, options) ->
   options = _.extend {}, default_options, options
@@ -75,10 +82,7 @@ open = (id, options) ->
     editor.getCommand('maximize').exec() if options.maximize
   return editor
 
-loader = roaster.dependency(
-  ckeditor: "#{base}#{version}/ckeditor_#{version}_#{pkg}.zip"
-  '/ext/ckeditor/ckeditor/ckeditor.js'
-)
+loader = roaster.dependency(packages, '/ext/ckeditor/ckeditor.js')
 
 module.exports = (next) ->
   roaster.ckeditor = {open,editors:{}}
