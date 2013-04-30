@@ -22,7 +22,6 @@
 #   respond: method to call to send data back to the browser - chaining support
 #   faye: pubsub server-side client. Set to false for no pubsub on server
 #   config: Configuration file (<config>.config.coffee)
-create_http_server = require 'boot/create-http-server'
 # create_faye_server = require 'boot/create-faye-server'
 project_init = require 'boot/project-init'
 system = require 'system'; dirs = require 'dirs'
@@ -36,6 +35,7 @@ environment = process.environment =
   since: new Date().getTime()  # time of server start (epoch time)
   command_line: process.argv.join ' ' # full command line for identification
   maximum_browser_cache_age: 60*60*1000 # 1 hour before statics are reloaded
+global.http_processors = []
 # allow project to tweak settings before we commit to action
 project_init.pre environment
 args = system.command_line(environment)
@@ -57,9 +57,8 @@ default_environment.sort()
 environment.configuration = configuration
 
 # create a server ready to listen
+create_http_server = require('boot/create-http-server')
 environment.server = create_http_server environment
-environment.faye = create_faye_server environment if environment.faye
-
 # kick-off
 environment.server.listen environment.port
 # lastly we do more project level initialisation

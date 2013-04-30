@@ -31,7 +31,7 @@ toolbarViews =
   Document: 'document,paragraph,align,insert'
   Edit: 'basicstyles,links,styles,colors'
   Form: 'forms,styles,colors'
-  View: 'doctools,tools,others,about'
+  View: 'editing,doctools,tools,others,about'
 
 default_options =
   fullPage: true

@@ -2,7 +2,7 @@
 
 // start by loading modules required for base operation
 var modules = [
-  'send', 'cookies', 'faye', 'coffee-script', 'underscore'
+  'send', 'coffee-script', 'underscore'
 ]
 // Now load languages that can be used in node requires()
 // js: javascript comes for free with V8

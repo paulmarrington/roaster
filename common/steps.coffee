@@ -85,7 +85,7 @@ class Steps extends events.EventEmitter
       return @next() if not list.length
       list.shift()(process_next)
   # Given one method and a data list, call sequentially for each item
-  list: (processor, list...) =>
+  list: (list..., processor) =>
     asynchronous()
     do process_next = =>
       return @next() if not list.length

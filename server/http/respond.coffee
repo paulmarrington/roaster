@@ -16,16 +16,17 @@ class Respond
     @exchange.request.filename = file_path if file_path
     @exchange.domain = 'client'
     @exchange.reply = (next) => @send_static(next)
-  send_static: (next) ->
+  send_static: (next = ->) ->
     fs.stat name = @exchange.request.filename, (err, stats) =>
       name += '/' if stats?.isDirectory() and name.slice(-1) != '/'
       # gzip name, (error, zipped-name) =>
       #   @exchange.response.setHeader 'Content-Encoding', 'gzip'
       #   @set_mime_type name
-      send(@exchange.request, name).
-        maxage(@exchange.environment.maximum_browser_cache_age).
-        pipe(@exchange.response)
-      next() if next
+      sender = send(@exchange.request, name)
+      sender.isMalicious = -> return false
+      sender.maxage(@exchange.environment.maximum_browser_cache_age)
+      sender.pipe(@exchange.response)
+      next()
   # respond to client with code to run in a sandbox
   client: (code) ->
     client = @exchange.request.filename
