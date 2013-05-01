@@ -22,8 +22,6 @@ class Steps extends events.EventEmitter
     # lastly we start of the running of steps.
     @_next()
 
-  next_if_unreferenced: -> @_next() if not @next_referenced
-
   _next: (callback) =>
     # parallel only nexts when all done
     return if @contains_parallels and --@pending and not @lock
@@ -53,14 +51,15 @@ class Steps extends events.EventEmitter
         if @tracing then console.log """
           Step #{@steps.length + 1}:
           #{fn.toString()}"""
-        fn.call(@, @_next)
-        @next_if_unreferenced()
+        this_step = @steps.length
+        fn.call @
+        @_next() if not @next_referenced and this_step is @steps.length
     catch exception
       exception.step = @total_steps - @steps.length
       # exception.calling = fn.toString()
       exception.trace = exception.stack if exception.stack
       @emit 'error', exception
-      @next()
+      @_next() if this_step is @steps.length
 
     @lock = false
     # ok, all entries were synchronous so parallel did not get to
@@ -80,13 +79,13 @@ class Steps extends events.EventEmitter
 
   # Given a list of closures, process then sequentially
   sequence: (list...) =>
-    asynchronous()
+    @asynchronous()
     do process_next = =>
       return @next() if not list.length
       list.shift()(process_next)
   # Given one method and a data list, call sequentially for each item
   list: (list..., processor) =>
-    asynchronous()
+    @asynchronous()
     do process_next = =>
       return @next() if not list.length
       processor list.shift(), process_next
