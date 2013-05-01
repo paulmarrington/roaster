@@ -7,7 +7,7 @@ mkdirs = function (dir, next) {
   existence = function(exists) {
     if (exists) {
       mkdir = function() {
-        if (paths.length == 0) return next(null)
+        if (paths.length == 0) return next()
         fs.mkdir(paths.pop(), mkdir)
       }
       mkdir()

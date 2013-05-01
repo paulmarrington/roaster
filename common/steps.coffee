@@ -28,7 +28,7 @@ class Steps extends events.EventEmitter
     # parallel only nexts when all done
     return if @contains_parallels and --@pending and not @lock
     # if passed a callback closure, return it with an @next() call if needed
-    if callback
+    if callback and callback instanceof Function
       step_number_for_this_callback = @steps.length
       return =>
         if @tracing then console.log """
