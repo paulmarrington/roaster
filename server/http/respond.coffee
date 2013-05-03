@@ -64,6 +64,10 @@ class Respond
     morph @exchange.request.filename, (error, filename, changed) =>
       @exchange.request.filename = filename
       next error, @exchange
+  # send back an error response to the client
+  error: (reason, code = 500) ->
+    @exchange.response.writeHead code, reason
+    @json reason: reason, error: true, code: code
   # helper to set the mime-type in a response object based on file name
   set_mime_type: (name) ->
     return if @exchange.response.getHeader 'Content-Type'

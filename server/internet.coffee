@@ -64,7 +64,7 @@ class Internet
       address.port ?= 443; transport = https
     options =
       method: method
-      host: address.hostname
+      hostname: address.hostname
       path: address.path
       port: address.port
       on_request: ->
