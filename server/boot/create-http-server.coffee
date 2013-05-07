@@ -5,6 +5,7 @@ fs = require 'fs'; util = require 'util'
 
 global.http_processors.push (exchange, next_processor) ->
   files.find exchange.request.url.pathname, (filename) ->
+    filename ?= exchange.request.url.pathname
     try
       exchange.request.filename = filename
       # all the set up is done, process the request based on a driver
@@ -25,12 +26,12 @@ global.http_processors.push (exchange, next_processor) ->
 
 module.exports = (environment) ->
   return environment.server = http.createServer (request, response) ->
-    console.log request.url
+    # console.log request.url if environment.debug
     request.pause()
     request.url = url.parse request.url, true
     # see if we want to restart in debug mode
     if request.url.query.restart and environment.debug
-      if (new Date().getTime() - process.environment.since) > 10000
+      if (new Date().getTime() - process.environment.since) > 5000
         response.end "<script>setTimeout('window.location.href = window.location.href', 2000)</script>"
         process.exit(0)
     # an exchange object that is passed to http processors

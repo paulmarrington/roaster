@@ -7,9 +7,11 @@ var mkdirsSync = require('dirs').mkdirsSync, newer = require('newer')
 //     saver(error, code, next)
 //       next(error)
 var morph = function (source, target_ext, builder) {
-    var gen = path.join(process.env.uSDLC_base_path, 'gen')
-    var target = path.relative(process.cwd(), source).replace(/\.\.\//g, '')
-    target = path.join(gen, target + target_ext)
+  cwd = process.cwd()//process.env.uSDLC_base_path
+    var target = path.relative(cwd, source).replace(/\.\.\//g, '')
+    // so we don't have gen/gen/...
+    if (target.slice(0,4) === 'gen/') target = target.slice(4)
+    target = path.join(cwd, 'gen', target + target_ext)
     // we only need to rebuild if source is newer
     if (newer(source, target)) {
         var code = fs.readFileSync(source, 'utf8')

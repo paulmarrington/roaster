@@ -19,7 +19,7 @@
 class WaitForIt
   constructor: (long_running_action) ->
     @waiting = waiting = []
-    long_running_action ->
+    long_running_action =>
       @get = (next) -> next()
       next() for next in waiting
   get: (next) -> @waiting.push next

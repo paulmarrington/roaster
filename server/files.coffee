@@ -2,10 +2,10 @@
 fs = require 'fs'; path = require 'path'; dirs = require 'dirs'
 
 module.exports =
-  # find a file in node or base with (sometimes) implied extensions
+  # returns a file on one path or null if it can't be found
   find: (name, next) ->
     find_one = (bases) ->
-      return next(dirs.base name) if bases.length is 0
+      return next() if bases.length is 0
       full_path = path.join bases.shift(), name
       fs.exists full_path, (exists) ->
         return next(full_path) if exists

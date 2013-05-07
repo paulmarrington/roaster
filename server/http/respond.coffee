@@ -67,7 +67,6 @@ class Respond
   # send back an error response to the client
   error: (reason, code = 500) ->
     @exchange.response.writeHead code, reason
-    @json reason: reason, error: true, code: code
   # helper to set the mime-type in a response object based on file name
   set_mime_type: (name) ->
     return if @exchange.response.getHeader 'Content-Type'
@@ -78,5 +77,11 @@ class Respond
     if (charset = send.mime.charsets.lookup type)
       type += "; charset=#{charset}"
     @exchange.response.setHeader 'Content-Type', type
+  # read post request into a string
+  read_request: (next) ->
+    data = []
+    @exchange.request.on 'data', (chunk) -> data.push chunk
+    @exchange.request.on 'end', -> next data.join ''
+    @exchange.request.resume()
 
 module.exports = (exchange) -> new Respond(exchange)

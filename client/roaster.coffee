@@ -110,6 +110,7 @@ roaster_loaded = ->
 roaster.depends '/client/roaster/request.coffee', 'client', (request) ->
   roaster.request = request
   roaster.depends '/client/roaster/steps.coffee', 'client', (steps) ->
+    roaster.cache.steps = steps
     steps(
       ->  @requires '/ext/node_modules/underscore/underscore.js',
           '/client/roaster/environment.coffee', '/common/wait_for.coffee',

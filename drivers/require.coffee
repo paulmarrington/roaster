@@ -9,13 +9,13 @@ module.exports = (exchange, next) ->
     exchange.respond.static_file module_path
     next()
 
-  if not (module_path = require.resolve module_name)
+  try
+    module_path = require.resolve module_name
+    return done(module_path) if module_path.indexOf('/') isnt -1
+    node_library.resolve_built_in module_name, (module_path) -> done module_path
+  catch err
     npm module_name, (error, module) ->
       if error
         console.log error
         return next()
       done require.resolve module_name
-  else if module_path.indexOf('/') is -1
-    node_library.resolve_built_in module_name, (module_path) -> done module_path
-  else
-    done module_path

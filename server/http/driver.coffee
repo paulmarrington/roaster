@@ -27,7 +27,7 @@ module.exports = (exchange) ->
         npm.check_for_missing_requirement(name, error)
     if driver = cache[name]
       do (driver) ->
-        drivers.push fn = -> driver(exchange, @next)
+        drivers.push fn = -> @long_operation(); driver(exchange, @next)
         fn.notes = "#{exchange.request.filename}: driver '#{name}'"
   # pull drivers from query string key 'domain' and file name extensions
   if query_drivers = exchange.request.url.query.domain
@@ -68,11 +68,19 @@ module.exports.use_template = (exchange, template, next) ->
           options =
             script: content
             url: exchange.request.url.pathname
+          # set template or abort merge if no template
+          hasTemplate = (template) ->
+            if template
+              return options.template_name = template
+            else
+              template_applied(null, filename, false)
+              return false
           steps(
-            -> @requires 'templates', 'files'
-            -> @files.find template, @next (found) => options.template_name = found
-            -> @templates.process_text options, @next (@merged) =>
-            -> save(null, @merged); template_applied(null, filename, true)
+            ->  @requires 'templates', 'files'
+            ->  @files.find template, @next (@found) ->
+            ->  @abort() if not hasTemplate(@found)
+            ->  @templates.process_text options, @next (@merged) =>
+            ->  save(null, @merged); template_applied(null, filename, true)
             )
         else
           template_applied(null, filename, false)

@@ -16,16 +16,19 @@ module.exports = roaster.steps = (steps...) ->
           name = modules.shift()
           # switch domains on the fly
           if domains[name]
-            domain = name;
+            domain = name
             depends()
+          # break up into key, inner and extension
+          parts = path.basename(name).split(/\W/)
+          if parts[0].length then key = parts[0] else key = parts[1]
           # no extension means load with node require on server
           if name.indexOf('.') is -1 and domain is 'client'
-            return roaster.request.requireAsync name, depends
+            return roaster.request.requireAsync name, (imports) =>
+              @[key] = imports
+              depends()
           # allocate more time to download
           @long_operation()
           # See if it is script or style
-          parts = path.basename(name).split(/\W/)
-          key = parts[0]
           type = parts.slice(-1)[0]
           if roaster.environment?.extensions?[type] is 'css'
             roaster.request.css name
