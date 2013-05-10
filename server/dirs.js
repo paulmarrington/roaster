@@ -75,7 +75,7 @@ base = function() {
 // bases used to find relative address files
 process.env.uSDLC_base_path = fs.realpathSync(process.env.uSDLC_base_path)
 process.env.uSDLC_node_path = fs.realpathSync(process.env.uSDLC_node_path)
-bases = [process.env.uSDLC_base_path, process.env.uSDLC_node_path]
+bases = ['',process.env.uSDLC_base_path, process.env.uSDLC_node_path]
 
 module.exports = {
   mkdirs: mkdirs,

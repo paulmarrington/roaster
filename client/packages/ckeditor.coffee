@@ -1,4 +1,3 @@
-
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 version = "4.1.1"
 pkg = "full"
@@ -24,13 +23,13 @@ toolbarGroups = [
   { name: 'styles' }
   { name: 'colors' }
   { name: 'tools', groups: [ 'mode', 'tools'] }
-  { name: 'others' }
+  # { name: 'others' }
   { name: 'about' }
 ]
 toolbarViews =
   Document: 'document,paragraph,align,insert'
   Edit: 'basicstyles,links,styles,colors'
-  Form: 'forms,styles,colors'
+  Form: 'forms'
   View: 'editing,doctools,tools,others,about'
 
 default_options =
@@ -85,5 +84,5 @@ open = (id, options) ->
 loader = roaster.dependency(packages, '/ext/ckeditor/ckeditor.js')
 
 module.exports = (next) ->
-  roaster.ckeditor = {open,editors:{}}
+  roaster.ckeditor = {open, default_options, editors:{}}
   loader next

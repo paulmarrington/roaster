@@ -46,7 +46,7 @@ config = args.config ? environment.config
 require("config/#{config}")(environment)
 # lastly over-ride with anything from the command line
 environment[key] = value for key, value of args
-environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
+# environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
 # prepare copies for client and display
 default_environment = []
 configuration = {}

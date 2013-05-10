@@ -7,6 +7,7 @@ module.exports =
     find_one = (bases) ->
       return next() if bases.length is 0
       full_path = path.join bases.shift(), name
+      return find_one(bases) if full_path is '/'
       fs.exists full_path, (exists) ->
         return next(full_path) if exists
         find_one(bases)
