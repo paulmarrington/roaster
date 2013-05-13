@@ -52,13 +52,15 @@ module.exports = roaster.steps = (steps...) ->
       # run server scripts sequentially
       Steps::service = (scripts...) -> @depends 'server', scripts
       # load static data asynchronously
-      Steps::data = (urls...) ->
+      Steps::_data = (urls..., parser) ->
         for url in urls then do =>
           done = @parallel()
-          key = path.basename(url).split('.')[0]
+          @key = path.basename(url).split('.')[0]
           roaster.request.data url, (@error, text) =>
-            @[key] = text
+            @[@key] = parser text
             done()
+      Steps::data = (urls...) -> @_data urls..., (text) -> text
+      Steps::json = (urls...) -> @_data urls..., (text) -> JSON.parse text
       # Check with server to make sure dependencies are available
       Steps::dependency = (packages) ->
         url = roaster.add_command_line '/server/http/dependency.coffee', packages
