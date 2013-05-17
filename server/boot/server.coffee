@@ -35,6 +35,7 @@ environment = process.environment =
   since: new Date().getTime()  # time of server start (epoch time)
   command_line: process.argv.join ' ' # full command line for identification
   maximum_browser_cache_age: 60*60*1000 # 1 hour before statics are reloaded
+  pid: process.pid # for kill, etc
 global.http_processors = []
 # allow project to tweak settings before we commit to action
 project_init.pre environment

@@ -1,4 +1,4 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2012,13 paul@marrington.net, see GPL for license
 fs = require 'fs'; path = require 'path'; dirs = require 'dirs'
 
 module.exports =

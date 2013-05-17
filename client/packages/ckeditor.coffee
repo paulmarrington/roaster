@@ -36,8 +36,8 @@ default_options =
   fullPage: true
   allowedContent: true
   browserContextMenuOnCtrl: true
-  contentsCss: '/page.stylus'
-  scayt_autoStartup: true
+  contentsCss: '/app.stylus'
+  # scayt_autoStartup: true
   removeButtons: ''
   toolbarGroups: toolbarGroups
   toolbarViews: toolbarViews

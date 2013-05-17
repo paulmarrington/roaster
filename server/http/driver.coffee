@@ -39,14 +39,20 @@ module.exports = (exchange) ->
   exchange.reply ?= (next) ->
     try
       driver = require(exchange.request.filename)
+    catch error
+      console.log error.toString()
+      exchange.respond.error "No #{exchange.request.url.href}", 404
+      return next()
+    try
       if driver.length > 1
         driver(exchange, next) # async
       else
         driver(exchange) # sync
         next()
     catch error
-      console.log "Script failure:
-        '#{exchange.request.filename}' #{error.toString()}"
+      console.log """Script failure:
+        \t#{exchange.request.filename}
+        \t#{error.toString()}"""
       next()
       throw error
   # run each driver in turn then fire off the response

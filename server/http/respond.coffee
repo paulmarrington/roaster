@@ -67,6 +67,7 @@ class Respond
   # send back an error response to the client
   error: (reason, code = 500) ->
     @exchange.response.writeHead code, reason
+    @exchange.response.end JSON.stringify error:reason
   # helper to set the mime-type in a response object based on file name
   set_mime_type: (name) ->
     return if @exchange.response.getHeader 'Content-Type'
