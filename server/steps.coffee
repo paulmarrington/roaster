@@ -12,7 +12,7 @@ Steps::drain = (stream, data) ->
 # similarly when we pipe we need to wait for it to complete. This version will
 # take any number of pipes - inner ones mus both read and write.
 Steps::pipe = (input, pipes...) ->
-  pipes.slice(-1) 'close', @next
+  pipes.slice(-1)[0].on 'close', @next
   for pipe in pipes
     input.pipe pipe
     input = pipe
