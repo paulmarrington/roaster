@@ -1,7 +1,7 @@
 # Copyright (C) 2012 paul@marrington.net, see GPL for license
 
 module.exports = (args...) ->
-  if process.env.DEBUG_NODE or args[0] is 'config=debug'
+  if process.env.DEBUG_NODE or args[0] is 'mode=gwt'
     require 'server/boot/server'
   else
     processes = require 'processes'; dirs = require 'dirs'

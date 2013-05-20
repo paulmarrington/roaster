@@ -30,6 +30,7 @@ loader = function(index) {
       loader(index)
     } else {
       extend_for(require('coffee-script').compile, '.coffee')
+      require("init")
       // and lastly, require the main module from the command line to run it
       require(process.argv[2])
     }

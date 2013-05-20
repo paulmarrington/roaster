@@ -34,6 +34,7 @@ module.exports = (exchange) ->
 
   load = (key, url, next) ->
     [url, to, rename] = url.split '|'; to ?= key
+    # console.log "LOAD",url
     download key, url, (file) ->
       return next() if not file
       results[key] = true

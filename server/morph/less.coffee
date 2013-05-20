@@ -21,7 +21,7 @@ module.exports = (source, css_created) ->
 
   convert_to_css = ->
     return if not @tree
-    css = @tree.toCSS compress: true
+    css = @tree.toCSS compress: false
     @write_css null, css
 
   parsing_complete = -> css_created null, @css_filename

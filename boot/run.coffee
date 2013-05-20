@@ -13,5 +13,4 @@ usage = ->
 usage() if process.argv.length < 4
 [cmd,args...] = process.argv.slice(3)
 
-require("init")
 require("scripts/#{cmd}")(args...)

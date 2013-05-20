@@ -57,9 +57,13 @@ class Internet
 
   download_now: (on_download_complete) ->
     return if not on_download_complete
-    console.log "Downloading //#{@from}//..."
+    console.log "Downloading #{@from}..."
     to = @to
     @get @from, (error) =>
+      if error
+        console.log error
+        console.log error.trace if error.trace
+        return on_download_complete error
       writer = fs.createWriteStream to
       @response.on 'end', =>
         console.log '...done';
@@ -70,12 +74,8 @@ class Internet
 
   send_request: (method, address, on_connection) ->
     address = address[1..] if address[0] is '/'
-    address = url.parse "#{@base}/#{address}", true, true
-    # see if we are http or https
-    if address.protocol is 'http:'
-      address.port ?= 80; transport = http
-    else
-      address.port ?= 443; transport = https
+    address = "#{@base}/#{address}" if @base?.length
+    address = url.parse address, true, true
     # restore the query string - and add any from @options
     query = querystring.stringify _.extend {}, address.query, @_options.query
     address.path =
@@ -88,6 +88,14 @@ class Internet
       path: address.path
       port: address.port
       on_request: ->
+    # see if we are http or https
+    if address.protocol is 'http:'
+      address.port ?= 80; transport = http
+    else
+      address.port ?= 443; transport = https
+      options.rejectUnauthorized = false
+      options.agent = new https.Agent(options)
+    options.port = address.port
     options[key] = value for key, value of @_options
     @_options = {}
     clock = timer silent:true

@@ -87,7 +87,6 @@ var split = function(full_path) {
       return [base, to_find.slice(base.length)]
     }
   }
-  console.log("NOT FOUND\n")
   return ['', full_path]
 }
 
