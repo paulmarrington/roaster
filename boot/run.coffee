@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
 fs = require 'fs'; dirs = require 'dirs'
 
 usage = ->
@@ -13,4 +13,5 @@ usage = ->
 usage() if process.argv.length < 4
 [cmd,args...] = process.argv.slice(3)
 
+require("init")
 require("scripts/#{cmd}")(args...)

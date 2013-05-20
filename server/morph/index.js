@@ -1,31 +1,33 @@
 /* Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license */
 var fs = require('fs'), path = require('path'), util = require('util')
-var mkdirsSync = require('dirs').mkdirsSync, newer = require('newer')
+var dirs = require('dirs'), newer = require('newer')
 // check for out-of-date files and recompile on an as-needs basis.
 // morph(source, target-ext, builder)
 //   builder(error, target-file-name, code, saver)
 //     saver(error, code, next)
 //       next(error)
 var morph = function (source, target_ext, builder) {
-  cwd = process.cwd()//process.env.uSDLC_base_path
-    var target = path.relative(cwd, source).replace(/\.\.\//g, '')
-    // so we don't have gen/gen/...
-    if (target.slice(0,4) === 'gen/') target = target.slice(4)
-    target = path.join(cwd, 'gen', target + target_ext)
-    // we only need to rebuild if source is newer
-    if (newer(source, target)) {
-        var code = fs.readFileSync(source, 'utf8')
-        if (code.charCodeAt(0) === 0xFEFF) {
-            code = code.substring(1);
-        }
-        mkdirsSync(path.dirname(target))
-        builder(null, target, code, function(error, built) {
-          fs.writeFileSync(target, built, 'utf8')
-        })
-    } else {
-      builder(null, target)
-    }
-    return target
+  var target = source
+  if (source.indexOf('/gen/') == -1) {
+    var split = dirs.split(source)
+    var base_dir = split[0], source_name = split[1]
+    target = path.join(base_dir, 'gen', source_name)
+  }
+  target += target_ext
+  // we only need to rebuild if source is newer
+  if (newer(source, target)) {
+      var code = fs.readFileSync(source, 'utf8')
+      if (code.charCodeAt(0) === 0xFEFF) {
+          code = code.substring(1);
+      }
+      dirs.mkdirsSync(path.dirname(target))
+      builder(null, target, code, function(error, built) {
+        fs.writeFileSync(target, built, 'utf8')
+      })
+  } else {
+    builder(null, target)
+  }
+  return target
 }
 module.exports = morph
 // Extend node require() to include a new source file type

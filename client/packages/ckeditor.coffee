@@ -43,6 +43,7 @@ default_options =
   toolbarViews: toolbarViews
   maximize: true
   extraPlugins: 'tableresize,placeholder'
+  basicEntities: false
 
 open = (id, options) ->
   options = _.extend {}, default_options, options

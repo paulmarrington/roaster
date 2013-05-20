@@ -16,7 +16,7 @@ class Internet
     Object.defineProperty @, "options", 
       get: => return @_options
       set: (value) =>
-        @_options = if value.length is 0 then {} else value[0]
+        @_options = if value?.length and value[0] then value[0] else {}
         @_options.headers ?= {}
 
   # Abort stream if Internet unavailable - require(internet).available(gwt)
@@ -45,9 +45,13 @@ class Internet
   # helper to get a JSON response - in-memory so size limited
   get_json: (address, @options..., next) ->
     @options.on_request = => @request.end()
-    @send_request 'GET', address, (error) ->
-      return next(error) if error
-      @read_response (data) -> next null, JSON.parse data
+    check = (err) => if err then @request?.abort(); next(err)
+    @send_request 'GET', address, (error) =>
+      check error
+      @read_response (data) =>
+        next null, '' if not data.length
+        try next null, JSON.parse data
+        catch error then check data
   # set how many seconds we keep retrying
   retry: (seconds) -> @retry_for = seconds; return @
 
@@ -102,6 +106,6 @@ class Internet
   read_response: (next) ->
     data = []
     @response.on 'data', (chunk) -> data.push chunk
-    @response.on 'end', -> next data.join ''
+    @response.on 'end', => next data.join ''
 
-module.exports = -> new Internet()
+module.exports = (args...) -> new Internet(args...)

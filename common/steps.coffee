@@ -65,8 +65,8 @@ class Steps extends events.EventEmitter
     # ok, all entries were synchronous so parallel did not get to
     # process them because the lock above was on
     @next() if @pending is 0 and @contains_parallels
-  # @call -> actions - call with steps as this so you can use @next, etc
   skip: => @steps.shift() if @steps.length; @next()
+  # @call -> actions - call with steps as this so you can use @next, etc
   call: (func) => func.apply(@, arguments)
   abort: (error) =>
     clearTimeout @step_timer
@@ -122,7 +122,7 @@ class Steps extends events.EventEmitter
     console.log """
       Error: #{error}
           Step: #{error.step ? ''}
-          Trace: #{error.trace ? ''}"""
+          Trace: #{error.stack ? ''}"""
   # Display each step before running it
   trace: (tracing = true) -> @tracing = tracing
 module.exports = Steps
