@@ -19,3 +19,7 @@ module.exports =
     input = fs.createReadStream(source).on 'error', done
     output = fs.createWriteStream(target).on('error', done).on('close', done)
     input.pipe output
+    
+  size: (name, next) ->
+    fs.stat name, (error, stat) ->
+      next error, stat?.size

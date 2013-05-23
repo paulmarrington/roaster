@@ -14,8 +14,7 @@ Steps::drain = (stream, data) ->
 Steps::pipe = (input, pipes...) ->
   pipes.slice(-1)[0].on 'close', @next
   for pipe in pipes
-    input.pipe pipe
-    input = pipe
+    input = input.pipe pipe
 
 # possibly asynchronous requires
 Steps::requires = (modules...) ->
