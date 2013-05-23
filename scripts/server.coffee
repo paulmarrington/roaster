@@ -1,15 +1,13 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-processes = require 'processes'; fs = require 'file-system'
-
-load = fs.node 'boot/load.js'
-server = fs.node 'server/boot/server'
+# Copyright (C) 2012 paul@marrington.net, see GPL for license
 
 module.exports = (args...) ->
-  node = processes('node')
-  node.respawn load, server, args...
-  return node
+  if process.env.DEBUG_NODE or args[0] is 'mode=gwt'
+    require 'server/boot/server'
+  else
+    processes = require 'processes'; dirs = require 'dirs'
+    load = dirs.node 'boot/load.js'
+    server = dirs.node 'server/boot/server'
 
-module.exports.debug = (args...) ->
-  node = processes('node')
-  node.respawn '--debug', load, server, args...
-  return node
+    node = processes('node')
+    node.respawn load, server, args...
+    return node

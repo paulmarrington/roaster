@@ -22,39 +22,44 @@
 #   respond: method to call to send data back to the browser - chaining support
 #   faye: pubsub server-side client. Set to false for no pubsub on server
 #   config: Configuration file (<config>.config.coffee)
-create_http_server = require 'boot/create-http-server'
-create_faye_server = require 'boot/create-faye-server'
+# create_faye_server = require 'boot/create-faye-server'
 project_init = require 'boot/project-init'
-system = require 'system'; fs = require 'file-system'
+system = require 'system'; dirs = require 'dirs'
 
 # process the command line
-environment = process.environment = system.command_line(
-  base_dir: fs.base ''  # convenience path to server base directory
+environment = process.environment =
+  base_dir: dirs.base ''# convenience path to server base directory
   config: 'base'        # used to load config settings (<name>.config.coffee)
-  faye: true            # true to activate pubsub - set to faye.client
+  # faye: true            # true to activate pubsub - set to faye.client
   user: 'Guest'         # default user if one is not logged in
   since: new Date().getTime()  # time of server start (epoch time)
   command_line: process.argv.join ' ' # full command line for identification
-)
-
+  maximum_browser_cache_age: 60*60*1000 # 1 hour before statics are reloaded
+  pid: process.pid # for kill, etc
+global.http_processors = []
 # allow project to tweak settings before we commit to action
 project_init.pre environment
-
-default_environment = ("#{name}=#{value}" for name, value of environment).sort()
+args = system.command_line(environment)
 
 # load an environment related config file
-# command-line could have config=debug
 # related file can be anywhere on the node requires paths + /config/
-require("config/#{environment.config}")(environment)
+config = args.config ? environment.config
+require("config/#{config}")(environment)
+# lastly over-ride with anything from the command line
+environment[key] = value for key, value of args
+# environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
+# prepare copies for client and display
+default_environment = []
+configuration = {}
+for name, value of environment
+  default_environment.push "#{name}=#{value}" if not (value instanceof Object)
+  configuration[name] = value
+default_environment.sort()
+environment.configuration = configuration
 
 # create a server ready to listen
+create_http_server = require('boot/create-http-server')
 environment.server = create_http_server environment
-environment.faye = create_faye_server environment if environment.faye
-
-# in debug mode we reload pages fresh from server.
-if environment.debug
-  exchange.respond.maximum_browser_cache_age = 1000
-
 # kick-off
 environment.server.listen environment.port
 # lastly we do more project level initialisation

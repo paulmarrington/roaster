@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license"
+#echo "Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license"
 echo
 # The go script is in the root directory of uSDLC2 Node
 export uSDLC_base_path=$(pwd)
@@ -13,7 +13,7 @@ export PATH=$uSDLC_node_path/ext/node/bin:$PATH
 if [ ! -d "$uSDLC_node_path/ext/node" ]; then
     echo "First time only install of node.js to"
     echo "    $uSDLC_node_path"
-    "$uSDLC_node_path/bin/update-node-on-unix"
+    "$uSDLC_node_path/release/update-node-on-unix"
 fi
 
-node "$uSDLC_node_path/boot/load.js" "boot/run" $@
+node $DEBUG_NODE "$uSDLC_node_path/boot/load.js" "boot/run" $@

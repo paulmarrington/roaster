@@ -1,72 +1,81 @@
 module.exports = (exchange) ->
   exchange.respond.client ->
-    step(
-      # if the dependant does not do anything asynchronous during init
-      # then we can call depends directly
-      ()->
-        @common = 1
-        roaster.depends '/scratch/dep-sync.coffee', @next
-      (error, dep_sync) ->
-        @common++
-        console.log "dep_sync=#{dep_sync}"
+    load_requires = ->
+      @service '/scratch/dep_sync.coffee'
 
-        # if a dependency does async stuff during init it needs to be
-        # wrapped in a function and that function called
-        roaster.depends '/scratch/dep-async.coffee', @next
-      (error, dep_async) ->
-        dep_async null, @next
+    check_requires = ->
+      console.log "dep_sync=#{@dep_sync} (should be 'dep-sync result')"
 
-      (error, dep_async2) ->
-        console.log "dep_async in-line=#{dep_async2}"
+    load_libraries = ->
+      # test out libraries that are synchronous js files that load in parallel
+      window.libraries_test = []
+      @requires '/scratch/l1.js', '/scratch/l2.js','/scratch/l3.js'
 
-        # As a shorthand function use @depends. This approach also has then
-        # benefit of loading more than one dependency in parallel - and passing
-        # back all the results
-        @depends '/scratch/dep-async.coffee',
-          '/scratch/dep-async4.coffee', '/scratch/dep-sync.coffee'
-      (error, dep_async3, dep_async4, dep_sync) ->
-        console.log "@depends dep_async3=#{dep_async3}, dep_async4=#{dep_async4}, dep_sync=#{dep_sync}"
+    check_libraries = ->
+      console.log window.libraries_test
+      console.log "Expecting 'l1 loaded, l2 loaded, l3 loaded'"
 
-        # test out libraries that are synchronous js files that load in parallel
-        window.libraries_test = []
-        @library '/scratch/l1.js', '/scratch/l2.js','/scratch/l3.js'
-      () ->
-        @common++
-        console.log window.libraries_test
+    check_libraries_reload = ->
+      console.log window.libraries_test
+      console.log "Expecting empty list since already loaded"
 
-        # Now we need to test what happens when we call depends/libraries on
-        # previously loaded code
-        window.libraries_test = []
-        @library '/scratch/l1.js', '/scratch/l2.js','/scratch/l3.js'
-      () ->
-        console.log window.libraries_test
+    load_parallel_requires = ->
+      @parallel(
+        -> @requires '/scratch/dep_async.coffee'
+        -> @requires '/scratch/dep_async4.coffee')
 
-        @parallel(
-          -> depends('/scratch/dep-async.coffee', @next)
-          -> depends('/scratch/dep-async4.coffee', @next))
-      # (error, dep_async5, dep_async6) ->
-      #   dep_async5 null, @parallel()
-      #   dep_async6 null, @parallel()
-      (error, dep_async5, dep_async6) ->
-        console.log "@parallel dep_async5=#{dep_async5}, dep_async6=#{dep_async6}"
-        #Check async loading of data
-        @data '/scratch/run', '/scratch/l1.js'
-      (error, run, l1) ->
-        console.log "error=#{error}"
-        console.log "run=#{run.length}"
-        console.log "l1=#{l1.length}"
+    check_parallel_requires = ->
+      console.log "@parallel dep_async=#{@dep_async}, dep_async4=#{@dep_async4}"
+      console.log "Expecting two x 'dep-async[-n] result"
 
-        @depends '/client/faye.coffee'
-      (error, @faye) ->
-        roaster.script_loader '/scratch/test-faye.server.coffee', @next
-      ->
-        console.log "Client: subscribe to '/channel/on-client'"
-        @faye.subscribe '/channel/on-client', (message) -> console.log message.text
-        publish = =>
-          console.log "Client: publish to '/channel/on-server'"
-          @faye.publish '/channel/on-server', text: 'from client to server'
-          console.log "Client: publish to '/channel/on-client'"
-          @faye.publish '/channel/on-client', text: 'from client to client'
-        setTimeout publish, 1000
-        console.log "COMMON=#{@common}"
+    load_data = ->
+      @data '/scratch/run', '/scratch/l1.js'
+
+    check_data_load = ->
+      console.log "run=#{@run?.length}, l1=#{@l1?.length}"
+      console.log "Async data load = both should have non-zero lengths"
+
+    load_faye = -> @requires '/client/faye.coffee'
+
+    instantiate_faye = -> @faye @next (@faye) =>
+
+    start_faye_server_script = ->
+      @service '/scratch/test_faye.server.coffee'
+      console.log "Expecting 'test-faye.server.coffee ran' on client console"
+      console.log "and 3 'Server' type messages on the server console"
+
+    subscribe = ->
+      @faye.subscribe '/channel/on-client', (message) -> console.log message.text
+      console.log "Expect 'from server to client' on client console"
+
+    publish = ->
+      go = =>
+        console.log "Expecting 'from client to server' on server"
+        @faye.publish '/channel/on-server', text: 'from client to server'
+        console.log "Expecting 'from client to client' on client"
+        @faye.publish '/channel/on-client', text: 'from client to client'
+      setTimeout go, 1000
+
+
+    steps(
+      load_requires
+      check_requires
+
+      load_libraries
+      check_libraries
+
+      load_libraries
+      check_libraries_reload
+
+      load_parallel_requires
+      check_parallel_requires
+
+      load_data
+      check_data_load
+
+      load_faye
+      instantiate_faye
+      start_faye_server_script
+      subscribe
+      publish
     )

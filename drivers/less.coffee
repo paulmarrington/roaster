@@ -1,4 +1,4 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2012 paul@marrington.net, see GPL for license
 less = require 'morph/less'
 
 module.exports = (exchange, next) ->

@@ -1,32 +1,33 @@
 /* Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license */
-var fs = require('fs'), path = require('path')
-var mkdirsSync = require('dirs').mkdirsSync, newer = require('newer')
-// all files are cached in /gen under the main project directory
-var base_dir = process.env.uSDLC_base_path
-var base_length = base_dir.length
+var fs = require('fs'), path = require('path'), util = require('util')
+var dirs = require('dirs'), newer = require('newer')
 // check for out-of-date files and recompile on an as-needs basis.
 // morph(source, target-ext, builder)
 //   builder(error, target-file-name, code, saver)
 //     saver(error, code, next)
 //       next(error)
 var morph = function (source, target_ext, builder) {
-    var target = path.relative(process.cwd(), source).replace(/\.\.\//g, '')
-    target = path.join(base_dir, 'gen', (target + target_ext))
-
-    // we only need to rebuild if source is newer
-    if (newer(source, target)) {
-        var code = fs.readFileSync(source, 'utf8')
-        if (code.charCodeAt(0) === 0xFEFF) {
-            code = code.substring(1);
-        }
-        mkdirsSync(path.dirname(target))
-        builder(null, target, code, function(error, built) {
-          fs.writeFileSync(target, built, 'utf8')
-        })
-    } else {
-      builder(null, target)
-    }
-    return target
+  var target = source
+  if (source.indexOf('/gen/') == -1) {
+    var split = dirs.split(source)
+    var base_dir = split[0], source_name = split[1]
+    target = path.join(base_dir, 'gen', source_name)
+  }
+  target += target_ext
+  // we only need to rebuild if source is newer
+  if (newer(source, target)) {
+      var code = fs.readFileSync(source, 'utf8')
+      if (code.charCodeAt(0) === 0xFEFF) {
+          code = code.substring(1);
+      }
+      dirs.mkdirsSync(path.dirname(target))
+      builder(null, target, code, function(error, built) {
+        fs.writeFileSync(target, built, 'utf8')
+      })
+  } else {
+    builder(null, target)
+  }
+  return target
 }
 module.exports = morph
 // Extend node require() to include a new source file type
@@ -46,12 +47,32 @@ module.exports.extend_require = function (source_ext, compiler) {
 module.exports.compileJavascript = function(source, compiler, next) {
     morph(source, '.js', function(error, filename, content, save) {
         if (error) return next(error, filename)
-        if(content) {
-            js = compiler.compile(content, {filename:filename})
+        if (content) {
+          try {
+            var js = compiler.compile(content, {filename:filename})
             save(null, js)
-            next(error, filename)
+          } catch(err) {
+            console.log("Error compiling " + source +
+              " to JavaScript\n" + util.inspect(err))
+            throw err
+          }
+          next(error, filename, true)
         } else {
-            next(null, filename)
+            next(null, filename, false)
         }
     })
 }
+// Simple morph that does nothing but copy to destination dir.
+// Used when templates are going to up date source otherwise
+module.exports.copier = function(source, next) {
+    morph(source, '', function(error, filename, content, save) {
+        if (error) return next(error, filename)
+        if (content) {
+          save(null, content)
+          next(error, filename, true)
+        } else {
+          next(null, filename, false)
+        }
+    })
+}
+

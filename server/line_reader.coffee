@@ -1,5 +1,5 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-fs = require 'file-system'; stream = require('stream')
+fs = require 'fs'; stream = require('stream')
 
 # Read lines from a stream - with the same stream pattern of pause and resume.
 class line_reader extends stream.Stream
@@ -27,8 +27,8 @@ class line_reader extends stream.Stream
 
 module.exports = (reader) -> new line_reader(reader)
 module.exports.for_file = (name, action_per_line) ->
-    @reader = new line_reader(fs.createReadStream(name))
-    @reader.on 'data', action_per_line
-    @reader.on 'end', => @reader.destroy();
-    return @reader
-
+  @reader = new line_reader(fs.createReadStream(name))
+  @reader.on 'data', action_per_line
+  @reader.on 'end', => @reader.destroy()
+  return @reader
+module.exports.for_text = (text) -> lines = text.split(/\r?\n/)

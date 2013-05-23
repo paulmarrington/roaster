@@ -1,6 +1,6 @@
 # Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 send = require 'send'; gzip = require 'morph/gzip'; fs = require 'fs'
-clients = {}
+templates = require 'templates'; clients = {}
 
 # http://localhost:9009/server/save?file=/My_Project/usdlc/Development/index.html
 # contents of the file is in the body of the request as a binary stream
@@ -12,36 +12,41 @@ class Respond
     @exchange.response.setHeader(
       'Access-Control-Allow-Headers', 'Content-Type')
   # by default we send it as static content where the browser caches it forever
-  static_file: -> @exchange.reply = => @send_static()
-  send_static: ->
+  static_file: (file_path) ->
+    @exchange.request.filename = file_path if file_path
+    @exchange.domain = 'client'
+    @exchange.reply = (next) => @send_static(next)
+  send_static: (next = ->) ->
     fs.stat name = @exchange.request.filename, (err, stats) =>
       name += '/' if stats?.isDirectory() and name.slice(-1) != '/'
       # gzip name, (error, zipped-name) =>
       #   @exchange.response.setHeader 'Content-Encoding', 'gzip'
       #   @set_mime_type name
-      send(@exchange.request, name).
-      maxage(@maximum_browser_cache_age).pipe(@exchange.response)
-
-  # Default is for browser to cache static files for a day. This is unsuitable in development
-  # so the server will reset to 1 second if in debug mode. It is here so anyone else
-  # can change it if needed.
-  maximum_browser_cache_age: 86400 #Infinity
+      sender = send(@exchange.request, name)
+      sender.isMalicious = -> return false
+      sender.maxage(@exchange.environment.maximum_browser_cache_age)
+      sender.pipe(@exchange.response)
+      next()
   # respond to client with code to run in a sandbox
-  client: (functions...) ->
-    if not ((client = @exchange.request.filename) of clients)
-      url = @exchange.request.url.path
-      functions = ("#{func.toString()}()" for func in functions)
-      functions = functions.join(',')
-      # null is actally error first paramenter in cliend depends()
-      clients[client] = "roaster.cache['#{url}'] = [null,#{functions}]"
-    @script clients[client]
+  client: (code) ->
+    client = @exchange.request.filename
+    return @script(clients[client]) if clients[client]
+    url = @exchange.request.url.path
+    options =
+      template_name: 'templates/client.js'
+      script: "(#{code.toString()})()\n"
+      url: @exchange.request.url.pathname
+    templates.process_text options, (js) =>
+      @script clients[client] = js
   # respond to client with code
   js: (code) ->
-    @script "_tmp_=#{code.toString()}()"
+    @script "#{code.toString()}()"
   # string representation of a scipt
   script: (text) ->
+    @exchange.reply = (next) -> next()
     @exchange.respond.set_mime_type 'js'
-    @exchange.response.setHeader 'Cache-Control', 'public, max-age=#{maximum_browser_cache_age}'
+    @exchange.response.setHeader 'Cache-Control',
+      'public, max-age=#{@exchange.environment.maximum_browser_cache_age}'
     @exchange.response.setHeader 'content-length', text.length
     @exchange.response.end text
   # respond to client with some JSON for browser script consumption
@@ -56,9 +61,13 @@ class Respond
     @exchange.response.end text
   # morph (compile) one language to another (usually javascriot or css)
   morph: (morph, next) ->
-    morph @exchange.request.filename, (error, filename) =>
+    morph @exchange.request.filename, (error, filename, changed) =>
       @exchange.request.filename = filename
       next error, @exchange
+  # send back an error response to the client
+  error: (reason, code = 500) ->
+    @exchange.response.writeHead code, reason
+    @exchange.response.end JSON.stringify error:reason
   # helper to set the mime-type in a response object based on file name
   set_mime_type: (name) ->
     return if @exchange.response.getHeader 'Content-Type'
@@ -69,5 +78,11 @@ class Respond
     if (charset = send.mime.charsets.lookup type)
       type += "; charset=#{charset}"
     @exchange.response.setHeader 'Content-Type', type
+  # read post request into a string
+  read_request: (next) ->
+    data = []
+    @exchange.request.on 'data', (chunk) -> data.push chunk
+    @exchange.request.on 'end', -> next data.join ''
+    @exchange.request.resume()
 
 module.exports = (exchange) -> new Respond(exchange)

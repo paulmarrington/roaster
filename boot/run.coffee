@@ -1,13 +1,13 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-fs = require 'file-system'
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
+fs = require 'fs'; dirs = require 'dirs'
 
 usage = ->
-  node = fs.node 'scripts'
-  base = fs.base 'scripts'
+  node = dirs.node 'scripts'
+  base = dirs.base 'scripts'
   cmds = fs.readdirSync node
   cmds = cmds.concat fs.readdirSync base if node isnt base
   cmds = [name.split('.')[0] for name in cmds when name[0] isnt '.'].sort()
-  console.log "usage: #{fs.node()}/go [#{cmds}] [args]"
+  console.log "usage: #{dirs.node()}/go [#{cmds}] [args]"
   process.exit(1)
 
 usage() if process.argv.length < 4

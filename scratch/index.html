@@ -5,12 +5,13 @@
 	<!-- Date: 2012-11-23 -->
 	<!--
 		Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-	-->
-    <script type="text/javascript" src="/client/roaster.coffee"></script>
+    -->
+    <script type="text/javascript" src="/client/roaster.coffee?domain=client,library">
+    </script>
     <script type="text/javascript">
         function init() {
             document.getElementById('date').innerHTML = (new Date()).toString()
-            roaster.depends('/scratch/app.coffee')
+            roaster.depends('/scratch/app.coffee', 'server')
         }
     </script>
 

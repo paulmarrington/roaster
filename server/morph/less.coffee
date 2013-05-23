@@ -1,30 +1,35 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-demand = require 'demand'; step = require 'step';
-morph = require 'morph'; path = require 'path'; fs = require 'fs'
+# Copyright (C) 2012 paul@marrington.net, see GPL for license
+steps = require 'steps';
+morph = require 'morph'; path = require 'path'; dirs = require 'dirs'
 
-module.exports = (source, next) ->
-  step(
-    ->
-      demand 'less', (ref) => @next(null, ref)
-    (error, less_reference) ->
-      @less = less_reference
-      morph source, '.css', @next
-    (error, filename, content, save) ->
-      # return next(error, filename) if error
-      return next(null, filename) if not content  # up to date
-      @write_css = save
-      @css_filename = filename
-      # we have less @imports search from base path and the path
-      # if this file (the one being included from)
-      new @less.Parser(
-        # Specify search paths for @import directives
-        paths: [path.dirname source, fs.base()]
-        # Specify a filename, for better error messages
-        filename: filename
-      ).parse content, @next
-    (error, tree) ->
-      return next(error, @css_filename) if error
-      css = tree.toCSS compress: true
-      @write_css null, css
-      next null, @css_filename
+module.exports = (source, css_created) ->
+
+  load_libraries = -> @requires 'less'
+
+  process_less = -> morph source, '.css',
+    @next (@error, @css_filename, @content, @write_css) =>
+
+  convert_to_parse_tree = ->
+    return @next() if not @content  # up to date
+    new @less.Parser(
+      # Specify search paths for @import directives
+      paths: [path.dirname source, dirs.base()]
+      relativeUrls: true
+      # Specify a filename, for better error messages
+      filename: @css_filename
+    ).parse @content, @next (@error, @tree) =>
+
+  convert_to_css = ->
+    return if not @tree
+    css = @tree.toCSS compress: false
+    @write_css null, css
+
+  parsing_complete = -> css_created null, @css_filename
+
+  steps(
+    load_libraries
+    process_less
+    convert_to_parse_tree
+    convert_to_css
+    parsing_complete
   )
