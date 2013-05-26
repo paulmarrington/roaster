@@ -16,6 +16,7 @@ class Respond
     @exchange.request.filename = file_path if file_path
     @exchange.domain = 'client'
     @exchange.reply = (next) => @send_static(next)
+    return @
   send_static: (next = ->) ->
     fs.stat name = @exchange.request.filename, (err, stats) =>
       name += '/' if stats?.isDirectory() and name.slice(-1) != '/'
