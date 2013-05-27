@@ -74,6 +74,7 @@ module.exports.use_template = (exchange, template, next) ->
           options =
             script: content
             url: exchange.request.url.pathname
+            key: path.basename(exchange.request.url.pathname).split('.')[0]
           # set template or abort merge if no template
           hasTemplate = (template) ->
             if template

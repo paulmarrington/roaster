@@ -8,6 +8,7 @@ window.bind$ = (obj, key, target) ->
   return -> return (target || obj)[key].apply(obj, arguments)
 
 window.roaster =
+  context: {}
   # run code sequentially once roaster is ready
   on_ready: []
   ready: (func) ->

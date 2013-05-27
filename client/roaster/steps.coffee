@@ -40,7 +40,10 @@ module.exports = roaster.steps = (steps...) ->
               from = if name[0] is '/' then 1 else 0
               name = name.slice(from, -(type.length+1))
               @[key] = roaster.cache[name] = imports
-              depends()
+              if imports.initialise
+                imports.initialise(depends)
+              else
+                depends()
       # possibly asynchronous requires
       Steps::requires = (modules...) -> @depends 'client', modules
       # for packages that may be downloaded from other sites

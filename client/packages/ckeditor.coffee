@@ -82,8 +82,9 @@ open = (id, options) ->
     editor.getCommand('maximize').exec() if options.maximize
   return editor
 
+read_only = (read_only = true) -> editor.setReadOnly read_only
 loader = roaster.dependency(packages, '/ext/ckeditor/ckeditor.js')
 
 module.exports = (next) ->
-  roaster.ckeditor = {open, default_options, editors:{}}
+  roaster.ckeditor = {open, read_only, default_options, editors:{}}
   loader next
