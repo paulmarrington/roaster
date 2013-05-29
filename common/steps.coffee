@@ -88,7 +88,11 @@ class Steps extends events.EventEmitter
     @asynchronous()
     do process_next = =>
       return @next() if not list.length
-      processor list.shift(), process_next
+      try
+        processor list.shift(), process_next
+      catch exception
+        @emit 'error', exception
+        process_next()
 
   # Add a special callback generator `this.parallel()` that groups stuff.
   parallel: =>
