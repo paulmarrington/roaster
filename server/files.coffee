@@ -1,5 +1,6 @@
 # Copyright (C) 2012,13 paul@marrington.net, see GPL for license
-fs = require 'fs'; path = require 'path'; dirs = require 'dirs'
+fs = require 'fs'; path = require 'path'
+os = require 'os'; dirs = require 'dirs'
 
 module.exports =
   # returns a file on one path or null if it can't be found
@@ -19,7 +20,20 @@ module.exports =
     input = fs.createReadStream(source).on 'error', done
     output = fs.createWriteStream(target).on('error', done).on('close', done)
     input.pipe output
-    
+
   size: (name, next) ->
     fs.stat name, (error, stat) ->
       next error, stat?.size
+
+  save: (file_name, input_stream, next) ->
+    building_place = path.join os.tmpdir(), path.basename file_name
+    final_resting_place = file_name
+
+    steps(
+      ->  dirs.mkdirs path.dirname(file_name), @next
+      ->  @file = fs.createWriteStream(building_place)
+      ->  @pipe(inputStream, @file)
+      ->  fs.unlink final_resting_place, @next
+      ->  fs.rename building_place, final_resting_place, @next
+      ->  next()
+    )

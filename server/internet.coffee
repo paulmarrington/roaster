@@ -13,7 +13,7 @@ class Internet
       to: (@to, next) => @download_now(next); return @download
     # process options as needed
     @_options = {}
-    Object.defineProperty @, "options", 
+    Object.defineProperty @, "options",
       get: => return @_options
       set: (value) =>
         @_options = if value?.length and value[0] then value[0] else {}
@@ -34,6 +34,10 @@ class Internet
   # prepare to post a stream of data
   post_stream: (address, @options..., on_response) ->
     @send_request('POST', address, on_response)
+
+  # put a stream down the http line
+  put:  (address, @options..., on_response) ->
+    @send_request('PUT', address, on_response)
 
   # helper for http GET - returns request object
   get: (address, @options..., on_response) ->
@@ -73,8 +77,11 @@ class Internet
     @from = @to = ''
 
   send_request: (method, address, on_connection) ->
-    address = address[1..] if address[0] is '/'
-    address = "#{@base}/#{address}" if @base?.length
+    if not address?.length
+      address = @base
+    else
+      address = address[1..] if address[0] is '/'
+      address = "#{@base}/#{address}" if @base?.length
     address = url.parse address, true, true
     # restore the query string - and add any from @options
     query = querystring.stringify _.extend {}, address.query, @_options.query
