@@ -27,10 +27,11 @@ toolbarGroups = [
   { name: 'about' }
 ]
 toolbarViews =
-  Document: 'document,paragraph,align,insert'
+  Insert: 'document,paragraph,align,insert'
   Edit: 'basicstyles,links,styles,colors'
   Form: 'forms'
   View: 'editing,doctools,tools,others,about'
+toolbarViewsOrder = "Insert,Edit,Form,View".split(',')
 
 default_options =
   fullPage: true
@@ -41,19 +42,25 @@ default_options =
   removeButtons: ''
   toolbarGroups: toolbarGroups
   toolbarViews: toolbarViews
+  toolbarViewsOrder: toolbarViewsOrder
   maximize: true
   extraPlugins: 'tableresize,placeholder'
   basicEntities: false
+  removePlugins: 'magicline'
+
+editor = null
 
 open = (id, options) ->
   options = _.extend {}, default_options, options
   options.removeButtons += ',Maximize' if options.maximize
 
-  roaster.ckeditor.editors[id] = editor = CKEDITOR.replace 'document', options
+  roaster.ckeditor.editors[id] = editor = CKEDITOR.instances.document
+  _.extend editor.config, options
 
   editor.toolbarGroupNames = {}
   for group, index in options.toolbarGroups
     editor.toolbarGroupNames[group.name] = index
+  options.toolbarViewsOrder = toolbarViewsOrder
   [toolbarViews, options.toolbarViews] = [options.toolbarViews, {}]
   options.toolbarViews[view] = list.split(',') for view,list of toolbarViews
 
@@ -68,23 +75,45 @@ open = (id, options) ->
     $(".cke_editor_tab_#{name}", editor.div).addClass 'cke_editor_tab_selected'
     return false
 
-  editor.once 'instanceReady', ->
-    editor.div = $ '.cke_inner', $ editor.container.$
+  instanceReady = ->
+    editor.div = $ '.cke_inner'
     tab = $ '<div class="cke_editor_tabs"></div>'
-    for name in (name for name, items of options.toolbarViews).sort()
+    for name in toolbarViewsOrder
       do ->
         tab_name = name
         a = $ "<a class='cke_editor_tab cke_editor_tab_#{name}'>#{name}</a>"
-        a.click -> roaster.ckeditor.editors[id].showToolbarGroup(tab_name)
+        a.click -> show_tab tab_name
         tab.append a
     editor.div.prepend tab
     editor.showToolbarGroup 'Edit'
-    editor.getCommand('maximize').exec() if options.maximize
+  editor.onInstanceReady = [instanceReady]
+  editor.once 'instanceReady', ->
+    onInstanceReady() for onInstanceReady in editor.onInstanceReady
   return editor
+
+last_tab = 'Edit'
+
+show_tab = (tab_name) ->
+  editor.showToolbarGroup(tab_name)
+  editor.focusManager.focus()
+  [last_tab, last] = [tab_name, last_tab]
+  return last
 
 read_only = (read_only = true) -> editor.setReadOnly read_only
 loader = roaster.dependency(packages, '/ext/ckeditor/ckeditor.js')
 
+toolbar = (group, tab, items...) ->
+  external = (item) ->
+    CKEDITOR.plugins.addExternal item, "/client/#{group}/", "#{item}.coffee"
+    roaster.ckeditor.default_options.extraPlugins += ",#{item}"
+  external item for item in items
+  if not roaster.ckeditor.default_options.toolbarViews[tab]
+    roaster.ckeditor.default_options.toolbarGroups.push name: tab
+    roaster.ckeditor.default_options.toolbarViews[tab] = tab
+    roaster.ckeditor.default_options.toolbarViewsOrder.push tab
+
 module.exports = (next) ->
-  roaster.ckeditor = {open, read_only, default_options, editors:{}}
+  roaster.ckeditor = {
+    open, read_only, default_options, editors:{}, toolbar, show_tab
+  }
   loader next
