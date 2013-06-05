@@ -84,12 +84,15 @@ open = (id, options) ->
         a = $ "<a class='cke_editor_tab cke_editor_tab_#{name}'>#{name}</a>"
         a.click -> show_tab tab_name
         tab.append a
+    tab.append '<span class=messages></span>'
     editor.div.prepend tab
     editor.showToolbarGroup 'Edit'
   editor.onInstanceReady = [instanceReady]
   editor.once 'instanceReady', ->
     onInstanceReady() for onInstanceReady in editor.onInstanceReady
   return editor
+
+roaster.message = (msg) -> $('span.message').html(msg)
 
 last_tab = 'Edit'
 
@@ -106,7 +109,7 @@ toolbar = (group, tab, items...) ->
   external = (item) ->
     CKEDITOR.plugins.addExternal item, "/client/#{group}/", "#{item}.coffee"
     roaster.ckeditor.default_options.extraPlugins += ",#{item}"
-  external item for item in items
+  external item for item in items if item isnt '-'
   if not roaster.ckeditor.default_options.toolbarViews[tab]
     roaster.ckeditor.default_options.toolbarGroups.push name: tab
     roaster.ckeditor.default_options.toolbarViews[tab] = tab

@@ -46,7 +46,7 @@ args = system.command_line(environment)
 config = args.config ? environment.config
 require("config/#{config}")(environment)
 # Then over-ride as needed in a local (repo excluded) configuration file
-try require("local/config") catch error
+try require("local/config")(environment) catch error
 # lastly over-ride with anything from the command line
 environment[key] = value for key, value of args
 # environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
