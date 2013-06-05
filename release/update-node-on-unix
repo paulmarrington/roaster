@@ -6,7 +6,7 @@ echo
 ##################################################
 # change this as new versions of node are released
 ##################################################
-nodeVersion=v0.10.9
+nodeVersion=v0.10.10
 
 ################################################
 # Now we download the correct version of node-js
@@ -18,7 +18,7 @@ os="`uname`-`uname -m`"
 case $os in
 	Darwin-x86_64) os=darwin-x64 ;;
 	Darwin-i386) os=darwin-x86 ;;
-	Linux-x86-64) os=linux-x64 ;;
+	Linux-x86_64) os=linux-x64 ;;
 	Linux-i386) os=linux-x86 ;;
 	*) echo "Unknown OS version - '$os'"
 	   echo "Compile from source at 'http://nodejs.org/dist/$nodeVersion/node-$nodeVersion.tar.gz'"
