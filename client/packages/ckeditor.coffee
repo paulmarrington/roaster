@@ -92,7 +92,7 @@ open = (id, options) ->
     onInstanceReady() for onInstanceReady in editor.onInstanceReady
   return editor
 
-roaster.message = (msg) -> $('span.message').html(msg)
+roaster.message = (msg) -> $('span.messages').html(msg)
 
 last_tab = 'Edit'
 

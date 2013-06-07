@@ -123,10 +123,11 @@ class Steps extends events.EventEmitter
       ), @maximum_time_ms
 
   log_error: (error) =>
-    console.log """
-      Error: #{error}
-          Step: #{error.step ? ''}
-          Trace: #{error.stack ? ''}"""
+    console.log "Error:", error
+    console.log "Step:", error.step if error.step?.length
+    console.log "Trace:", error.stack if error.stack?.length
+    
   # Display each step before running it
   trace: (tracing = true) -> @tracing = tracing
+
 module.exports = Steps
