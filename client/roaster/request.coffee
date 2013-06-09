@@ -2,13 +2,25 @@
 
 module.exports =
   data: (url, next) ->
+    contents = []
+    @stream url, (error, text, is_complete) ->
+      contents.push text
+      next(error, contents.join('')) if is_complete
+    
+  stream: (url, onData) ->
     request = new XMLHttpRequest()
     request.open 'GET', url, true
+    previous_length = 0
     request.onreadystatechange = ->
-      return if request.readyState isnt 4
-      switch request.status
-        when 200 then next null, request.responseText
-        else next request.statusText
+      return if request.readyState <= 2
+      try
+        text = request.responseText.substring(previous_length)
+        previous_length += request.responseText.length
+      catch e then text = ''
+      error = null
+      if is_complete = (request.readyState is 4)
+        if request.status isnt 200 then error = request.statusText
+      onData(error, text, is_complete)
     request.send null
 
   css: (url) ->
@@ -20,7 +32,7 @@ module.exports =
     document.getElementsByTagName("head")[0].appendChild(link)
 
   json: (url, next) ->
-    roaster.request.data url, (error, text) ->
+    @data url, (error, text) ->
       next(error) if error
       next null, JSON.parse text
 
