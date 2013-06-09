@@ -17,7 +17,6 @@ module.exports = (exchange) ->
       )
 
   process_zip = (file, to, next) ->
-    console.log "UNZIP '#{file}' to '#{to}'"
     base = dirs.base 'ext', to
     steps(
       ->  @requires 'adm-zip'
@@ -34,7 +33,6 @@ module.exports = (exchange) ->
 
   load = (key, url, next) ->
     [url, to, rename] = url.split '|'; to ?= key
-    # console.log "LOAD",url
     download key, url, (file) ->
       return next() if not file
       results[key] = true
@@ -48,7 +46,6 @@ module.exports = (exchange) ->
           fs.rename from, to, next
         else
           next()
-
   steps(
     ->  @long_operation()
     ->  for key, url of exchange.request.url.query
