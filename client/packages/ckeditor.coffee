@@ -27,8 +27,8 @@ toolbarGroups = [
   { name: 'about' }
 ]
 toolbarViews =
-  Insert: 'document,paragraph,align,insert'
-  Edit: 'basicstyles,links,styles,colors'
+  Insert: 'document,paragraph,align,insert,links'
+  Edit: 'basicstyles,styles,colors'
   Form: 'forms'
   View: 'editing,doctools,tools,others,about'
 toolbarViewsOrder = "Insert,Edit,Form,View".split(',')
