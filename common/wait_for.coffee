@@ -4,7 +4,7 @@
 # to complete. Useful when downloading packages and modules from the Internet.
 # Used like:
 
-# wait_for = require 'wait_for'
+# wait_for = require 'common/wait_for'
 # package = wait_for (next) ->
 #   steps(
 #     -> dowload_package_from_internet_if_not_local()
