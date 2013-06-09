@@ -16,8 +16,8 @@ class Processes # proc = require('proc')() # sets default streaming and options
     return @
 
   node_setup: ->
-    @args.unshift 'boot/run' if @program isnt 'server'
     @args = [@program, @args...]
+    @args.unshift 'boot/run' if @program isnt 'server'
     @program = dirs.node('boot/load.js')
 
   # restart runs a node job and restarts it if and when it dies
@@ -83,5 +83,11 @@ class Processes # proc = require('proc')() # sets default streaming and options
       return @next(new Error(@signal, @args)) if @signal
       return @next(null)
     return @proc
+    
+  decode_query: (query) ->
+    decoded = []
+    for key, value of query
+      decoded.push if value then "#{key}=#{value}" else key
+    return decoded
 
 module.exports = (program) -> new Processes program
