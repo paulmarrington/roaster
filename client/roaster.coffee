@@ -96,6 +96,7 @@ window.roaster =
   process:
     noDeprecation: true
     platform: 'browser'
+    env: {}
 
   cache: {}
   loading: {}

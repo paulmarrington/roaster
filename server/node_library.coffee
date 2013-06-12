@@ -11,6 +11,6 @@ module.exports =
     steps(
       -> dirs.mkdirs library_path, @next
       -> fs.exists local, @next (exists) => @skip() if exists
-      -> internet.download.from(url).to(local, @next)
+      -> internet.download.from(url).to local, @next (@error) ->
       -> on_resolve(local)
       )

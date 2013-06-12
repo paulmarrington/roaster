@@ -3,6 +3,7 @@ url = require 'url'; path = require 'path'; os = require 'os'
 http = require 'http'; https = require 'https'; fs = require 'fs'
 querystring = require 'querystring'; url = require 'url'
 timer = require 'common/timer', _ = require 'underscore'
+dirs = require 'dirs'
 
 class Internet
   constructor: (@base = '') ->
@@ -68,12 +69,13 @@ class Internet
         console.log error
         console.log error.trace if error.trace
         return on_download_complete error
-      writer = fs.createWriteStream to
-      @response.on 'end', =>
-        console.log '...done';
-        writer.end()
-        on_download_complete()
-      @response.pipe writer
+      dirs.mkdirs path.dirname(to), =>
+        writer = fs.createWriteStream to
+        @response.on 'end', =>
+          console.log '...done';
+          writer.end()
+          on_download_complete()
+        @response.pipe writer
     @from = @to = ''
 
   send_request: (method, address, on_connection) ->
@@ -109,10 +111,13 @@ class Internet
     @request = null
     do requesting = =>
       @request?.abort()
+      console.log(address.protocol,options) if method is 'PUT'
       @request = transport.request options, (@response) =>
+        console.log('CONNECTED') if method is 'PUT'
         on_connection(null, @request, @response)
       options.on_request @request
       @request.on 'error', (error) =>
+        console.log('ERROR', error) if method is 'PUT'
         if error?.code is 'ECONNREFUSED' and clock.total() < @retry_for
           return setTimeout requesting, 500
         on_connection error, @request
