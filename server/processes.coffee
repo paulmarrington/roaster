@@ -36,7 +36,7 @@ class Processes # proc = require('proc')() # sets default streaming and options
   # exec runs the provided command in a shell (next(error, stdout, stderr))
   exec: (next) -> child_process.exec @program, @options, next; return @
 
-  # half-way between a spawn and exec - it fires up a shell, but pipes I/I
+  # half-way between a spawn and exec - it fires up a shell, but pipes I/o
   cmd: (@args..., @next) ->
     @program = process.env.SHELL ? process.env.ComSpec
     is_unix = require('system').expecting 'unix'
