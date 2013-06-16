@@ -19,9 +19,10 @@
 class WaitForIt
   constructor: (long_running_action) ->
     @waiting = waiting = []
+    @context = {}
     long_running_action =>
-      @get = (next) -> next()
-      next() for next in waiting
+      @get = (next) -> next.call(@context)
+      next.call(@context) for next in waiting
   get: (next) -> @waiting.push next
 
 module.exports = wait_for = (long_running_action) ->
