@@ -9,18 +9,18 @@ module.exports =
     
   stream: (url, onData) ->
     request = new XMLHttpRequest()
-    request.open 'GET', url, true
     previous_length = 0
     request.onreadystatechange = ->
       return if request.readyState <= 2
       try
         text = request.responseText.substring(previous_length)
-        previous_length += request.responseText.length
+        previous_length = request.responseText.length
       catch e then text = ''
       error = null
       if is_complete = (request.readyState is 4)
         if request.status isnt 200 then error = request.statusText
       onData(error, text, is_complete)
+    request.open 'GET', url, true
     request.send null
 
   css: (url) ->
