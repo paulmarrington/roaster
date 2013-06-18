@@ -6,8 +6,8 @@ ckurl = "http://download.ckeditor.com"
 plugin_dir = "ckeditor/plugins/"
 packages =
   ckeditor: "#{base}#{version}/ckeditor_#{version}_#{pkg}.zip|."
-  tableresize: "#{ckurl}/tableresize/releases/tableresize_4.1.1.zip|#{plugin_dir}"
-  placeholder: "#{ckurl}/placeholder/releases/placeholder_4.1.1.zip|#{plugin_dir}"
+  tableresize: "#{ckurl}/tableresize/releases/tableresize_#{version}.zip|#{plugin_dir}"
+  placeholder: "#{ckurl}/placeholder/releases/placeholder_#{version}.zip|#{plugin_dir}"
 
 toolbarGroups = [
   { name: 'document' }
