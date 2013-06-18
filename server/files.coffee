@@ -1,5 +1,5 @@
 # Copyright (C) 2012,13 paul@marrington.net, see GPL for license
-fs = require 'fs'; path = require 'path'
+fs = require 'fs'; path = require 'path'; steps = require 'steps'
 os = require 'os'; dirs = require 'dirs'
 
 module.exports =
@@ -25,14 +25,13 @@ module.exports =
     fs.stat name, (error, stat) ->
       next error, stat?.size
 
-  save: (file_name, input_stream, next) ->
-    building_place = path.join os.tmpdir(), path.basename file_name
-    final_resting_place = file_name
+  save: (final_resting_place, input_stream, next) ->
+    building_place = path.join os.tmpDir(), path.basename final_resting_place
 
     steps(
-      ->  dirs.mkdirs path.dirname(file_name), @next
+      ->  dirs.mkdirs path.dirname(final_resting_place), @next
       ->  @file = fs.createWriteStream(building_place)
-      ->  @pipe(inputStream, @file)
+      ->  @pipe input_stream, @file
       ->  fs.unlink final_resting_place, @next
       ->  fs.rename building_place, final_resting_place, @next
       ->  next()
