@@ -3,9 +3,9 @@ url = require 'url'; path = require 'path'; os = require 'os'
 http = require 'http'; https = require 'https'; fs = require 'fs'
 querystring = require 'querystring'; url = require 'url'
 timer = require 'common/timer', _ = require 'underscore'
-dirs = require 'dirs'
+dirs = require 'dirs'; events = require('events')
 
-class Internet
+class Internet extends events.EventEmitter
   constructor: (@base = '') ->
     @retry_for = 5
     # download a file - pausing the stream while it happens
@@ -20,43 +20,49 @@ class Internet
         @_options = if value?.length and value[0] then value[0] else {}
         @_options.headers ?= {}
 
-  # Abort stream if Internet unavailable - require(internet).available(gwt)
-  available: (next) ->
-    @send_request 'HEAD', 'http://google.com', (error) =>
-      if error then @request.end() else next()
+  # Abort stream if Internet unavailable
+  available: (url..., next) ->
+    @once 'connect', (error) => next(error)
+    url = if url.length then url[0] else 'http://google.com'
+    @send_request 'HEAD', url
 
   # Post known static data as either a string or url-encoded
-  post: (address, data, @options..., on_response) ->
+  post: (address, data, @options..., on_connect) ->
     data = querystring.stringify data if typeof data isnt 'string'
     @options.headers['Content-Length'] =  data.length
-    @options.on_request = => @request.end data
-    @send_request('POST', address, on_response)
+    @once 'request', => @request.end data
+    @once 'connect', on_connect
+    @send_request 'POST', address
 
   # prepare to post a stream of data
-  post_stream: (address, @options..., on_response) ->
-    @send_request('POST', address, on_response)
+  post_stream: (address, @options..., on_request) ->
+    @once 'request', on_request
+    @send_request 'POST', address
 
   # put a stream down the http line
-  put:  (address, @options..., on_response) ->
-    @send_request('PUT', address, on_response)
+  put:  (address, @options..., on_request) ->
+    @once 'request', on_request
+    @send_request 'PUT', address
 
   # helper for http GET - returns request object
-  get: (address, @options..., on_response) ->
-    @options.on_request = => @request.end()
-    @send_request 'GET', address, on_response
+  get: (address, @options..., on_connect) ->
+    @once 'request', => @request.end()
+    @once 'connect', on_connect
+    @send_request 'GET', address
   # helper for http GET - returns request object
-  get_stream: (address, @options..., on_response) ->
-    @send_request 'GET', address, on_response
+  get_stream: (address, @options..., on_connect) ->
+    @once 'connect', on_connect
+    @send_request 'GET', address
   # helper to get a JSON response - in-memory so size limited
   get_json: (address, @options..., next) ->
-    @options.on_request = => @request.end()
+    @once 'request', => @request.end()
     check = (err) => if err then @request?.abort(); next(err)
-    @send_request 'GET', address, (error) =>
-      check error
-      @read_response (data) =>
-        next null, '' if not data.length
-        try next null, JSON.parse data
-        catch error then check data
+    @once 'error', check
+    @read_response (data) =>
+      next null, '' if not data.length
+      try next null, JSON.parse data
+      catch error then check data
+    @send_request 'GET', address
   # set how many seconds we keep retrying
   retry: (seconds) -> @retry_for = seconds; return @
 
@@ -78,7 +84,7 @@ class Internet
         @response.pipe writer
     @from = @to = ''
 
-  send_request: (method, address, on_connection) ->
+  send_request: (method, address) ->
     if not address?.length
       address = @base
     else
@@ -111,21 +117,27 @@ class Internet
     @request = null
     do requesting = =>
       @request?.abort()
-      console.log(address.protocol,options) if method is 'PUT'
       @request = transport.request options, (@response) =>
-        console.log('CONNECTED') if method is 'PUT'
-        on_connection(null, @request, @response)
-      options.on_request @request
+        @emit 'connect', null, @request, @response
+        @removeAllListeners()
+      @emit 'request', @request
       @request.on 'error', (error) =>
-        console.log('ERROR', error) if method is 'PUT'
         if error?.code is 'ECONNREFUSED' and clock.total() < @retry_for
           return setTimeout requesting, 500
-        on_connection error, @request
+        @emit 'connect', error, @request
+        @removeAllListeners()
 
   # read response into a string for further processing
   read_response: (next) ->
-    data = []
-    @response.on 'data', (chunk) -> data.push chunk
-    @response.on 'end', => next data.join ''
+    @once 'connect', (error) ->
+      return @emit('error', error) if error
+      response_stream = new Response_Stream()
+      response_stream.on 'finish', (data) -> next(data)
+      @response.pipe response_stream
+
+class Response_Stream extends require('stream').Writable
+  constructor: -> @chunks = []
+  end: (data) -> @write(data); @emit 'finish', @chunks.join('')
+  write: (data) -> @chunks.push data; return true
 
 module.exports = (args...) -> new Internet(args...)
