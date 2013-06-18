@@ -52,7 +52,8 @@ class Steps extends events.EventEmitter
           Step #{@steps.length + 1}:
           #{fn.toString()}"""
         this_step = @steps.length
-        fn.call @
+        param = @next if fn.length  # one parameter is @next
+        fn.call @, param
         @_next() if not @next_referenced and this_step is @steps.length
     catch exception
       exception.step = @total_steps - @steps.length
