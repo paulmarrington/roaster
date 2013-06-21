@@ -78,12 +78,11 @@ class Processes # proc = require('proc')() # sets default streaming and options
       @args = @args[0]?.split ' '
     @proc = action @program, @args, @options
     @proc.on 'exit', (@code, @signal) =>
-      if @code
-        return @next(new Error("return code #{@code}", @args))
+      return @next(new Error("return code #{@code}", @args)) if @code
       return @next(new Error(@signal, @args)) if @signal
       return @next(null)
     return @proc
-    
+
   decode_query: (query) ->
     decoded = []
     for key, value of query
