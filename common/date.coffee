@@ -1,6 +1,6 @@
 # Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
 
-Date::format = (fmt = 'YYYYMMDD-HHmmSSsss') ->
+Date::format = (fmt = 'YYMMDD-HHmmSSsss') ->
   text = []
   fmt = fmt[0..]  # clone
   # so we can create one or 2 digits on demand
