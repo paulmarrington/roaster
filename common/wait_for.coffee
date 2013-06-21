@@ -18,12 +18,13 @@
 
 class WaitForIt
   constructor: (long_running_action) ->
-    @waiting = waiting = []
+    @waiting = []
     @context = {}
     long_running_action =>
-      @get = (next) -> next.call(@context)
-      next.call(@context) for next in waiting
-  get: (next) -> @waiting.push next
+      @get = (next) -> next.call(@context); return 0
+      next.call(@context) for next in @waiting
+  # get returns the number of items waiting - so caller can decide to give up
+  get: (next) -> @waiting.push(next); return @waiting.length
 
 module.exports = wait_for = (long_running_action) ->
   waiter = new WaitForIt long_running_action
