@@ -69,10 +69,10 @@ class Steps extends events.EventEmitter
   skip: => @steps.shift() if @steps.length; @next()
   # @call -> actions - call with steps as this so you can use @next, etc
   call: (func) => func.apply(@, arguments)
-  abort: (error) =>
+  abort: (next, args...) =>
     clearTimeout @step_timer
     @steps = []
-    @error = error if error
+    next(args...) if next
 
   long_operation: (seconds = 300) => @maximum_time_ms = seconds * 1000
 
@@ -127,7 +127,7 @@ class Steps extends events.EventEmitter
     console.log "Error:", error
     console.log "Step:", error.step if error.step?.length
     console.log "Trace:", error.stack if error.stack?.length
-    
+
   # Display each step before running it
   trace: (tracing = true) -> @tracing = tracing
 
