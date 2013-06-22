@@ -19,10 +19,9 @@
 class WaitForIt
   constructor: (long_running_action) ->
     @waiting = []
-    @context = {}
-    long_running_action =>
-      @get = (next) -> next.call(@context); return 0
-      next.call(@context) for next in @waiting
+    long_running_action.call @, =>
+      @get = (next) -> next.call(@, @waiting.length); return @waiting.length
+      next.call(@, @waiting.length) for next in @waiting
   # get returns the number of items waiting - so caller can decide to give up
   get: (next) -> @waiting.push(next); return @waiting.length
 
