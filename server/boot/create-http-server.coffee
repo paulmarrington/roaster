@@ -27,7 +27,6 @@ global.http_processors.push (exchange, next_processor) ->
 module.exports = (environment) ->
   return environment.server = http.createServer (request, response) ->
     console.log request.url if environment.debug
-    request.pause()
     request.url = url.parse request.url, true
     # see if we want to restart in debug mode
     if request.url.query.restart and environment.debug
