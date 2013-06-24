@@ -16,7 +16,7 @@ global.http_processors.push (exchange, next_processor) ->
       # kick off exchange
       driver(exchange)
     catch error
-      errmsg = util.inspect error
+      errmsg = error.toString()
       console.log errmsg
       exchange.response.write errmsg if environment.debug
       next_processor()  # try the next one since this one failed
@@ -45,5 +45,5 @@ module.exports = (environment) ->
         request.url.query.domain = request.url.pathname.slice 2, slash
       request.url.pathname = request.url.pathname.slice slash
     # run through all the http processors until one says 'all done'
-    processors = global.http_processors.slice(0)
+    processors = global.http_processors.slice(0) # clone
     do it = -> processors.shift()(exchange, it) if processors.length

@@ -29,6 +29,7 @@ module.exports =
     building_place = path.join os.tmpDir(), path.basename final_resting_place
 
     steps(
+      ->  @on 'error', -> @abort next, @error
       ->  dirs.mkdirs path.dirname(final_resting_place), @next
       ->  @file = fs.createWriteStream(building_place)
       ->  @pipe input_stream, @file

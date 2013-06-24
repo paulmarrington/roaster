@@ -13,9 +13,9 @@ Steps::drain = (stream, data) ->
 # take any number of pipes - inner ones mus both read and write.
 Steps::pipe = (input, pipes...) ->
   pipes.slice(-1)[0].on 'finish', @next
-  input.on 'error', -> @next (@error) ->
+  input.on 'error', @next (@error) ->
   for pipe in pipes
-    pipe.on 'error', -> @next (@error) ->
+    pipe.on 'error', @next (@error) ->
     input = input.pipe pipe
 
 # possibly asynchronous requires

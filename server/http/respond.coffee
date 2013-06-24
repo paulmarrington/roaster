@@ -81,6 +81,7 @@ class Respond
     @exchange.response.setHeader 'Content-Type', type
   # read post request into a string
   read_request: (next) ->
+    # TODO: change to streams2
     data = []
     @exchange.request.on 'data', (chunk) -> data.push chunk
     @exchange.request.on 'end', -> next data.join ''
