@@ -3,7 +3,7 @@ url = require 'url'; path = require 'path'; os = require 'os'
 http = require 'http'; https = require 'https'; fs = require 'fs'
 querystring = require 'querystring'; url = require 'url'
 timer = require 'common/timer', _ = require 'underscore'
-dirs = require 'dirs'; events = require('events')
+dirs = require 'dirs'; events = require 'events'
 
 class Internet extends events.EventEmitter
   constructor: (@base = '') ->
@@ -29,7 +29,7 @@ class Internet extends events.EventEmitter
   # Post known static data as either a string or url-encoded
   post: (address, data, @options..., on_connect) ->
     data = querystring.stringify data if typeof data isnt 'string'
-    @options.headers['Content-Length'] =  data.length
+    @options.headers['Content-Length'] = data.length
     @once 'request', => @request.end data
     @once 'connect', on_connect
     @send_request 'POST', address
@@ -59,7 +59,7 @@ class Internet extends events.EventEmitter
     check = (err) => if err then @request?.abort(); next(err)
     @once 'error', check
     @read_response (data) =>
-      next null, '' if not data.length
+      next null, '' if not data?.length
       try next null, JSON.parse data
       catch error then check data
     @send_request 'GET', address
@@ -124,6 +124,8 @@ class Internet extends events.EventEmitter
       @request.on 'error', (error) =>
         if error?.code is 'ECONNREFUSED' and clock.total() < @retry_for
           return setTimeout requesting, 500
+        options = JSON.stringify options
+        error = new Error "#{error?.code} for #{address.href}\n#{options}"
         @emit 'connect', error, @request
         @removeAllListeners()
 
