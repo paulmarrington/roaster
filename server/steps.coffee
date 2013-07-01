@@ -12,7 +12,15 @@ Steps::drain = (stream, data) ->
 # similarly when we pipe we need to wait for it to complete. This version will
 # take any number of pipes - inner ones mus both read and write.
 Steps::pipe = (input, pipes...) ->
-  pipes.slice(-1)[0].on 'finish', @next
+  @asynchronous()
+  next_called = false
+  next = (@error) =>
+    return if next_called
+    next_called = true
+    @next()
+  last_target = pipes.slice(-1)[0]
+  last_target.on 'finish', next
+  last_target.on 'close', next
   input.on 'error', @next (@error) ->
   for pipe in pipes
     pipe.on 'error', @next (@error) ->
