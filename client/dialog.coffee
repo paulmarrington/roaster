@@ -6,6 +6,7 @@
 #   url:    url,
 #   after:  @next
 
+# https://github.com/ROMB/jquery-dialogextend
 # "closable" : true,
 # "maximizable" : true,
 # "minimizable" : true,
@@ -32,17 +33,17 @@
 dialogs = {}
 
 module.exports = (options...) ->
-  # name = options[0].name
-  # if not dlg = dialogs[name]
-  #   options = _.extend {}, options...
-  #   dlg = dialogs[name] = $('<div>').addClass('dialog').appendTo(document.body)
-  #   dlg.dialog(options).dialogExtend(options)
-  # else
-  #   options = options[0]
-  #   dlg.dialog 'option', 'title', options.title
-  #   dlg.dialogExtend('restore')
-  #   dlg.dialog('open').dialog('moveToTop')
-  roaster.request.stream options[0].url, (error, text, is_complete) ->
-    options.after?(error) if error
-    console.log text if text?.length
-    options.after?() if is_complete
+  name = options[0].name
+  if not dlg = dialogs[name]
+    options = _.extend {}, options...
+    dlg = dialogs[name] = $('<div>').addClass('dialog').appendTo(document.body)
+    dlg.dialog(options).dialogExtend(options)
+  else
+    options = options[0]
+    dlg.dialog 'option', 'title', options.title
+    dlg.dialogExtend('restore')
+    dlg.dialog('open').dialog('moveToTop')
+    dlg.dialog('option', 'position', options.position) if options.position
+  options.init(dlg) if options.init
+  options.fill(dlg)
+  return dlg
