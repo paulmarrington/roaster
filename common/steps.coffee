@@ -18,7 +18,7 @@ class Steps extends events.EventEmitter
     Object.defineProperty @, "error", set: (value) =>
       @emit('error', value) if value
     # by default an error will log rather than throw an exception
-    @on 'error', @log_error
+    # @on 'error', @log_error
     # lastly we start of the running of steps.
     @_next()
 
@@ -110,7 +110,7 @@ class Steps extends events.EventEmitter
   start_timer: (fn) =>
     step = @total_steps - @steps.length
     @step_timer = setTimeout (=>
-      err = """\n
+      err = new Error """\n
         Step did not complete in #{@maximum_time_ms} ms (@next not called)
         (change @maximum_time_ms if process needs more time)
         Function being called in step #{step} was:
@@ -118,15 +118,14 @@ class Steps extends events.EventEmitter
         #{fn.notes ? ''}
 
         #{fn.toString()}"""
-      # console.log err
       @emit 'error', err
       @next()
       ), @maximum_time_ms
-
-  log_error: (error) =>
-    console.log "Error:", error
-    console.log "Step:", error.step if error.step?.length
-    console.log "Trace:", error.stack if error.stack?.length
+  # 
+  # log_error: (error) =>
+  #   console.log "Error:", error
+  #   console.log "Step:", error.step if error.step?.length
+  #   console.log "Trace:", error.stack if error.stack?.length
 
   # Display each step before running it
   trace: (tracing = true) -> @tracing = tracing
