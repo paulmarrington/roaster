@@ -21,9 +21,10 @@ module.exports =
     output = fs.createWriteStream(target).on('error', done).on('close', done)
     input.pipe output
 
-  size: (name, next) ->
-    fs.stat name, (error, stat) ->
-      next error, stat?.size
+  size: (name, next) -> fs.stat name, (error, stat) -> next error, stat?.size
+
+  is_dir: (name, next) -> fs.stat name, (error, stat) ->
+    next error, stat?.isDirectory()
 
   save: (final_resting_place, input_stream, next) ->
     building_place = path.join os.tmpDir(), path.basename final_resting_place
