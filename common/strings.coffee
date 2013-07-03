@@ -10,6 +10,10 @@ module.exports =
   from_map: (map) ->
     return ("#{key}: #{value}" for key, value of map).join(',  ')
 
+String::starts_with = (start) ->
+  return false if not start or start.length > @length
+  return @[0...start.length] is start
+
 String::ends_with = (ending) ->
   return false if not ending or ending.length > @length
   return @[(@length - ending.length)..] is ending
