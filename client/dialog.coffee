@@ -31,11 +31,12 @@
 # "minimize" : function(evt, dlg){ alert(evt.type); },
 # "restore" : function(evt, dlg){ alert(evt.type); }
 dialogs = {}
+default_options = closable: false
 
 module.exports = (options...) ->
   name = options[0].name
   if not dlg = dialogs[name]
-    options = _.extend {}, options...
+    options = _.extend {}, default_options, options...
     dlg = dialogs[name] = $('<div>').addClass('dialog').appendTo(document.body)
     dlg.dialog(options).dialogExtend(options)
   else
