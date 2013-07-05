@@ -8,15 +8,17 @@ var modules = [
 // js: javascript comes for free with V8
 extend_require = require('morph').extend_require
 extend_for = function(compile, ext) {
-  extend_require(ext, function(error, filename, content, next) {
+  extend_require(ext, function(error, filename, content, save) {
+    var js = ''
     if (content) {
       try {
         js = compile(content, {filename:filename})
       } catch (error) {
         console.log("Error compiling "+filename+ ": " + error)
-        js = ''
       }
-      next(null, js)
+      save(null, js)
+    } else if (content === '') {
+      save(null,'') // Empty file, not undefined because already compiled
     }
   })
 }
