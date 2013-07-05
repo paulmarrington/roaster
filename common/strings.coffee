@@ -17,3 +17,7 @@ String::starts_with = (start) ->
 String::ends_with = (ending) ->
   return false if not ending or ending.length > @length
   return @[(@length - ending.length)..] is ending
+
+String::regex_index_of = (regex, start = 0) ->
+  index_of = @substring(start).search(regex)
+  return if index_of is -1 then -1 else index_of + start

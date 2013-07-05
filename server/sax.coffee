@@ -1,22 +1,19 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
-Stream = require('stream').Stream; fs = require 'fs'
+Writable = require('stream').Writable
+fs = require 'fs'; require 'common/strings'
 
 specials = {'script', 'style', 'textarea'}
 
-class Sax extends Stream 
+class Sax extends Writable 
   constructor: ->
-    @writable = true
+    super()
     @partial = ''
     @in_special = null
-
-  end: (data) ->
-    @write(data)
-    @emit('text', @partial) if @partial.length
-    @emit 'finish'
+    @on 'finish', ->
+      @emit('text', @partial) if @partial.length
     
-  write: (data) ->
-    return true if not data
-    data = @partial + data
+  _write: (data, encoding, next) ->
+    data = @partial + data.toString()
     start = 0
     while (tag_start = data.indexOf('<', start)) != -1
       if not @in_special
@@ -32,16 +29,16 @@ class Sax extends Stream
           @in_special = new RegExp "<\s*/\s*#{tag}\s*>"
         @emit event, parts...
         start = tag_end + 1
-      else if (tag_start = data.search(@in_special)) is -1
-        @emit 'text', data[start..] if start < data.length
-        start = data.length
-        break
-      else # found end of special
+      else if (tag_start = data.regex_index_of(@in_special, tag_start)) isnt -1
         @in_special = null
         @emit 'text', data[start..tag_start - 1]
         start = data.indexOf('>', tag_start) + 1
         @emit 'closing_tag', data[tag_start + 2..start - 2]
+      else # end of chunk
+        @emit 'text', data[start..] if start < data.length
+        start = data.length
+        break
     @partial = data[start..]
-    return true
+    next()
 
 module.exports = Sax
