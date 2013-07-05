@@ -31,7 +31,16 @@
 # "minimize" : function(evt, dlg){ alert(evt.type); },
 # "restore" : function(evt, dlg){ alert(evt.type); }
 dialogs = {}
-default_options = closable: false
+default_options =
+  closable:         false
+  maximizable:      true
+  minimizable:      true
+  collapsable:      true
+  minimizeLocation: 'right'
+  dblclick:         'maximize'
+  icons:            {collapse: "ui-icon-close"}
+  width:            600
+  collapse:         (evt, dlg) -> usdlc.instrument_window.dialog('close')
 
 module.exports = (options...) ->
   name = options[0].name
@@ -39,12 +48,16 @@ module.exports = (options...) ->
     options = _.extend {}, default_options, options...
     dlg = dialogs[name] = $('<div>').addClass('dialog').appendTo(document.body)
     dlg.dialog(options).dialogExtend(options)
+    options?.init(dlg)
+    if options.fix_height_to_window
+      (w = $(window)).resize ->
+        $(dlg).css height: w.height() - options.fix_height_to_window
+      w.resize()
   else
     options = options[0]
     dlg.dialog 'option', 'title', options.title
     dlg.dialogExtend('restore')
     dlg.dialog('open').dialog('moveToTop')
     dlg.dialog('option', 'position', options.position) if options.position
-  options.init(dlg) if options.init
-  options.fill(dlg)
+  options?.fill(dlg)
   return dlg
