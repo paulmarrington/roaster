@@ -27,35 +27,35 @@ toolbarGroups = [
   { name: 'about' }
 ]
 toolbarViews =
-  Insert: 'document,paragraph,align,insert,links'
-  Edit: 'basicstyles,styles,colors'
-  Form: 'forms'
-  View: 'editing,doctools,tools,others,about'
-toolbarViewsOrder = "Insert,Edit,Form,View".split(',')
+  Font:     'basicstyles,colors'
+  Insert:   'insert,links'
+  Style:    'styles'
+  Paragraph:'paragraph,align'
+  Form:     'forms'
+  View:     'document,editing,doctools,tools,others,about'
+toolbarViewsOrder = "Font,Style,Paragraph,Insert,Form,View".split(',')
 
 default_options =
   fullPage: true
   allowedContent: true
   browserContextMenuOnCtrl: true
-  contentsCss: '/app.stylus'
-  # scayt_autoStartup: true
+  # contentsCss: '/uSDLC2/usdlc2/document.css'
+  scayt_autoStartup: true
   removeButtons: ''
   toolbarGroups: toolbarGroups
   toolbarViews: toolbarViews
   toolbarViewsOrder: toolbarViewsOrder
-  maximize: true
   extraPlugins: 'tableresize,placeholder'
-  basicEntities: false
-  removePlugins: 'magicline'
+  # basicEntities: false
+  # removePlugins: 'magicline'
 
 editor = null
 
 open = (id, options) ->
   options = _.extend {}, default_options, options
-  options.removeButtons += ',Maximize' if options.maximize
 
-  roaster.ckeditor.editors[id] = editor = CKEDITOR.instances.document
-  _.extend editor.config, options
+  roaster.ckeditor.editors[id] = editor = CKEDITOR.replace id, options #CKEDITOR.instances.document
+  # _.extend editor.config, options
 
   editor.toolbarGroupNames = {}
   for group, index in options.toolbarGroups
@@ -86,7 +86,7 @@ open = (id, options) ->
         tab.append a
     tab.append '<span class=messages></span>'
     editor.div.prepend tab
-    editor.showToolbarGroup 'Edit'
+    editor.showToolbarGroup 'Font'
   editor.onInstanceReady = [instanceReady]
   editor.once 'instanceReady', ->
     onInstanceReady() for onInstanceReady in editor.onInstanceReady

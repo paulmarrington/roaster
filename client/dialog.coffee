@@ -40,7 +40,7 @@ default_options =
   dblclick:         'maximize'
   icons:            {collapse: "ui-icon-close"}
   width:            600
-  collapse:         (evt, dlg) -> usdlc.instrument_window.dialog('close')
+  collapse:         (evt, dlg) -> $(evt.target).dialog('close')
 
 module.exports = (options...) ->
   name = options[0].name
@@ -48,11 +48,9 @@ module.exports = (options...) ->
     options = _.extend {}, default_options, options...
     dlg = dialogs[name] = $('<div>').addClass('dialog').appendTo(document.body)
     dlg.dialog(options).dialogExtend(options)
-    options?.init(dlg)
     if options.fix_height_to_window
-      (w = $(window)).resize ->
-        $(dlg).css height: w.height() - options.fix_height_to_window
-      w.resize()
+      $(dlg).css height: $(window).height() - options.fix_height_to_window
+    options?.init(dlg)
   else
     options = options[0]
     dlg.dialog 'option', 'title', options.title
