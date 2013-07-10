@@ -30,7 +30,7 @@
 # "maximize" : function(evt, dlg){ alert(evt.type); },
 # "minimize" : function(evt, dlg){ alert(evt.type); },
 # "restore" : function(evt, dlg){ alert(evt.type); }
-dialogs = {}
+dialogs = roaster.dialogs = {}
 default_options =
   closable:         false
   maximizable:      true

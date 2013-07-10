@@ -80,8 +80,8 @@ open = (id, options) ->
     tab = $ '<div class="cke_editor_tabs"></div>'
     for name in toolbarViewsOrder
       do ->
-        tab_name = name
         a = $ "<a class='cke_editor_tab cke_editor_tab_#{name}'>#{name}</a>"
+        tab_name = name
         a.click -> show_tab tab_name
         tab.append a
     tab.append '<span class=messages></span>'
@@ -94,7 +94,7 @@ open = (id, options) ->
 
 roaster.message = (msg) -> $('span.messages').html(msg)
 
-last_tab = 'Edit'
+last_tab = 'Font'
 
 show_tab = (tab_name) ->
   editor.showToolbarGroup(tab_name)

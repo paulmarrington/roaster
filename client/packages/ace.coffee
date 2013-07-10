@@ -1,6 +1,6 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 
-usdlc.ace_base = '/ext/ace/ace-builds-master/src-min-noconflict'
+# usdlc.ace_base = '/ext/ace/ace-master/src-min-noconflict'
 usdlc.ace_base = '/ext/ace/ace-builds-master/src-noconflict'
 
 module.exports = roaster.dependency(
