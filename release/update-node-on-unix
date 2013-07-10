@@ -6,7 +6,7 @@ echo
 ##################################################
 # change this as new versions of node are released
 ##################################################
-nodeVersion=v0.10.12
+nodeVersion=v0.10.13
 
 ################################################
 # Now we download the correct version of node-js
@@ -25,10 +25,8 @@ case $os in
 	   exit
 esac
 filename=node-$nodeVersion-$os
-if [ -e $filename.tar.gz ]
+if [ ! -e $filename.tar.gz ]
 then
-    echo "$filename already installed"
-else
     echo "download $filename.tar.gz from nodejs.org"
     curl -sOL http://nodejs.org/dist/$nodeVersion/$filename.tar.gz
     echo "unpack $filename"

@@ -9,11 +9,6 @@ export NODE_PATH=.:$uSDLC_base_path/server:$uSDLC_base_path/scripts:$uSDLC_node_
 # add scripts and node itself to the path for convenience
 export PATH=$uSDLC_node_path/ext/node/bin:$PATH
 
-# Is this a first-time run - as will happen after uns-unix-install.sh is run
-if [ ! -d "$uSDLC_node_path/ext/node" ]; then
-    echo "First time only install of node.js to"
-    echo "    $uSDLC_node_path"
-    "$uSDLC_node_path/release/update-node-on-unix"
-fi
+$uSDLC_node_path/release/update-node-on-unix
 
 node $DEBUG_NODE "$uSDLC_node_path/boot/load.js" "boot/run" $@
