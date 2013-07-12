@@ -21,6 +21,10 @@ module.exports = (exchange) ->
     steps(
       ->  @requires 'adm-zip'
       ->  new @adm_zip(file).extractAllTo base, true
+      ->  fs.readdir base, @next (@error, @files) ->
+      ->  @files = @files.filter (file) -> file[0] isnt '.'
+      ->  @skip() if @files.length isnt 1
+      ->  fs.rename path.join(base,@files[0]), path.join(base, to), @next
       ->  next()
       )
 
