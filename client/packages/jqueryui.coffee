@@ -5,10 +5,12 @@ base = 'http://code.jquery.com/ui/1.10.3'
 
 module.exports = roaster.dependency(
   jqueryui: "#{base}/jquery-ui.js|jquery/jquery-ui"
-  jqueryuithemes: "https://codeload.github.com/taitems/Aristo-jQuery-UI-Theme"+
-    "/zip/master|jquery|ext/jquery/Aristo-jQuery-UI-Theme-master=ext/jquery/theme"
+  jqueryuithemes: "http://jqueryui.com/resources/download/jquery-ui-themes-1.10.3.zip"+
+    "|jquery/themes|themes"
   dialogextend: "https://raw.github.com/ROMB/jquery-dialogextend/"+
-    "master/build/jquery.dialogextend.min.js|jquery/jquery.dialogextend.min"
-  '/ext/jquery/jquery-ui.js', '/ext/jquery/theme/css/Aristo/Aristo.css',
-  '/ext/jquery/jquery.dialogextend.min.js'
+    "master/build/jquery.dialogextend.js|jquery/dialogextend"
+  contextmenu: "https://raw.github.com/mar10/jquery-ui-contextmenu/master/"+
+    "jquery.ui-contextmenu.js|jquery/contextmenu"
+  '/ext/jquery/jquery-ui.js', '/ext/jquery/themes/themes/themes/smoothness/jquery-ui.css',
+  '/ext/jquery/dialogextend.js', '/ext/jquery/contextmenu.js'
 )

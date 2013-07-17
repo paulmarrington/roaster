@@ -16,23 +16,27 @@ module.exports = (exchange) ->
       ->  next(file)
       )
 
-  process_zip = (file, to, next) ->
+  process_zip = (file, to, rename, next) ->
     base = dirs.base 'ext', to
     steps(
       ->  @requires 'adm-zip'
       ->  new @adm_zip(file).extractAllTo base, true
       ->  fs.readdir base, @next (@error, @files) ->
       ->  @files = @files.filter (file) -> file[0] isnt '.'
-      ->  @skip() if @files.length isnt 1
-      ->  fs.rename path.join(base,@files[0]), path.join(base, to), @next
+      ->  console.log "**** UNZIP",@files.length,': ',path.join(base,@files[0])," ====> ",path.join(base, rename)
+      ->  @skip() if @files.length isnt 1 or not rename
+      ->  fs.rename path.join(base,@files[0]), path.join(base, rename), @next
       ->  next()
-      )
+    )
 
-  process_file = (file, to, next) ->
+  process_file = (file, to, rename, next) ->
     name_to_use = dirs.base 'ext', "#{to}#{path.extname(file)}"
     steps(
       ->  dirs.mkdirs path.dirname(name_to_use), @next
-      ->  files.copy file, name_to_use, next
+      ->  files.copy file, name_to_use, @next
+      ->  @skip() if not rename
+      ->  fs.rename rename.split('=')..., @next
+      ->  next()
     )
 
   load = (key, url, next) ->
@@ -41,15 +45,9 @@ module.exports = (exchange) ->
       return next() if not file
       results[key] = true
       if path.extname(url) is '.zip' or url.indexOf('/zip/') isnt -1
-        action = process_zip
+        process_zip file, to, rename, next
       else
-        action = process_file
-      action file, to, ->
-        if rename
-          [from, to] = rename.split '='
-          fs.rename from, to, next
-        else
-          next()
+        process_file file, to, rename, next
   steps(
     ->  @long_operation()
     ->  for key, url of exchange.request.url.query

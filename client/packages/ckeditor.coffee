@@ -23,7 +23,6 @@ toolbarGroups = [
   { name: 'styles' }
   { name: 'colors' }
   { name: 'tools', groups: [ 'mode', 'tools'] }
-  # { name: 'others' }
   { name: 'about' }
 ]
 toolbarViews =
@@ -39,24 +38,19 @@ default_options =
   fullPage: true
   allowedContent: true
   browserContextMenuOnCtrl: true
-  # contentsCss: '/uSDLC2/usdlc2/document.css'
   scayt_autoStartup: true
   removeButtons: ''
   toolbarGroups: toolbarGroups
   toolbarViews: toolbarViews
   toolbarViewsOrder: toolbarViewsOrder
   extraPlugins: 'tableresize,placeholder'
-  # basicEntities: false
-  # removePlugins: 'magicline'
 
 editor = null
 
 open = (id, options) ->
   options = _.extend {}, default_options, options
 
-  roaster.ckeditor.editors[id] = editor = CKEDITOR.replace id, options #CKEDITOR.instances.document
-  # _.extend editor.config, options
-
+  roaster.ckeditor.editors[id] = editor = CKEDITOR.replace id, options
   editor.toolbarGroupNames = {}
   for group, index in options.toolbarGroups
     editor.toolbarGroupNames[group.name] = index

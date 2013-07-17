@@ -1,4 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
+stream = require 'stream'
   
 class String_to_Stream extends stream.Readable
   constructor: (@string) ->
@@ -9,4 +10,4 @@ class String_to_Stream extends stream.Readable
     @push @string
     @done = true
 
-String::to_stream = new String_to_Stream(@)
+String::to_stream = -> new String_to_Stream(@)

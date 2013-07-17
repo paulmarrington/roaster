@@ -49,7 +49,11 @@ module.exports = (options...) ->
     dlg = dialogs[name] = $('<div>').addClass('dialog').appendTo(document.body)
     dlg.dialog(options).dialogExtend(options)
     if options.fix_height_to_window
-      $(dlg).css height: $(window).height() - options.fix_height_to_window
+      set_height = ->
+        height = $(window).height() - options.fix_height_to_window
+        dlg.dialog 'option', 'height', height
+        options.resizeStop?(dlg)
+      setTimeout(set_height, 500)
     options?.init(dlg)
   else
     options = options[0]

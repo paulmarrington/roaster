@@ -6,7 +6,7 @@ var dirs = require('dirs'), newer = require('newer')
 //   builder(error, target-file-name, code, saver)
 //     saver(error, code, next)
 //       next(error)
-var morph = function (source, target_ext, builder) {
+var multi_morph = function (source, reader, target_ext, builder) {
   var target = source
   if (source.indexOf('/gen/') == -1) {
     var split = dirs.split(source)
@@ -16,7 +16,7 @@ var morph = function (source, target_ext, builder) {
   target += target_ext
   // we only need to rebuild if source is newer
   if (newer(source, target)) {
-      var code = fs.readFileSync(source, 'utf8')
+      var code = reader()
       if (code.charCodeAt(0) === 0xFEFF) {
           code = code.substring(1);
       }
@@ -29,7 +29,12 @@ var morph = function (source, target_ext, builder) {
   }
   return target
 }
+var morph = function(source, target_ext, builder) {
+  reader = function() { return fs.readFileSync(source, 'utf8') }
+  return multi_morph(source, reader, target_ext, builder)
+}
 module.exports = morph
+module.exports.multi_morph = multi_morph
 // Extend node require() to include a new source file type
 // Has to be synhronous because require() is synchronous
 module.exports.extend_require = function (source_ext, compiler) {
