@@ -23,7 +23,6 @@ module.exports = (exchange) ->
       ->  new @adm_zip(file).extractAllTo base, true
       ->  fs.readdir base, @next (@error, @files) ->
       ->  @files = @files.filter (file) -> file[0] isnt '.'
-      ->  console.log "**** UNZIP",@files.length,': ',path.join(base,@files[0])," ====> ",path.join(base, rename)
       ->  @skip() if @files.length isnt 1 or not rename
       ->  fs.rename path.join(base,@files[0]), path.join(base, rename), @next
       ->  next()
