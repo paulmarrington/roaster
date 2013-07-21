@@ -10,4 +10,4 @@ class String_to_Stream extends stream.Readable
     @push @string
     @done = true
 
-String::to_stream = -> new String_to_Stream(@)
+String::to_stream = -> new String_to_Stream(@.toString())

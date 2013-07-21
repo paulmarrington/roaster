@@ -26,14 +26,14 @@ module.exports =
   is_dir: (name, next) -> fs.stat name, (error, stat) ->
     next error, stat?.isDirectory()
 
-  save: (final_resting_place, input_stream, next) ->
+  save: (final_resting_place, input_streams..., next) ->
     building_place = path.join os.tmpDir(), path.basename final_resting_place
 
     steps(
-      ->  @on 'error', -> @abort next, @error
+      ->  @on 'error', (error) -> console.log error; @abort next, error
       ->  dirs.mkdirs path.dirname(final_resting_place), @next
       ->  @file = fs.createWriteStream(building_place)
-      ->  @pipe input_stream, @file
+      ->  @cat input_streams..., @file
       ->  fs.unlink final_resting_place, @next
       ->  fs.rename building_place, final_resting_place, @next
       ->  next()

@@ -26,6 +26,23 @@ Steps::pipe = (input, pipes...) ->
     pipe.on 'error', @next (@error) ->
     input = input.pipe pipe
 
+# another pipe implementation - to sequentially pipe all inputs to output
+Steps::cat = (inputs..., output) ->
+  @asynchronous()
+  next_called = false
+  next = (@error) =>
+    return if next_called
+    next_called = true
+    @next()
+  output.on 'finish', next
+  output.on 'close', next
+  do piper = =>
+    return output.end() if not inputs.length
+    input = inputs.shift()
+    input.on 'error', (err) => console.log(err.stack); @error = err; output.end()
+    input.on 'end', piper
+    input.pipe output, end:false
+
 # possibly asynchronous requires
 Steps::requires = (modules...) ->
   for name in modules
