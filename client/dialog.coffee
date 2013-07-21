@@ -41,7 +41,27 @@ default_options =
   icons:            {collapse: "ui-icon-close"}
   width:            600
   collapse:         (evt, dlg) -> $(evt.target).dialog('close')
-
+  
+$.widget "ui.dialog", $.ui.dialog,
+  _moveToTop: (event, silent) ->
+    moved = false
+    # // *** WORKAROUND FOR THE FOLLOWING ISSUES ***
+    # //
+    # // New stacking feature causing iframe problems when changing dialog
+    # // http://bugs.jqueryui.com/ticket/9067
+    # //
+    # // Moving an IFRAME within the DOM tree results in reloading of content
+    # // https://bugs.webkit.org/show_bug.cgi?id=13574
+    dialogs = @uiDialog.nextAll(":visible")
+    if dialogs.length > 0
+      moved = true
+      if dialogs.find('iframe').length > 0
+          @uiDialog.insertAfter(dialogs.last())
+      else
+          dialogs.insertBefore(@uiDialog)
+    @_trigger("focus", event) if moved && !silent
+    return moved
+            
 module.exports = (options...) ->
   name = options[0].name
   if not dlg = dialogs[name]
