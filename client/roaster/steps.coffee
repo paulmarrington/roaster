@@ -58,7 +58,7 @@ module.exports = roaster.steps = (steps...) ->
       Steps::_data = (urls..., parser) ->
         for url in urls then do =>
           done = @parallel()
-          @key = path.basename(url).split('.')[0]
+          @key = path.basename(url.split('?')[0]).split('.')[0]
           roaster.request.data url, (@error, text) =>
             @[@key] = parser text
             done()
