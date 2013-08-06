@@ -29,6 +29,6 @@ dirs = require 'dirs'
 module.exports = (environment) ->
   faye = require dirs.node 'ext/node_modules/faye'
   bayeux = new faye.NodeAdapter mount: '/faye', timeout: 45
-  bayeux.attach environment.server
+  bayeux.attach environment.http_server
   require 'faye'
   return environment.faye = faye.local_client = bayeux.getClient()

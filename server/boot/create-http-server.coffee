@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
 http = require 'http'; url = require 'url'; files = require 'files'
 driver = require 'http/driver'; respond = require 'http/respond'
 fs = require 'fs'; util = require 'util'
@@ -25,7 +25,7 @@ global.http_processors.push (exchange, next_processor) ->
   exchange.response.end()
 
 module.exports = (environment) ->
-  return environment.server = http.createServer (request, response) ->
+  return environment.http_server = http.createServer (request, response) ->
     console.log request.url if environment.debug
     request.url = url.parse request.url, true
     # see if we want to restart in debug mode

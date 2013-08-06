@@ -6,7 +6,7 @@ module.exports =
     @stream url, (error, text, is_complete) ->
       contents.push text
       next(error, contents.join('')) if is_complete
-    
+
   stream: (url, onData) ->
     request = new XMLHttpRequest()
     previous_length = 0

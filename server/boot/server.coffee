@@ -61,9 +61,9 @@ environment.configuration = configuration
 
 # create a server ready to listen
 create_http_server = require('boot/create-http-server')
-environment.server = create_http_server environment
+create_http_server(environment)
 # kick-off
-environment.server.listen environment.port
+environment.http_server.listen environment.port
 # lastly we do more project level initialisation
 project_init.post environment
 
