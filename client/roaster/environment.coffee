@@ -20,8 +20,11 @@ add_restart_link = ->
   window.onkeydown = ->
     if event.keyCode is 27
       time = new Date().getTime()
-      if time - key_time < 500
-        roaster.restart()
+      elapsed = time - key_time
+      if 500 > elapsed > 50
+        console.log "RESTART",event
+        alert 'RESTART ATTEMPTED WITH ESC-ESC'
+        #roaster.restart()
       else
         key_time = time
 
