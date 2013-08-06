@@ -40,8 +40,11 @@ class Processes # proc = require('proc')() # sets default streaming and options
   cmd: (@args..., @next) ->
     @program = process.env.SHELL ? process.env.ComSpec
     is_unix = require('system').expecting 'unix'
-    c_switch = if is_unix then '-c' else '/c'
-    @args = [c_switch, @args...]
+    if @args.length
+      c_switch = if is_unix then '-c' else '/c'
+      @args = [c_switch, @args...]
+    else if is_unix and @program[-4..-1] is 'fish'
+      @args = ['-c', 'bash']
     @_exec(child_process.spawn)
     return @
 
