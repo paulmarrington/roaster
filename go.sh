@@ -9,6 +9,6 @@ export NODE_PATH=.:$uSDLC_base_path/server:$uSDLC_base_path/scripts:$uSDLC_node_
 # add scripts and node itself to the path for convenience
 export PATH=$uSDLC_node_path/ext/node/bin:$PATH
 
-$uSDLC_node_path/release/update-node-on-unix
+$uSDLC_node_path/release/update-node-on-unix.sh
 
 node $DEBUG_NODE "$uSDLC_node_path/boot/load.js" "boot/run" $@
