@@ -1,19 +1,24 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 version = "4.1.2"
 pkg = "full"
-base = "http://download.cksource.com/CKEditor/CKEditor/CKEditor "
+base = "http://download.cksource.com/CKEditor/i"+
+  "CKEditor/CKEditor "
 ckurl = "http://download.ckeditor.com"
 plugin_dir = "ckeditor/plugins/"
 packages =
-  ckeditor: "#{base}#{version}/ckeditor_#{version}_#{pkg}.zip|."
-  tableresize: "#{ckurl}/tableresize/releases/tableresize_#{version}.zip|#{plugin_dir}"
-  placeholder: "#{ckurl}/placeholder/releases/placeholder_#{version}.zip|#{plugin_dir}"
+  ckeditor: "#{base}#{version}/i"+
+    "ckeditor_#{version}_#{pkg}.zip|."
+  tableresize: "#{ckurl}/tableresize/releases/"+
+    "tableresize_#{version}.zip|#{plugin_dir}"
+  placeholder: "#{ckurl}/placeholder/releases/"+
+    "placeholder_#{version}.zip|#{plugin_dir}"
 
 toolbarGroups = [
   { name: 'document' }
   { name: 'doctools' }
   { name: 'clipboard', groups: [ 'clipboard', 'undo' ] }
-  { name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ] }
+  { name: 'editing', groups:
+    [ 'find', 'selection', 'spellchecker' ] }
   { name: 'forms' }
   { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] }
   { name: 'paragraph', groups: [ 'list', 'indent', 'blocks' ] }
@@ -32,7 +37,8 @@ toolbarViews =
   Paragraph:'paragraph,align'
   Form:     'forms'
   View:     'document,editing,doctools,tools,others,about'
-toolbarViewsOrder = "Font,Style,Paragraph,Insert,Form,View".split(',')
+toolbarViewsOrder =
+  "Font,Style,Paragraph,Insert,Form,View".split(',')
 
 default_options =
   fullPage: true

@@ -43,8 +43,9 @@ class Processes # proc = require('proc')() # sets default streaming and options
     if @args.length
       c_switch = if is_unix then '-c' else '/c'
       @args = [c_switch, @args...]
-    else if is_unix and @program[-4..-1] is 'fish'
-      @args = ['-c', 'bash']
+    else if is_unix
+      @args = ['-c', 'bash -i'] if @program[-4..-1] is 'fish'
+      #@args.push('-i')
     @_exec(child_process.spawn)
     return @
 

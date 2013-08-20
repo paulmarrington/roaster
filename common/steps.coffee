@@ -121,7 +121,7 @@ class Steps extends events.EventEmitter
       @emit 'error', err
       @next()
       ), @maximum_time_ms
-  # 
+  #
   # log_error: (error) =>
   #   console.log "Error:", error
   #   console.log "Step:", error.step if error.step?.length

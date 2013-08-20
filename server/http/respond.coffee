@@ -54,6 +54,10 @@ class Respond
   json: (data, replacer = null, space = '  ') ->
     @exchange.respond.set_mime_type 'json'
     @text JSON.stringify data, replacer, space
+  # respond to client with some HTML for browser consumption
+  html: (data...) ->
+    @exchange.respond.set_mime_type 'html'
+    @text data.join('')
   # string representation of data that changes on every request
   text: (text) ->
     @exchange.response.setHeader 'Cache-Control', 'public, no-cache'

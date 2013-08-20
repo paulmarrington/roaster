@@ -5,6 +5,7 @@ module.exports =
     contents = []
     @stream url, (error, text, is_complete) ->
       contents.push text
+      contents = [] if error
       next(error, contents.join('')) if is_complete
 
   stream: (url, onData) ->
@@ -18,7 +19,8 @@ module.exports =
       catch e then text = ''
       error = null
       if is_complete = (request.readyState is 4)
-        if request.status isnt 200 then error = request.statusText
+        if request.status isnt 200
+          error = request.statusText
       onData(error, text, is_complete)
     request.open 'GET', url, true
     request.send null
