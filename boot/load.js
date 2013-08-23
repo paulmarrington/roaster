@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license */
+/* Copyright (C) 2013 paul@marrington.net, see /GPL license */
 
 // start by loading modules required for base operation
 var modules = [
