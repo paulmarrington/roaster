@@ -1,23 +1,25 @@
-# Copyright (C) 2012,13 paul@marrington.net, see GPL for license
+# Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 url = require 'url'; path = require 'path'; os = require 'os'
-http = require 'http'; https = require 'https'; fs = require 'fs'
-querystring = require 'querystring'; url = require 'url'
-timer = require 'common/timer', _ = require 'underscore'
-dirs = require 'dirs'; events = require 'events'
+http = require 'http'; https = require 'https'
+fs = require 'fs'; querystring = require 'querystring'
+url = require 'url'; timer = require 'common/timer'
+_ = require 'underscore'; dirs = require 'dirs'
+events = require 'events'
 
 class Internet extends events.EventEmitter
   constructor: (@base = '') ->
     @retry_for = 5
     # download a file - pausing the stream while it happens
-    @download = # internet.download.to(file_path).from url, => next()
-      from: (@from, next) => @download_now(next); return @download
-      to: (@to, next) => @download_now(next); return @download
+    # internet.download.to(file_path).from url, => next()
+    @download =
+      from: (@from, next) => @fetch(next); return @download
+      to: (@to, next) => @fetch(next); return @download
     # process options as needed
     @_options = {}
     Object.defineProperty @, "options",
       get: => return @_options
       set: (value) =>
-        @_options = if value?.length and value[0] then value[0] else {}
+        @_options = if value?[0] then value[0] else {}
         @_options.headers ?= {}
 
   # Abort stream if Internet unavailable
@@ -28,7 +30,8 @@ class Internet extends events.EventEmitter
 
   # Post known static data as either a string or url-encoded
   post: (address, data, @options..., on_connect) ->
-    data = querystring.stringify data if typeof data isnt 'string'
+    if typeof data isnt 'string'
+      data = querystring.stringify data
     @options.headers['Content-Length'] = data.length
     @once 'request', => @request.end data
     @once 'connect', on_connect
@@ -66,7 +69,7 @@ class Internet extends events.EventEmitter
   # set how many seconds we keep retrying
   retry: (seconds) -> @retry_for = seconds; return @
 
-  download_now: (on_download_complete) ->
+  fetch: (on_download_complete) ->
     return if not on_download_complete
     console.log "Downloading #{@from}..."
     to = @to
@@ -77,9 +80,9 @@ class Internet extends events.EventEmitter
         return on_download_complete error
       dirs.mkdirs path.dirname(to), =>
         writer = fs.createWriteStream to
-        @response.on 'end', =>
-          console.log '...done';
-          writer.end()
+        @response.on 'end', => writer.end()
+        writer.on 'finish', =>
+          console.log '...done'
           on_download_complete()
         @response.pipe writer
     @from = @to = ''
@@ -92,9 +95,11 @@ class Internet extends events.EventEmitter
       address = "#{@base}/#{address}" if @base?.length
     address = url.parse address, true, true
     # restore the query string - and add any from @options
-    query = querystring.stringify _.extend {}, address.query, @_options.query
+    query = querystring.stringify _.extend {},
+      address.query, @_options.query
     address.path =
-      if query.length then "#{address.pathname}?#{query}" else address.pathname
+      if query.length then "#{address.pathname}?#{query}"
+      else address.pathname
     # restore the hash if there is one
     address.path += '#'+address.path if address.hash?.length
     options =
@@ -122,10 +127,12 @@ class Internet extends events.EventEmitter
         @removeAllListeners()
       @emit 'request', @request
       @request.on 'error', (error) =>
-        if error?.code is 'ECONNREFUSED' and clock.total() < @retry_for
+        if error?.code is 'ECONNREFUSED' and
+        clock.total() < @retry_for
           return setTimeout requesting, 500
         options = JSON.stringify options
-        error = new Error "#{error?.code} for #{address.href}\n#{options}"
+        error = new Error(
+          "#{error?.code} for #{address.href}\n#{options}")
         @emit 'connect', error, @request
         @removeAllListeners()
 
@@ -133,13 +140,13 @@ class Internet extends events.EventEmitter
   read_response: (next) ->
     @once 'connect', (error) ->
       return @emit('error', error) if error
-      response_stream = new Response_Stream()
+      response_stream = new ResponseStream()
       response_stream.on 'finish', (data) -> next(data)
       @response.pipe response_stream
 
-class Response_Stream extends require('stream').Writable
+class ResponseStream extends require('stream').Writable
   constructor: -> @chunks = []
-  end: (data) -> @write(data); @emit 'finish', @chunks.join('')
-  write: (data) -> @chunks.push data; return true
+  end: (dat) -> @write(dat); @emit 'finish', @chunks.join('')
+  write: (dat) -> @chunks.push dat; return true
 
 module.exports = (args...) -> new Internet(args...)
