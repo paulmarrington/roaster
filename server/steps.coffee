@@ -1,6 +1,7 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
-Steps = require 'common/steps'; path = require 'path'; npm = require 'npm'
-wait_for = require('common/wait_for'); loading = {}
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
+Steps = require 'common/steps'; path = require 'path'
+npm = require 'npm'; wait_for = require('common/wait_for')
+loading = {}
 
 # when draining a stream we need to know when to do more
 Steps::drain = (stream, data) ->
@@ -9,8 +10,9 @@ Steps::drain = (stream, data) ->
   else # synchronous
     @next()
 
-# similarly when we pipe we need to wait for it to complete. This version will
-# take any number of pipes - inner ones mus both read and write.
+# similarly when we pipe we need to wait for it to complete.
+# This version will take any number of pipes - inner ones
+# must both read and write.
 Steps::pipe = (input, pipes...) ->
   @asynchronous()
   next_called = false
@@ -26,7 +28,8 @@ Steps::pipe = (input, pipes...) ->
     pipe.on 'error', @next (@error) ->
     input = input.pipe pipe
 
-# another pipe implementation - to sequentially pipe all inputs to output
+# another pipe implementation -
+# to sequentially pipe all inputs to output
 Steps::cat = (inputs..., output) ->
   @asynchronous()
   next_called = false
@@ -39,12 +42,14 @@ Steps::cat = (inputs..., output) ->
   do piper = =>
     return output.end() if not inputs.length
     input = inputs.shift()
-    input.on 'error', (err) => console.log(err.stack); @error = err; output.end()
+    input.on 'error', (err) =>
+      console.log(err.stack); @error = err; output.end()
     input.on 'end', piper
     input.pipe output, end:false
 
 # possibly asynchronous requires
 Steps::requires = (modules...) ->
+  @long_operation()
   for name in modules
     key = path.basename(name).replace /\W/g, '_'
     try @[key] = require(name) catch error
@@ -54,7 +59,8 @@ Steps::requires = (modules...) ->
           npm.load name, (error, module) =>
             if error then @errors = error else @[key] = module
             ready()
-        loading[name] = wait_for((next) -> load(name, key, next))
+        loading[name] =
+          wait_for((next) -> load(name, key, next))
       parallel = @parallel()
       loading[name] =>
         @[key] ?= require(name)

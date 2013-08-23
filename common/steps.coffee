@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
 # unashamedly cribbed from http://github.com/creationix/step
 # in turn inspired by http://github.com/willconant/flow-js
 
@@ -8,7 +8,8 @@ class Steps extends events.EventEmitter
   constructor: (@steps) ->
     @pending = 0
     @results = []; @lock = false
-    @maximum_time_ms = process?.environment?.steps_timeout_ms ? 60000
+    @maximum_time_ms =
+      process?.environment?.steps_timeout_ms ? 60000
     @total_steps = @steps.length
     # referencing @next will set step to be asynchronous
     Object.defineProperty @, "next", get: =>
@@ -17,7 +18,7 @@ class Steps extends events.EventEmitter
     # setting an error property will emit an error event
     Object.defineProperty @, "error", set: (value) =>
       @emit('error', value) if value
-    # by default an error will log rather than throw an exception
+    # by default an error will log (not throw an exception)
     # @on 'error', @log_error
     # lastly we start of the running of steps.
     @_next()
@@ -25,7 +26,8 @@ class Steps extends events.EventEmitter
   _next: (callback) =>
     # parallel only nexts when all done
     return if @contains_parallels and --@pending and not @lock
-    # if passed a callback closure, return it with an @next() call if needed
+    # if passed a callback closure, return it with an
+    # @next() call if needed
     if callback and callback instanceof Function
       step_number_for_this_callback = @steps.length
       return =>
@@ -34,27 +36,30 @@ class Steps extends events.EventEmitter
           #{callback.toString()}"""
         callback.apply(@, arguments)
         # make sure next hasn't been called explicitly
-        @_next() if step_number_for_this_callback is @steps.length
-    # normal next will run the next function in the call argument list.
+        if step_number_for_this_callback is @steps.length
+          @_next()
+    # normal next will run the next function in the
+    # call argument list.
     clearTimeout @step_timer
     @next_referenced = false
     @pending = @contains_parallels = 0
     return if @steps.length is 0
-
-    @start_timer fn = @steps.shift() # Get the next step to execute
+    # Get the next step to execute
+    @start_timer fn = @steps.shift()
 
     try
-      @lock = true;
+      @lock = true
       if fn instanceof Array
         @parallel fn
-      else # normally synchronous, but checks @next access to be sure
+      else # normally sync, but checks @next access to be sure
         if @tracing then console.log """
           Step #{@steps.length + 1}:
           #{fn.toString()}"""
         this_step = @steps.length
         param = @next if fn.length  # one parameter is @next
         fn.call @, param
-        @_next() if not @next_referenced and this_step is @steps.length
+        if not @next_referenced and this_step is @steps.length
+          @_next()
     catch exception
       exception.step = @total_steps - @steps.length
       # exception.calling = fn.toString()
@@ -63,28 +68,30 @@ class Steps extends events.EventEmitter
       @_next() if this_step is @steps.length
 
     @lock = false
-    # ok, all entries were synchronous so parallel did not get to
-    # process them because the lock above was on
+    # ok, all entries were synchronous so parallel did not
+    # get to process them because the lock above was on
     @next() if @pending is 0 and @contains_parallels
   skip: => @steps.shift() if @steps.length; @next()
-  # @call -> actions - call with steps as this so you can use @next, etc
+  # @call -> actions - call with steps as this
+  # so you can use @next, etc
   call: (func) => func.apply(@, arguments)
+  # Do not do any further steps
   abort: (next, args...) =>
     clearTimeout @step_timer
     @steps = []
     next(args...) if next
-
-  long_operation: (seconds = 300) => @maximum_time_ms = seconds * 1000
-
+  # wait longer for async ops to complete (default 5 min)
+  long_operation: (seconds = 300) =>
+    @maximum_time_ms = seconds * 1000
+  # if @next is in a function it can't infer asyn
   asynchronous: => @next_referenced = true
-
   # Given a list of closures, process then sequentially
   sequence: (list...) =>
     @asynchronous()
     do process_next = =>
       return @next() if not list.length
       list.shift()(process_next)
-  # Given one method and a data list, call sequentially for each item
+  # Given one method and data list, call sequentially for each
   list: (list..., processor) =>
     @asynchronous()
     do process_next = =>
@@ -94,8 +101,8 @@ class Steps extends events.EventEmitter
       catch exception
         @emit 'error', exception
         process_next()
-
-  # Add a special callback generator `this.parallel()` that groups stuff.
+  # Add a special callback generator `this.parallel()`
+  # that groups stuff.
   parallel: =>
     @contains_parallels = true
     @asynchronous()
@@ -106,12 +113,13 @@ class Steps extends events.EventEmitter
     else # use for fn, args..., @parallel()
       @pending++
       return @next
-
+  # callbacks that are never called are invisible without this
   start_timer: (fn) =>
     step = @total_steps - @steps.length
     @step_timer = setTimeout (=>
       err = new Error """\n
-        Step did not complete in #{@maximum_time_ms} ms (@next not called)
+        Step did not complete in #{@maximum_time_ms} ms
+        @next was not called
         (change @maximum_time_ms if process needs more time)
         Function being called in step #{step} was:
 

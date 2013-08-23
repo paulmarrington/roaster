@@ -1,11 +1,15 @@
-# Copyright (C) 2012 Paul Marrington (paul@marrington.net), see GPL for license
+# Copyright (C) 2012 paul@marrington.net, see GPL for license
 
-# Simple effective asynchronous module requirements for the browser.
+# Simple effective asynchronous module requirements
+# for the browser.
 
 window.slice$ = window['__slice'] = [].slice
-window['__bind'] = (fn, me) -> return -> return fn.apply(me, arguments)
+window['__bind'] = (fn, me) ->
+  return -> return fn.apply(me, arguments)
 window.bind$ = (obj, key, target) ->
   return -> return (target || obj)[key].apply(obj, arguments)
+
+pkg_dir = "/client/packages"
 
 window.roaster =
   context: {}
@@ -20,20 +24,21 @@ window.roaster =
     # see if we are loaded and ready to go
     return next imports if imports = roaster.cache[url]
     # see if we are in the process of loading
-    return roaster.loading[url].push(next) if roaster.loading[url]
+    if roaster.loading[url]
+      return roaster.loading[url].push(next)
     # ok, we are going to need to kick of a synchronous load
     roaster.loading[url] = [next]
 
     roaster.script_loader url, domain, ->
       imports = roaster.cache[url]
       callbacks = roaster.loading[url]
-      callback imports while callback = callbacks.pop() when callback
+      cb imports while cb = callbacks.pop() when cb
       delete roaster.loading[url]
 
   load: (packages..., next) ->
     packages = packages[0].split(',') if packages.length is 1
     roaster.ready ->
-      files = ("/client/packages/#{pkg}.coffee" for pkg in packages)
+      files = ("#{pkg_dir}/#{pkg}.coffee" for pkg in packages)
       loader = (step, next) ->
         return next() if not packages.length
         pkg = packages.shift()
@@ -52,13 +57,14 @@ window.roaster =
 
     [src, attributes] = url.split('#')
     if attributes
-      for key, value of roaster.parse_query_string attributes ? ''
+      for key, value of roaster.parse_query_string attributes
         script.setAttribute(key, value)
 
     if script.readyState # IE
       script.onreadystatechange = ->
-        if script.readyState == "loaded" || script.readyState == "complete"
-          script.onreadystatechange = null;
+        ready = script.readyState
+        if ready == "loaded" || ready == "complete"
+          script.onreadystatechange = null
           roaster.cache[url] ?= {}
           next()
     else # Other browsers
@@ -68,15 +74,18 @@ window.roaster =
 
     if domain?.length
       if src[0] == '/' # absolute
-        # domain in command over-rides one from earlier reference
-        src = src.slice src.indexOf('/', 2) + 1 if src[1] is '!'
+        # domain in command over-rides earlier reference
+        if src[1] is '!'
+          src = src.slice src.indexOf('/', 2) + 1
         # domain in query string takes precedence
-        src = "/!#{domain}#{src}" if src.indexOf('domain=') == -1
+        if src.indexOf('domain=') == -1
+          src = "/!#{domain}#{src}"
       else # relative, use query form of domain
         src = roaster.add_command_line src, domain: domain
 
     script.src = src
-    document.getElementsByTagName("head")[0].appendChild(script)
+    document.getElementsByTagName("head")[0].
+      appendChild(script)
 
   add_command_line: (url, args) ->
     sep = if url.indexOf('?') is -1 then '?' else '&'
@@ -97,6 +106,8 @@ window.roaster =
     noDeprecation: true
     platform: 'browser'
     env: {}
+    
+  global: {}
 
   cache: {}
   loading: {}
@@ -104,20 +115,32 @@ window.roaster =
 
 window.process = roaster.process
 
+load_requirements = ->
+  @requires(
+    '/ext/node_modules/underscore/underscore.js'
+    '/client/roaster/environment.coffee'
+    '/common/wait_for.coffee'
+    '/client/dependency.coffee', '/app.coffee')
+    
+load_environment = ->
+  roaster.dependency = @dependency
+  window._ = @underscore
+  @environment.load @next
+
 roaster_loaded = ->
   do on_ready = ->
-    return roaster.on_ready = null if not roaster.on_ready.length
+    if not roaster.on_ready.length
+      return roaster.on_ready = null
     roaster.on_ready.shift()(on_ready)
 
-roaster.depends '/client/roaster/request.coffee', 'client', (request) ->
+roaster.depends '/client/roaster/request.coffee',
+'client', (request) ->
   roaster.request = request
-  roaster.depends '/client/roaster/steps.coffee', 'client', (steps) ->
+  roaster.depends '/client/roaster/steps.coffee',
+  'client', (steps) ->
     roaster.cache.steps = steps
     steps(
-      ->  @requires '/ext/node_modules/underscore/underscore.js',
-          '/client/roaster/environment.coffee', '/common/wait_for.coffee',
-          '/client/dependency.coffee', '/app.coffee'
-      ->  roaster.dependency = @dependency; window._ = @underscore
-      ->  @environment.load @next
-      ->  roaster_loaded()
+      load_requirements
+      load_environment
+      roaster_loaded
     )

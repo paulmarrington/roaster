@@ -43,7 +43,7 @@ module.exports =
     return imports if imports = roaster.cache[module_name]
     console.log "If possible move to async step(->@requires '#{module_name}')"
     request = new XMLHttpRequest()
-    request.open 'GET', "/#{module_name}.requires.js?domain=client", false
+    request.open 'GET', "/#{module_name}.require.js?domain=client", false
     request.send null
     eval request.responseText
 

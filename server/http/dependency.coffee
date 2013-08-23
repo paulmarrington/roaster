@@ -1,6 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
-internet = require('internet')(); path = require 'path'; dirs = require 'dirs'
-fs = require 'fs'; steps = require 'steps'; files = require 'files'
+internet = require('internet')(); path = require 'path'
+dirs = require 'dirs'; fs = require 'fs'
+steps = require 'steps'; files = require 'files'
 
 module.exports = (exchange) ->
   results = {}
@@ -9,12 +10,22 @@ module.exports = (exchange) ->
     file = path.basename url
     file = "#{key}.#{file}" if file.indexOf(key) is -1
     file = dirs.base 'ext', file
+    
+    has_been_done_before = ->
+      @long_operation()
+      fs.exists file, @next (exists) ->
+        if exists then @abort(); next(null)
+        
+    download_file = ->
+      internet.download.from(url).to file, @next
+      
+    return_result = -> next(file)
+    
     steps(
-      ->  @long_operation()
-      ->  fs.exists file, @next (exists) -> if exists then @abort(); next(null)
-      ->  internet.download.from(url).to file, @next
-      ->  next(file)
-      )
+      has_been_done_before
+      download_file
+      return_result
+    )
 
   process_zip = (file, to, rename, next) ->
     base = dirs.base 'ext', to
@@ -47,9 +58,15 @@ module.exports = (exchange) ->
         process_zip file, to, rename, next
       else
         process_file file, to, rename, next
+        
+  load_from_urls = ->
+    @long_operation()
+    for key, url of exchange.request.url.query
+      @call -> load key, url, @parallel()
+      
+  return_results = -> exchange.respond.json results
+      
   steps(
-    ->  @long_operation()
-    ->  for key, url of exchange.request.url.query
-          @call -> load key, url, @parallel()
-    ->  exchange.respond.json results
-    )
+    load_from_urls
+    return_results
+  )
