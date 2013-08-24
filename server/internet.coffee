@@ -149,4 +149,4 @@ class ResponseStream extends require('stream').Writable
   end: (dat) -> @write(dat); @emit 'finish', @chunks.join('')
   write: (dat) -> @chunks.push dat; return true
 
-module.exports = (args...) -> new Internet(args...)
+module.exports = Internet

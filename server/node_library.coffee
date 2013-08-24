@@ -1,5 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
-fs = require 'fs'; download = require('internet')().download
+fs = require 'fs'; Internet = require('internet')
 dirs = require 'dirs'; steps = require 'steps'
 
 joyent = "https://raw.github.com/joyent/node/master/lib"
@@ -10,6 +10,7 @@ module.exports =
     library_path = 'ext/node_library'
     local = dirs.node(library_path, "#{module_name}.js")
     url = "#{joyent}/#{module_name}.js"
+    download = new Internet().download
 
     steps(
       -> dirs.mkdirs library_path, @next

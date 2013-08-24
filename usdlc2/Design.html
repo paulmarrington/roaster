@@ -74,7 +74,7 @@ Then and confirm a file 'ext/node_modules/coffee-script/README' now exists
 gwt = global.gwt # set by uSDLC2/scripts/gwt
 
 # Module requirements
-internet = require('internet')(); processes = require('processes')
+Internet = require('internet')(); processes = require('processes')
 path = require('path'); os = require('system'); fs = require('fs')
 dirs = require('dirs')
 
@@ -89,6 +89,7 @@ gwt.rules( # Rules used by child pages
     @next()
 
   /Internet access/, ->
+    internet = new Internet()
     internet.available (error) =>
       @skip.section("Internet not available") if error
       @next()
@@ -103,6 +104,7 @@ gwt.rules( # Rules used by child pages
 
   /download from github project '(.*)' at '(.*)'/, (project, at) ->
     @maximum_step_time = 120
+    internet = new Internet()
     internet.download.to(file_path()).
       from "https://raw.github.com/#{project}/#{at}/#{file_name}", @next
 
@@ -131,6 +133,7 @@ gwt.rules( # Rules used by child pages
       old_file_name = file_name
       file_name = 'install-usdlc-on-unix.sh'
       at = 'master/release'
+      internet = new Internet()
       internet.download.to(file_path()).
       from "https://raw.github.com/#{project}/#{at}/#{file_name}", =>
         dirs.in_directory temp_directory, =>

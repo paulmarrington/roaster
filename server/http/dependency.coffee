@@ -1,5 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
-internet = require('internet')(); path = require 'path'
+Internet = require 'internet'; path = require 'path'
 dirs = require 'dirs'; fs = require 'fs'
 steps = require 'steps'; files = require 'files'
 
@@ -10,14 +10,14 @@ module.exports = (exchange) ->
     file = path.basename url
     file = "#{key}.#{file}" if file.indexOf(key) is -1
     file = dirs.base 'ext', file
+    downloader = new Internet().download
     
     has_been_done_before = ->
       @long_operation()
       fs.exists file, @next (exists) ->
         if exists then @abort(); next(null)
         
-    download_file = ->
-      internet.download.from(url).to file, @next
+    download_file = -> downloader.from(url).to file, @next
       
     return_result = -> next(file)
     
