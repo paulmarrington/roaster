@@ -1,7 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 version = "4.1.2"
 pkg = "full"
-base = "http://download.cksource.com/CKEditor/i"+
+base = "http://download.cksource.com/CKEditor/"+
   "CKEditor/CKEditor "
 ckurl = "http://download.ckeditor.com"
 plugin_dir = "ckeditor/plugins/"
