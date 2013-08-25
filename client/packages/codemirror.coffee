@@ -1,6 +1,6 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 
-roaster.codemirror_base = base = '/ext/codemirror/codemirror'
+roaster.codemirror_base = base = '/ext/codemirror/Codemirror-master'
 addon = (type) -> return "#{base}/addon.#{type}.concat?
 exclude=(standalone.js$|_test.js$|pig-hint.js)"
 keymap = "#{base}/keymap.js.concat"
@@ -10,7 +10,8 @@ module.exports = (next) ->
     ->  @long_operation()
     ->  @package 'coffeelint', 'jshint', 'jsonlint'
     ->  @asynchronous roaster.dependency(
-          codemirror: 'https://codeload.github.com/marijnh/CodeMirror/zip/master|codemirror'
+          codemirror: 'https://codeload.github.com/marijnh"+
+            "/CodeMirror/zip/master|codemirror'
           "#{base}/lib/codemirror.css"
           "#{base}/lib/codemirror.js"
           "#{base}/mode/coffeescript/coffeescript.js"
