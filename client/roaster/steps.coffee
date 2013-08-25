@@ -8,7 +8,7 @@ domains =
 
 module.exports = roaster.steps = (steps...) ->
   requests = roaster.request
-  requests.requireAsync 'events', 'util', 'path',
+  requests.requireAsync 'util', 'events', 'path',
   (events, util, path) ->
     roaster.depends '/common/steps.coffee', 'client',
     (Steps) ->
