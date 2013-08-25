@@ -10,8 +10,8 @@ module.exports = (next) ->
     ->  @long_operation()
     ->  @package 'coffeelint', 'jshint', 'jsonlint'
     ->  @asynchronous roaster.dependency(
-          codemirror: 'https://codeload.github.com/marijnh"+
-            "/CodeMirror/zip/master|codemirror'
+          codemirror: 'https://codeload.github.com/marijnh'+
+            '/CodeMirror/zip/master|codemirror'
           "#{base}/lib/codemirror.css"
           "#{base}/lib/codemirror.js"
           "#{base}/mode/coffeescript/coffeescript.js"
