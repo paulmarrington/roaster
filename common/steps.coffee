@@ -71,6 +71,12 @@ class Steps extends events.EventEmitter
     # ok, all entries were synchronous so parallel did not
     # get to process them because the lock above was on
     @next() if @pending is 0 and @contains_parallels
+  # add additional steps
+  add: (more...) =>
+    running = @steps.length or @lock
+    @steps.push more...
+    @_next() if not running
+  # skip the next step
   skip: => @steps.shift() if @steps.length; @next()
   # @call -> actions - call with steps as this
   # so you can use @next, etc

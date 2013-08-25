@@ -1,10 +1,10 @@
 # Copyright (C) 2012 paul@marrington.net, see GPL for license
-steps = require 'steps';
-morph = require 'morph'; path = require 'path'; dirs = require 'dirs'
+steps = require 'steps'; morph = require 'morph'
+path = require 'path'; dirs = require 'dirs'
 
 module.exports = (source, css_created) ->
 
-  load_libraries = -> @requires 'less'
+  load_libraries = -> @long_operation(); @requires 'less'
 
   process_less = -> morph source, '.css',
     @next (@error, @css_filename, @content, @write_css) =>

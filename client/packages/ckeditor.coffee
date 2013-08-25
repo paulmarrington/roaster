@@ -6,7 +6,7 @@ base = "http://download.cksource.com/CKEditor/"+
 ckurl = "http://download.ckeditor.com"
 plugin_dir = "ckeditor/plugins/"
 packages =
-  ckeditor: "#{base}#{version}/i"+
+  ckeditor: "#{base}#{version}/"+
     "ckeditor_#{version}_#{pkg}.zip|."
   tableresize: "#{ckurl}/tableresize/releases/"+
     "tableresize_#{version}.zip|#{plugin_dir}"
