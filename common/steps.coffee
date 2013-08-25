@@ -89,6 +89,7 @@ class Steps extends events.EventEmitter
   # wait longer for async ops to complete (default 5 min)
   long_operation: (seconds = 300) =>
     @maximum_time_ms = seconds * 1000
+    start_timer()
   # if @next is in a function it can't infer asyn
   asynchronous: => @next_referenced = true
   # Given a list of closures, process then sequentially
@@ -120,7 +121,9 @@ class Steps extends events.EventEmitter
       @pending++
       return @next
   # callbacks that are never called are invisible without this
-  start_timer: (fn) =>
+  start_timer: (fn = @last_timed_function) =>
+    @last_timed_function = fn
+    clearTimeout @step_timer
     step = @total_steps - @steps.length
     @step_timer = setTimeout (=>
       err = new Error """\n
