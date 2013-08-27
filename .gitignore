@@ -3,3 +3,6 @@
 nohup.out
 .store
 .idea
+*.swo
+
+*.swp

@@ -11,6 +11,7 @@ class Steps extends events.EventEmitter
     @maximum_time_ms =
       process?.environment?.steps_timeout_ms ? 60000
     @total_steps = @steps.length
+    @queue = (actions...) => @add(actions...)
     # referencing @next will set step to be asynchronous
     Object.defineProperty @, "next", get: =>
       @asynchronous()
@@ -43,7 +44,8 @@ class Steps extends events.EventEmitter
     clearTimeout @step_timer
     @next_referenced = false
     @pending = @contains_parallels = 0
-    return if @steps.length is 0
+    return @idling = true if @steps.length is 0
+    @idling = false
     # Get the next step to execute
     @start_timer fn = @steps.shift()
 
@@ -72,10 +74,9 @@ class Steps extends events.EventEmitter
     # get to process them because the lock above was on
     @next() if @pending is 0 and @contains_parallels
   # add additional steps
-  add: (more...) =>
-    running = @steps.length or @lock
+  add: (more...) ->
     @steps.push more...
-    @_next() if not running
+    @_next() if @idling
   # skip the next step
   skip: => @steps.shift() if @steps.length; @next()
   # @call -> actions - call with steps as this

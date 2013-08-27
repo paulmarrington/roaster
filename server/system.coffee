@@ -1,12 +1,14 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-os = require 'os'; querystring = require 'querystring';
+# Copyright (C) 2012,13 paul@marrington.net, see /GPL license
+os = require 'os'; querystring = require 'querystring'
 
 # some scripts are platform dependent - so provide a check
-os.expecting = (system) -> # os.expecting('windows|unix|darwin|linux')
+# os.expecting('windows|unix|darwin|linux')
+os.expecting = (system) ->
   runningOn = os.type().toLowerCase()
   system = system.toLowerCase()
   system = 'darwin' if system is 'os x'
-  return system is runningOn or system is 'unix' and runningOn isnt 'windows'
+  return system is runningOn or
+         system is 'unix' and runningOn isnt 'windows'
 
 # process a command line of the form 'a=b c=d' into a map - with defaults
 os.command_line = ->

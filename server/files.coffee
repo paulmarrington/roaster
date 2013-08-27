@@ -1,6 +1,9 @@
-# Copyright (C) 2012,13 paul@marrington.net, see GPL for license
-fs = require 'fs'; path = require 'path'; steps = require 'steps'
-os = require 'os'; dirs = require 'dirs'
+# Copyright (C) 2012,13 paul@marrington.net, see /GPL license
+fs = require 'fs'; path = require 'path'
+steps = require 'steps'; os = require 'os'
+dirs = require 'dirs'
+
+tmp_dir = os.tmpDir()
 
 module.exports =
   # returns a file on one path or null if it can't be found
@@ -18,16 +21,19 @@ module.exports =
   copy: (source, target, next) ->
     done = (error = null) -> next error; done = ->
     input = fs.createReadStream(source).on 'error', done
-    output = fs.createWriteStream(target).on('error', done).on('close', done)
+    output = fs.createWriteStream(target)
+    output.on('error', done).on('close', done)
     input.pipe output
 
-  size: (name, next) -> fs.stat name, (error, stat) -> next error, stat?.size
+  size: (name, next) ->
+    fs.stat name, (error, stat) -> next error, stat?.size
 
   is_dir: (name, next) -> fs.stat name, (error, stat) ->
     next error, stat?.isDirectory()
 
   save: (final_resting_place, input_streams..., next) ->
-    building_place = path.join os.tmpDir(), path.basename final_resting_place
+    target = path.basename final_resting_place
+    building_place = path.join tmp_dir, target
 
     steps(
       ->  @on 'error', (error) -> console.log error; @abort next, error

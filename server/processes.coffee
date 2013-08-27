@@ -1,5 +1,6 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-child_process = require 'child_process'; fs = require 'fs'; dirs = require 'dirs'
+# Copyright (C) 2012,13 paul@marrington.net, see /GPL license
+child_process = require 'child_process'; fs = require 'fs'
+dirs = require 'dirs'
 
 class Processes # proc = require('proc')() # sets default streaming and options
   constructor: (@program) ->
