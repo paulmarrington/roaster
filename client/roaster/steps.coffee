@@ -82,4 +82,4 @@ module.exports = roaster.steps = (steps...) ->
             @error = "No package #{packages[key]}" if not value
       # over-ride loader and run it this first time
       roaster.steps = (steps...) -> new Steps(steps)
-      new Steps(steps)
+      return (new Steps(steps)).queue

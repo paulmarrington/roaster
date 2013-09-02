@@ -69,4 +69,4 @@ Steps::requires = (modules...) ->
 # set default timeout based on environment (debug or not)
 #Steps::steps_timeout_ms = process.environment.steps_timeout_ms
 
-module.exports = (steps...) -> new Steps(steps)
+module.exports = (steps...) -> (new Steps(steps)).queue
