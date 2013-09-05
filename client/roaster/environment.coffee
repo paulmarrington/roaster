@@ -5,6 +5,7 @@ roaster.environment = roaster.process.environment = {}
 reload = -> window.location.href = window.location.href
 
 roaster.restart = ->
+  $('body').hide()
   roaster.script_loader '/server/http/terminate.coffee?key=yestermorrow',
     'server', -> setTimeout reload, 2000
 

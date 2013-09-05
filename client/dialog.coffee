@@ -45,7 +45,9 @@ zindex = 200
 
 $.widget "ui.dialog", $.ui.dialog,
   _moveToTop: (event, silent) ->
+    return false if +@uiDialog.css('z-index') >= zindex - 1
     @uiDialog.css 'z-index', zindex++
+    @_trigger("focus", event) if not silent
     return true
 
 module.exports = (options...) ->

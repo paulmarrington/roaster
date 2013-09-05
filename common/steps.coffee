@@ -11,7 +11,10 @@ class Steps extends events.EventEmitter
     @maximum_time_ms =
       process?.environment?.steps_timeout_ms ? 60000
     @total_steps = @steps.length
-    @queue = (actions...) => @add(actions...)
+    queue = @queue = (actions...) => @add(actions...)
+    # return a function that will run a closure asynchronously
+    queue.async = (action) =>
+      queue -> @asynchronous(); action()
     # referencing @next will set step to be asynchronous
     Object.defineProperty @, "next", get: =>
       @asynchronous()
@@ -77,6 +80,8 @@ class Steps extends events.EventEmitter
   add: (more...) ->
     @steps.push more...
     @_next() if @idling
+  # see if there is more to done
+  empty: -> return not steps.length
   # skip the next step
   skip: => @steps.shift() if @steps.length; @next()
   # @call -> actions - call with steps as this
