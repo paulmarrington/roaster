@@ -6,15 +6,18 @@ events = require('events')
 
 class Steps extends events.EventEmitter
   constructor: (@steps) ->
+    @self = @ # first param could be context
+    if not (steps?[0] instanceof Function)
+      @self = @steps.shift()
+    @all_asynchronous = false
     @pending = 0
     @results = []; @lock = false
     @maximum_time_ms =
       process?.environment?.steps_timeout_ms ? 60000
     @total_steps = @steps.length
-    queue = @queue = (actions...) => @add(actions...)
-    # return a function that will run a closure asynchronously
-    queue.async = (action) =>
-      queue -> @asynchronous(); action()
+    # allows us to save reference and use out of context
+    @queue = (actions...) => @add(actions...)
+    @queue.instance = @instance = @
     # referencing @next will set step to be asynchronous
     Object.defineProperty @, "next", get: =>
       @asynchronous()
@@ -26,6 +29,13 @@ class Steps extends events.EventEmitter
     # @on 'error', @log_error
     # lastly we start of the running of steps.
     @_next()
+    
+  # Used to integrate steps. Can have optional context
+  # addressed by @self or as the parameter to the step
+  # as in queue @, ->
+  queue: (self..., action) ->
+    steps = new Steps(self...)
+    action.apply(steps, steps.self)
 
   _next: (callback) =>
     # parallel only nexts when all done
@@ -45,7 +55,7 @@ class Steps extends events.EventEmitter
     # normal next will run the next function in the
     # call argument list.
     clearTimeout @step_timer
-    @next_referenced = false
+    @next_referenced = @all_asynchronous
     @pending = @contains_parallels = 0
     return @idling = true if @steps.length is 0
     @idling = false
@@ -61,7 +71,8 @@ class Steps extends events.EventEmitter
           Step #{@steps.length + 1}:
           #{fn.toString()}"""
         this_step = @steps.length
-        param = @next if fn.length  # one parameter is @next
+        # one parameter is @next
+        param = (=> @next()) if fn.length
         fn.call @, param
         if not @next_referenced and this_step is @steps.length
           @_next()
@@ -78,10 +89,11 @@ class Steps extends events.EventEmitter
     @next() if @pending is 0 and @contains_parallels
   # add additional steps
   add: (more...) ->
+    @total_steps++
     @steps.push more...
     @_next() if @idling
   # see if there is more to done
-  empty: -> return not steps.length
+  empty: -> return not @steps.length
   # skip the next step
   skip: => @steps.shift() if @steps.length; @next()
   # @call -> actions - call with steps as this

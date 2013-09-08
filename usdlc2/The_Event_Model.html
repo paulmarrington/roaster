@@ -7,5 +7,83 @@
 <h1>The Event Model</h1>
 
 <p>Roaster is yet another web server built on Node. Node relies on a single thread and an event model to allow effective developer controlled asynchronous processing.</p>
+
+<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/common/steps.coffee',category:'common'})">steps.coffee</a></span><span class="one_by_one"><a href="javascript:usdlc.edit_source({value:'one_by_one.js',path:'../roaster/common/one_by_one.js',category:'common'})">one_by_one.js</a></span><span class="client"><a href="javascript:usdlc.edit_source({value:'client.js',path:'../roaster/templates/client.js',category:'templates'})">client.js</a></span><span class="rules"><a href="javascript:usdlc.edit_source({value:'rules.coffee',path:'../roaster/common/rules.coffee',category:'common'})">rules.coffee</a></span></div>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
+
+<h2>Integration</h2>
+
+<p>One of the least painful ways to use steps is to integrate it into a function or method. The pattern is as follows:</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>queue = require(&#39;steps&#39;).queue<br />
+...</code><br />
+func = (data..., callback) -&gt; <span style="background-color:#FFD700;">queue -&gt;</span><br />
+&nbsp;&nbsp;# a good place to set variables available to all queued code<br />
+<br />
+&nbsp; <span style="background-color:#FFD700;">@queue (next) -&gt;</span><br />
+&nbsp;&nbsp; &nbsp;# asynchronous code - call next() to continue<br />
+&nbsp;&nbsp; &nbsp;setTimeout(next, 1000)<br />
+<br />
+&nbsp;&nbsp;<span style="background-color:#FFD700;">@queue -&gt;</span><br />
+&nbsp;&nbsp; &nbsp;# synchronous code - runs in queued sequence<br />
+<br />
+&nbsp;&nbsp;@queue (next) -&gt;<br />
+&nbsp;&nbsp; &nbsp;# Simulate asynchronous function complete to call callback.<br />
+&nbsp; &nbsp; setTimeout(callback, 1000)</div>
+
+<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/common/steps.coffee',category:'common'})">steps.coffee</a></span><span class="rules"><a href="javascript:usdlc.edit_source({value:'rules.coffee',path:'../roaster/common/rules.coffee',category:'common'})">rules.coffee</a></span></div>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee">queue = require(&#39;steps&#39;).queue
+
+func = (data) -&gt; queue -&gt;
+  # parameters available through closure
+  @fail() if data?.value isnt 22
+  # Anything run in the body happens immediately, just as
+  # it would with any standard function. This is a good place
+  # to define data available across asynchronous work
+  count = 0
+
+  @queue (next) -&gt;
+    # Code here will be run next, but following steps will
+    # not start until @next() is called.
+    count++
+    after_ten_ms = -&gt;
+      count++
+      next()
+    setTimeout after_ten_ms, 10
+
+  # This will be run when the step above waits for I/O.
+  # In this example it will run as soon as the timeout period
+  # starts. Data for following operations can be defined here.
+  
+  # count will be incremented by the queued operation above
+  @fail() if count isnt 1
+  count++
+
+  @queue -&gt;
+    # this step is synchronous, but will still only run after
+    # the step above completes. Note that &#39;next&#39; need not be
+    # referenced or called for synchronous code.
+    
+    # Count was incremented once at start of queue, then again
+    # in-line and yet a third time 10ms later - plus in-line
+    # below
+    @fail() if count isnt 4
+    count++
+    
+  # Back to in-line. Count should have been incremented by
+  # the first queue and the middle in-line.
+  @fail() if count isnt 2
+  count++
+  
+  @queue -&gt;
+    # one more for luck. It will be the last code executed
+    # in this function
+    return @fail() if count isnt 5
+    @pass()
+    
+gwt.code_tests -&gt;
+  func value: 22</textarea></p>
 </body>
 </html>
