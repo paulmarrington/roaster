@@ -7,7 +7,7 @@ usage = ->
   cmds = fs.readdirSync node
   cmds = cmds.concat fs.readdirSync base if node isnt base
   cmds = [name.split('.')[0] for name in cmds when name[0] isnt '.'].sort()
-  console.log "usage: #{dirs.node()}/go.sh [#{cmds}] [args]"
+  console.log "usage: #{dirs.node()}/go.sh [node,#{cmds}] [args]"
   process.exit(1)
 
 usage() if process.argv.length < 4
