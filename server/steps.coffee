@@ -70,3 +70,4 @@ Steps::requires = (modules...) ->
 #Steps::steps_timeout_ms = process.environment.steps_timeout_ms
 
 module.exports = (steps...) -> (new Steps(steps))
+module.exports.queue = Steps.queue
