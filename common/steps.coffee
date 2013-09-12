@@ -5,7 +5,7 @@
 events = require('events')
 
 class Steps extends events.EventEmitter
-  constructor: (@steps) ->
+  constructor: (@steps = []) ->
     @self = @ # first param could be context
     if not (steps?[0] instanceof Function)
       @self = @steps.shift()
@@ -30,13 +30,6 @@ class Steps extends events.EventEmitter
     # lastly we start of the running of steps.
     @_next()
     
-  # Used to integrate steps. Can have optional context
-  # addressed by @self or as the parameter to the step
-  # as in queue @, ->
-  queue: (self..., action) ->
-    steps = new Steps(self...)
-    action.apply(steps, steps.self)
-
   _next: (callback) =>
     # parallel only nexts when all done
     return if @contains_parallels and --@pending and not @lock

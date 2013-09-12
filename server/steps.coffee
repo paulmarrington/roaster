@@ -70,4 +70,9 @@ Steps::requires = (modules...) ->
 #Steps::steps_timeout_ms = process.environment.steps_timeout_ms
 
 module.exports = (steps...) -> (new Steps(steps))
-module.exports.queue = Steps.queue
+# Used to integrate steps. Can have optional context
+# addressed by @self or as the parameter to the step
+# as in queue @, ->
+module.exports.queue = queue: (self..., action) ->
+  steps = new Steps(self...)
+  action.apply(steps, steps.self)

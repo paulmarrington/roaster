@@ -1,5 +1,6 @@
 (function(window) {
   var steps = roaster.steps
+  var queue = steps.queue
   var require = roaster.request.requireSync
   var global = roaster.global
   var process = roaster.process

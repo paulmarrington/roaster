@@ -100,5 +100,11 @@ module.exports = roaster.steps = (steps...) ->
       roaster.Steps = ClientSteps
       roaster.Queue = Queue
       roaster.steps = (steps...) -> new ClientSteps(steps)
-      roaster.steps.queue = Queue.queue
+      # Used to integrate steps. Can have optional context
+      # addressed by @self or as the parameter to the step
+      # as in queue @, ->
+      roaster.steps.queue = (self..., action) ->
+        steps = new Queue(self...)
+        action.apply(steps, steps.self)
+      # do the original request that sparked off the load...
       new roaster.steps(steps...)
