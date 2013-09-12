@@ -1,21 +1,23 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
+# Copyright (C) 2013 paul@marrington.net, see /GPL for license
 
 roaster.environment = roaster.process.environment = {}
 
 reload = -> window.location.href = window.location.href
 
+key_time = 0; restart_link = null
+restart_style = "position:absolute;right:2;top:0;z-index:10000"
+restarting_style = "#{restart_style};background-color:red"
+
 roaster.restart = ->
-  $('body').hide()
+  restart_link.setAttribute 'style', restarting_style
   roaster.script_loader '/server/http/terminate.coffee?key=yestermorrow',
     'server', -> setTimeout reload, 2000
 
-key_time = 0
-
 add_restart_link = ->
-  a = document.createElement("a")
+  restart_link = a = document.createElement("a")
   a.href = "javascript:roaster.restart()"
   a.innerHTML = "restart"
-  a.setAttribute 'style', "position:absolute;right:2;top:0;z-index:1000000"
+  a.setAttribute 'style', restart_style
   a.setAttribute 'title', "Or press <esc><esc>"
   document.body.appendChild(a)
   window.onkeydown = ->
