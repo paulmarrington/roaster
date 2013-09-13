@@ -2,7 +2,7 @@
 
 roaster.environment = roaster.process.environment = {}
 
-reload = -> window.location.href = window.location.href
+reload = -> window.location.reload(true)
 
 key_time = 0; restart_link = null
 restart_style = "position:absolute;right:2;top:0;z-index:10000"
@@ -10,8 +10,9 @@ restarting_style = "#{restart_style};background-color:red"
 
 roaster.restart = ->
   restart_link.setAttribute 'style', restarting_style
-  roaster.script_loader '/server/http/terminate.coffee?key=yestermorrow',
-    'server', -> setTimeout reload, 2000
+  roaster.request.json(
+    '/server/http/terminate.coffee?key=yestermorrow'
+    -> setTimeout reload, 2000)
 
 add_restart_link = ->
   restart_link = a = document.createElement("a")
@@ -30,7 +31,8 @@ add_restart_link = ->
         key_time = time
 
 module.exports.load = (next) ->
-  roaster.request.data '/server/http/environment.coffee?domain=server',
+  url = '/server/http/environment.coffee?domain=server'
+  roaster.request.data url,
     (@error, data) =>
       try
         roaster.environment = JSON.parse data
