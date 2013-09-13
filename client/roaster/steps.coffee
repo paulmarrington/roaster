@@ -93,9 +93,9 @@ module.exports = roaster.steps = (steps...) ->
         service: (scripts..., next) ->
           @queue -> super scripts...; @queue next
         data: (urls..., next) ->
-          @queue -> super scripts...; @queue next
+          @queue -> super urls...; @queue next
         json: (urls..., next) ->
-          @queue -> super scripts...; @queue next
+          @queue -> super urls...; @queue next
       # over-ride loader and run it this first time
       roaster.Steps = ClientSteps
       roaster.Queue = Queue

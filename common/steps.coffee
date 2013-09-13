@@ -72,7 +72,6 @@ class Steps extends events.EventEmitter
     catch exception
       exception.step = @total_steps - @steps.length
       # exception.calling = fn.toString()
-      exception.trace = exception.stack if exception.stack
       @emit 'error', exception
       @_next() if this_step is @steps.length
 
