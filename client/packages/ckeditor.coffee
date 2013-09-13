@@ -1,5 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
-version = "4.1.2"
+version = "4.2.1"
 pkg = "full"
 base = "http://download.cksource.com/CKEditor/"+
   "CKEditor/CKEditor "
