@@ -83,7 +83,7 @@ module.exports = roaster.steps = (steps...) ->
               @error = "No package #{packages[key]}" if not value
   
       class Queue extends ClientSteps
-        # steps.queue -> @require modules..., -> actions
+        # steps.queue -> @requirse modules..., -> actions
         requires: (modules..., next) ->
           @queue -> super modules...; @queue next
         package: (modules..., next) ->

@@ -65,7 +65,9 @@ class Steps extends events.EventEmitter
           #{fn.toString()}"""
         this_step = @steps.length
         # one parameter is @next
-        param = (=> @next()) if fn.length
+        if fn.length
+          @asynchronous()
+          param = (=> @next())
         fn.call @, param
         if not @next_referenced and this_step is @steps.length
           @_next()
@@ -83,6 +85,7 @@ class Steps extends events.EventEmitter
   add: (more...) ->
     @total_steps++
     @steps.push more...
+    console.log "IDLING", @idling
     @_next() if @idling
   # see if there is more to done
   empty: -> return not @steps.length
