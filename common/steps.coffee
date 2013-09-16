@@ -85,7 +85,6 @@ class Steps extends events.EventEmitter
   add: (more...) ->
     @total_steps++
     @steps.push more...
-    console.log "IDLING", @idling
     @_next() if @idling
   # see if there is more to done
   empty: -> return not @steps.length

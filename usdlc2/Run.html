@@ -1,0 +1,29 @@
+<html>
+<head>
+	<title></title>
+	<link href="document.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="scayt-enabled">
+<h1>Running Roaster Applications</h1>
+
+<h2>Debugging</h2>
+
+<h3>Stand-alone roaster applications</h3>
+
+<p>For anything but a server, set an environment variable <strong>$DEBUG_NODE</strong> to <strong>debug</strong>, &nbsp;<strong>--debug</strong> or <strong>--debug-brk</strong>. The former will trigger the node internal debugger interface, while the latter work with node-inspector. Install node-inspector if you have not run a roaster server in debug mode.</p>
+
+<div class="metadata Ref">Ref: <span class="go"><a href="javascript:usdlc.edit_source({value:'go.sh',path:'../roaster/go.sh',category:'roaster'})">go.sh</a></span></div>
+
+<h3>Server-based roaster applications</h3>
+
+<p>From any roaster based server, add <strong>config=debug</strong>&nbsp;to the command line:</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;">./go.sh server config=debug</div>
+
+<p>This will download node-inspector if necessary and start the server in debug mode. As per instructions the debugger can be accessed via chrome (being a current&nbsp;node-inspector requirement) with</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;">http://127.0.0.1:8080/debug?port=5858</div>
+
+<div class="metadata Ref">Ref: <span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/scripts/server.coffee',category:'scripts'})">server.coffee</a></span></div>
+</body>
+</html>

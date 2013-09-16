@@ -67,16 +67,16 @@ class ServerSteps extends Steps
           @[key] ?= require(name)
           parallel()
           
-  class Queue extends ServerSteps
-    # steps.queue -> @requirse modules..., -> actions
-    requires: (modules..., next) ->
-      @queue -> super modules...; @queue next
-    cat: (inputs..., output, next) ->
-      @queue -> super inputs..., output; @queue next
-    pipe: (input, pipes..., next) ->
-      @queue -> super input, pipes...; @queue next
-    drain: (stream, data, next) ->
-      @queue -> super stream, data; @queue next
+class Queue extends ServerSteps
+  # steps.queue -> @requirse modules..., -> actions
+  requires: (modules..., next) ->
+    @queue -> super modules...; @queue next
+  cat: (inputs..., output, next) ->
+    @queue -> super inputs..., output; @queue next
+  pipe: (input, pipes..., next) ->
+    @queue -> super input, pipes...; @queue next
+  drain: (stream, data, next) ->
+    @queue -> super stream, data; @queue next
 
 # set default timeout based on environment (debug or not)
 #Steps::steps_timeout_ms = process.environment.steps_timeout_ms
@@ -86,5 +86,5 @@ module.exports = (steps...) -> (new ServerSteps(steps))
 # addressed by @self or as the parameter to the step
 # as in queue @, ->
 module.exports.queue = (self..., action) ->
-  steps = new Steps(self...)
+  steps = new Queue(self...)
   action.apply(steps, steps.self)

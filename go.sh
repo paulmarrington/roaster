@@ -13,7 +13,7 @@ export PATH=$uSDLC_node_path/ext/node/bin:$PATH
 case $1 in
   node)
     shift
-    node $@
+    node $DEBUG_NODE $@
     ;;
   *)
     node $DEBUG_NODE "$uSDLC_node_path/boot/load.js" "boot/run" $@

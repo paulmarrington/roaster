@@ -1,4 +1,5 @@
 # Copyright (C) 2012 paul@marrington.net, see GPL for license
+queue = require('steps').queue
 
 module.exports = (args...) ->
   if process.env.DEBUG_NODE or args[0] is 'mode=gwt'
@@ -9,5 +10,17 @@ module.exports = (args...) ->
     server = dirs.node 'server/boot/server'
 
     node = processes('node')
-    node.respawn load, server, args...
+    if args[0] is 'config=debug'
+      debug = ->
+        node.spawn '--debug', load, server, args..., ->
+        node.spawn dirs.node(
+          'ext/node_modules/node-inspector/bin/inspector.js'), '', ->
+      
+      try # Don't require if it has been loaded
+        require.resolve 'node-inspector'
+      catch e # we need to load using npm
+        return require('npm').load 'node-inspector', debug
+      debug()
+    else
+      node.respawn load, server, args...
     return node
