@@ -41,12 +41,13 @@ default_options =
   icons:            {collapse: "ui-icon-close"}
   collapse:         (evt, dlg) -> $(evt.target).dialog('close')
 
-zindex = 200
+roaster.zindex = 200
 
 $.widget "ui.dialog", $.ui.dialog,
   _moveToTop: (event, silent) ->
-    return false if +@uiDialog.css('z-index') >= zindex - 1
-    @uiDialog.css 'z-index', zindex++
+    if +@uiDialog.css('z-index') >= roaster.zindex - 1
+      return false
+    @uiDialog.css 'z-index', roaster.zindex++
     @_trigger("focus", event) if not silent
     return true
 
