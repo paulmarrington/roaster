@@ -28,8 +28,11 @@ class Processes # proc = require('proc')() # sets default streaming and options
     @node_setup()
     @_respawn(child_process.fork, Infinity)
 
-  # Spawn off a separate OS process - next(code) provides return code
-  spawn: (@args..., @next) -> @_exec(child_process.spawn); return @
+  # Spawn off a separate OS process -
+  # next(code) provides return code
+  spawn: (@args..., @next) ->
+    @_exec(child_process.spawn)
+    return @
 
   debug: (break_on_start = false) ->
     @debug_flag = if break_on_start then '--debug-brk' else '--debug'

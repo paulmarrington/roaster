@@ -12,9 +12,11 @@ module.exports = (args...) ->
     node = processes('node')
     if args[0] is 'config=debug'
       debug = ->
-        node.spawn '--debug', load, server, args..., ->
-        node.spawn dirs.node(
-          'ext/node_modules/node-inspector/bin/inspector.js'), '', ->
+        try
+          inspector = processes('node').spawn dirs.node(
+            'ext/node_modules/node-inspector/bin/inspector.js'), '', ->
+        catch e
+        node.respawn '--debug', load, server, args...
       
       try # Don't require if it has been loaded
         require.resolve 'node-inspector'
