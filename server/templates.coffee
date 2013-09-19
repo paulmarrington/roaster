@@ -1,21 +1,24 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
 
-# very basic string templating engine. Pattern #{key} is replaced by data element
-# A function can be used if the key and arguments are separates by spaces or comma
+# very basic string templating engine. Pattern #{key}
+# is replaced by data element A function can be used
+# if the key and arguments are separates by spaces or comma
 # as in #{my_func a,1,34}
-steps = require 'steps'; fs = require 'fs'; files = require 'files'
+steps = require 'steps'; fs = require 'fs'
+files = require 'files'
 
 process = (template, options) ->
   return template.toString().replace /#{(.*?)}/g, (all, key) ->
-  	return options[key] if key of options
-  	[key, args...] = key.split /[\s,]/
-  	return data[key](args...) if key of options
-  	return ''
+    return options[key] if key of options
+    [key, args...] = key.split /[\s,]/
+    return data[key](args...) if key of options
+    return ''
 
 process_text = (options, processed) ->
   steps(
     ->  files.find options.template_name, @next (@template_name) ->
-    ->  fs.readFile @template_name, @next (@error, @template) =>
+    ->  if not @template_name then processed(null); @abort()
+    ->  fs.readFile @template_name, @next (@error, @template) ->
     ->  @merged = process @template, options
     ->  processed(@merged)
     )

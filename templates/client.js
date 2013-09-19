@@ -1,13 +1,13 @@
 (function(window) {
-  var steps = roaster.steps
-  var queue = steps ? steps.queue : null
-  var require = roaster.request.requireSync
-  var global = roaster.global
-  var process = roaster.process
-  var module = {exports:{}}
+  var steps = roaster.steps;
+  var queue = steps ? steps.queue : null;
+  var require = roaster.request.requireSync;
+  var global = roaster.global;
+  var process = roaster.process;
+  var module = {exports:{}};
   var exports =  module.exports;
   #{definitions};
-  var log = function() {console.log(arguments)};
+  var log = function() {console.log(arguments);};
   #{script};
-  roaster.cache['#{url}'] = module.exports
+  roaster.cache['#{url}'] = module.exports;
 })(window)

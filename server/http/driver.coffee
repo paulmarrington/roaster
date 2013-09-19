@@ -1,7 +1,8 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see GPL for license
-respond = require 'http/respond'; cache = {}; steps = require 'steps'
-npm = require 'npm'; morph = require 'morph'; path = require 'path'
-_ = require 'underscore'
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
+respond = require 'http/respond'; cache = {}
+steps = require 'steps'
+npm = require 'npm'; morph = require 'morph'
+path = require 'path'; _ = require 'underscore'
 
 # Look for drivers to handle files of a specific file type.
 # More than one extension means more than one driver to pipe through.
@@ -72,23 +73,17 @@ module.exports.use_template = (exchange, template, next) ->
       morph source, ext, (error, filename, content, save) =>
         return next(error, filename) if error
         if content
-          options = 
+          options =
             script: content
             url: exchange.request.url.pathname
             key: path.basename(exchange.request.url.pathname).split('.')[0]
+            template_name: template
           options = _.extend options, exchange.request.url.query
           # set template or abort merge if no template
-          hasTemplate = (template) ->
-            if template
-              return options.template_name = template
-            else
-              template_applied(null, filename, false)
-              return false
           steps(
             ->  @requires 'templates', 'files'
-            ->  @files.find template, @next (@found) ->
-            ->  @abort() if not hasTemplate(@found)
-            ->  @templates.process_text options, @next (@merged) =>
+            ->  @templates.process_text options, @next (@merged) ->
+            -> if not @merged then template_applied(null, filename, false);  @abort()
             ->  save(null, @merged); template_applied(null, filename, true)
             )
         else
