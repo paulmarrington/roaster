@@ -1,6 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
-http = require 'http'; url = require 'url'; files = require 'files'
-driver = require 'http/driver'; respond = require 'http/respond'
+http = require 'http'; url = require 'url'
+files = require 'files'; driver = require 'http/driver'
+respond = require 'http/respond'
 fs = require 'fs'; util = require 'util'
 
 global.http_processors.push (exchange, next_processor) ->
@@ -8,30 +9,36 @@ global.http_processors.push (exchange, next_processor) ->
     filename ?= exchange.request.url.pathname
     try
       exchange.request.filename = filename
-      # all the set up is done, process the request based on a driver
-      # for file type. Some drivers cannot set mime type. For these we put it
+      # all the set up is done, process the request based
+      # on a driver for file type. Some drivers cannot set
+      # mime type. For these we put it
       # in the query string as txt or text/plain.
       if exchange.request.url.query.mimetype
-          exchange.respond.set_mime_type request.url.query.mimetype
+        exchange.respond.set_mime_type(
+          request.url.query.mimetype)
       # kick off exchange
       driver(exchange)
     catch error
       errmsg = error.toString()
       console.log errmsg
       exchange.response.write errmsg if environment.debug
-      next_processor()  # try the next one since this one failed
+      # try the next one since this one failed
+      next_processor()
 
 global.http_processors.push (exchange, next_processor) ->
   exchange.response.end()
 
 module.exports = (environment) ->
-  return environment.http_server = http.createServer (request, response) ->
+  return environment.http_server =
+  http.createServer (request, response) ->
     console.log request.url if environment.debug
     request.url = url.parse request.url, true
     # see if we want to restart in debug mode
     if request.url.query.restart and environment.debug
       if (new Date().getTime() - process.environment.since) > 5000
-        response.end "<script>setTimeout('window.location.href = window.location.href', 2000)</script>"
+        response.end(
+          "<script>setTimeout('window.location.href = "+
+          "window.location.href', 2000)</script>")
         process.exit(0)
     # an exchange object that is passed to http processors
     exchange = { request, response, environment }

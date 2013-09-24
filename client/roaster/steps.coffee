@@ -13,6 +13,8 @@ module.exports = roaster.steps = (steps...) ->
     roaster.depends '/common/steps.coffee', 'client',
     (Steps) ->
       class ClientSteps extends Steps
+        set_import: (key, value) -> @[key] = value
+        # base requirement loader (client and server)
         depends: (domain, modules) ->
           @asynchronous()
           do depends = =>
@@ -26,10 +28,10 @@ module.exports = roaster.steps = (steps...) ->
             parts = path.basename(name).split(/\./)
             if parts[0].length then key = parts[0]
             else key = parts[1]
-            # no extension means load with node require on server
+            # no extension is load with node require on server
             if name.indexOf('.') is -1 and domain is 'client'
               return requests.requireAsync name, (imports) =>
-                @[key] = imports
+                @set_import key, imports
                 depends()
             # allocate more time to download
             @long_operation()
@@ -44,7 +46,7 @@ module.exports = roaster.steps = (steps...) ->
               roaster.depends name, domain, (imports) =>
                 from = if name[0] is '/' then 1 else 0
                 name = name.slice(from, -(type.length+1))
-                @[key] = roaster.cache[name] = imports
+                roaster.cache[name] = @set_import key, imports
                 if imports.initialise
                   imports.initialise(depends)
                 else
@@ -64,9 +66,10 @@ module.exports = roaster.steps = (steps...) ->
           @depends 'server', scripts
         # load static data asynchronously
         _data: (urls..., parser) ->
+          base = path.basename
           for url in urls then do =>
             done = @parallel()
-            @key = path.basename(url.split('?')[0]).split('.')[0]
+            @key = base(url.split('?')[0]).split('.')[0]
             requests.data url, (@error, text) =>
               @[@key] = parser text
               done()
@@ -80,10 +83,23 @@ module.exports = roaster.steps = (steps...) ->
             '/server/http/dependency.coffee', packages)
           requests.json url,@next (data) =>
             for key, value of data
-              @error = "No package #{packages[key]}" if not value
+              if not value
+                @error = "No package #{packages[key]}"
   
       class Queue extends ClientSteps
-        # steps.queue -> @requirse modules..., -> actions
+        set_import: (key, value) ->
+          if value instanceof Function
+            @[key] = (args...) ->
+              if (end = args.length - 1) >= 0 and
+              (next = args[end]) instanceof Function
+                args[end] = -> @next()
+                @queue -> value.apply(@, args)
+                @queue next
+              else
+                value.apply(@, args)
+          else
+            @[key] = value
+        # steps.queue -> @requires modules..., -> actions
         requires: (modules..., next) ->
           @queue -> super modules...; @queue next
         package: (modules..., next) ->
