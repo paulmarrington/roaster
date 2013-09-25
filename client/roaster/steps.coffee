@@ -16,41 +16,51 @@ module.exports = roaster.steps = (steps...) ->
         set_import: (key, value) -> @[key] = value
         # base requirement loader (client and server)
         depends: (domain, modules) ->
-          @asynchronous()
-          do depends = =>
-            return @next() if not modules.length
-            name = modules.shift()
+          # actions that must be sequential
+          acts = []
+          # make them available for queueing before set
+          for module in modules then do =>
+            return if module instanceof Function
             # switch domains on the fly
-            if domains[name]
-              domain = name
-              depends()
+            return domain = module if domains[module]
             # break up into key, inner and extension
-            parts = path.basename(name).split(/\./)
+            parts = path.basename(module).split(/\./)
             if parts[0].length then key = parts[0]
             else key = parts[1]
+            type = parts.slice(-1)[0]
             # no extension is load with node require on server
-            if name.indexOf('.') is -1 and domain is 'client'
-              return requests.requireAsync name, (imports) =>
-                @set_import key, imports
-                depends()
-            # allocate more time to download
-            @long_operation()
+            if module.indexOf('.') is -1 and domain is 'client'
+              return acts.push (cb) =>
+                requests.requireAsync module, (imports) =>
+                  @set_import key, imports
+                  cb()
             # See if it is script or style
             type = parts.slice(-1)[0]
             if roaster.environment?.extensions?[type] is 'css'
-              requests.css name
-              depends()
-            else if domain is 'package'
-              roaster.load name, depends
-            else
+              return requests.css module
+            # load third-party package from the server
+            name = module
+            if domain is 'package'
+              return acts.push (cb) -> roaster.load name, cb
+            # so we can reference import before it is loaded
+            # only works for function imports
+            module_imports = null
+            @set_import key, -> module_imports.apply(@,arguments)
+            # load from server then continue
+            acts.push (cb) =>
+              @long_operation()
               roaster.depends name, domain, (imports) =>
+                module_imports = imports
                 from = if name[0] is '/' then 1 else 0
                 name = name.slice(from, -(type.length+1))
                 roaster.cache[name] = @set_import key, imports
                 if imports.initialise
-                  imports.initialise(depends)
+                  imports.initialise(cb)
                 else
-                  depends()
+                  cb()
+          # ready to load everything in order
+          acts.push => @next()
+          @sequence acts
         # possibly asynchronous requires
         requires: (modules...) ->
           @depends 'client', modules
@@ -68,11 +78,12 @@ module.exports = roaster.steps = (steps...) ->
         _data: (urls..., parser) ->
           base = path.basename
           for url in urls then do =>
-            done = @parallel()
-            @key = base(url.split('?')[0]).split('.')[0]
-            requests.data url, (@error, text) =>
-              @[@key] = parser text
-              done()
+            if url not instanceof Function
+              done = @parallel()
+              @key = base(url.split('?')[0]).split('.')[0]
+              requests.data url, (@error, text) =>
+                @[@key] = parser text
+                done()
         data: (urls...) ->
           @_data urls..., (text) -> text
         json: (urls...) ->
@@ -87,31 +98,15 @@ module.exports = roaster.steps = (steps...) ->
                 @error = "No package #{packages[key]}"
   
       class Queue extends ClientSteps
-        set_import: (key, value) ->
-          if value instanceof Function
-            @[key] = (args...) ->
-              if (end = args.length - 1) >= 0 and
-              (next = args[end]) instanceof Function
-                args[end] = -> @next()
-                @queue -> value.apply(@, args)
-                @queue next
-              else
-                value.apply(@, args)
-          else
-            @[key] = value
+        # imported code can be called asynchronously
+        set_import: (k, v) -> @[k] = Steps.modex(v)
         # steps.queue -> @requires modules..., -> actions
-        requires: (modules..., next) ->
-          @queue -> super modules...; @queue next
-        package: (modules..., next) ->
-          @queue -> super modules...; @queue next
-        libraries: (libraries..., next) ->
-          @queue -> super libraries...; @queue next
-        service: (scripts..., next) ->
-          @queue -> super scripts...; @queue next
-        data: (urls..., next) ->
-          @queue -> super urls...; @queue next
-        json: (urls..., next) ->
-          @queue -> super urls...; @queue next
+        requires: @modex(ClientSteps::requires)
+        package: @modex(ClientSteps::package)
+        libraries: @modex(ClientSteps::libraries)
+        service: @modex(ClientSteps::service)
+        data: @modex(ClientSteps::data)
+        json: @modex(ClientSteps::json)
       # over-ride loader and run it this first time
       roaster.Steps = ClientSteps
       roaster.Queue = Queue

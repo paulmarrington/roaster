@@ -84,6 +84,7 @@ class Steps extends events.EventEmitter
   # add additional steps
   add: (more...) ->
     @total_steps++
+    return if @aborted
     @steps.push more...
     @_next() if @idling
   # see if there is more to done
@@ -94,10 +95,11 @@ class Steps extends events.EventEmitter
   # so you can use @next, etc
   call: (func) => func.apply(@, arguments)
   # Do not do any further steps
-  abort: (next, args...) =>
+  abort: (next) =>
     clearTimeout @step_timer
+    @aborted = true
     @steps = []
-    next(args...) if next
+    next?.apply(@)
   # wait longer for async ops to complete (default 5 min)
   long_operation: (seconds = 300) =>
     @maximum_time_ms = seconds * 1000
@@ -106,12 +108,14 @@ class Steps extends events.EventEmitter
   asynchronous: => @next_referenced = true
   # Given a list of closures, process then sequentially
   sequence: (list...) =>
+    list = list[0] if list.length is 1 and list[0] instanceof Array
     @asynchronous()
     do process_next = =>
       return @next() if not list.length
       list.shift()(process_next)
   # Given one method and data list, call sequentially for each
   list: (list..., processor) =>
+    list = list[0] if list.length is 1 and list[0] instanceof Array
     @asynchronous()
     do process_next = =>
       return @next() if not list.length
@@ -158,5 +162,24 @@ class Steps extends events.EventEmitter
 
   # Display each step before running it
   trace: (tracing = true) -> @tracing = tracing
+
+  # decide if a call is synchronous or async - for Queue
+  @modex: (func) ->
+    if func instanceof Function
+      return (args...) -> # wrap function to add modality
+        if (end = args.length - 1) >= 0 and
+        (next = args[end]) instanceof Function
+          # last argument is a callback
+          next_args = null
+          args[end] = => next_args = arguments; @next()
+          # call with replacement callback to @next()
+          @queue -> @asynchronous(); func.apply(@, args)
+          # fire off provided callback - add @next if needed
+          @queue -> next.apply(@, next_args)
+        else # function does not provide callback
+          # func itself will decide on async or sync
+          @queue -> func.apply(@, args)
+    else # not a function - use as-is
+      return func
 
 module.exports = Steps

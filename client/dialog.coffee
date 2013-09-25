@@ -51,7 +51,10 @@ $.widget "ui.dialog", $.ui.dialog,
     @_trigger("focus", event) if not silent
     return true
 
-module.exports = (options...) ->
+module.exports = (options..., next) ->
+  if next not instanceof Function
+    options.push next
+    next = ->
   name = options[0].name
   if not dlg = dialogs[name]
     options = _.extend {}, default_options, options...
@@ -72,4 +75,4 @@ module.exports = (options...) ->
     dlg.dialog('option', 'position', options.position) if options.position
   dlg.dialog('option', 'closeOnEscape', false)
   options?.fill(dlg)
-  return dlg
+  next(dlg)
