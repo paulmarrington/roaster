@@ -10,14 +10,14 @@
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
 
-<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/common/steps.coffee',category:'common'})">steps.coffee</a></span><span class="dialog"><a href="javascript:usdlc.edit_source({value:'dialog.coffee',path:'../roaster/client/dialog.coffee',category:'client'})">dialog.coffee</a></span></div>
+<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/common/steps.coffee',category:'common'})">steps.coffee</a></span></div>
 
 <h2>Integration</h2>
 
 <p>One of the least painful ways to use steps is to integrate it into a function or method. The pattern is as follows:</p>
 
-<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>queue = require(&#39;steps&#39;).queue<br />
-...</code><br />
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>queue = require(&#39;queue&#39;)<br />
+...<br />
 func = (data..., callback) -&gt; <span style="background-color:#FFD700;">queue -&gt;</span><br />
 &nbsp;&nbsp;# a good place to set variables available to all queued code<br />
 <br />
@@ -28,9 +28,57 @@ func = (data..., callback) -&gt; <span style="background-color:#FFD700;">queue -
 &nbsp;&nbsp;<span style="background-color:#FFD700;">@queue -&gt;</span><br />
 &nbsp;&nbsp; &nbsp;# synchronous code - runs in queued sequence<br />
 <br />
-&nbsp;&nbsp;@queue (next) -&gt;<br />
+&nbsp;&nbsp;<span style="background-color:#FFD700;">@queue (next)</span> -&gt;<br />
 &nbsp;&nbsp; &nbsp;# Simulate asynchronous function complete to call callback.<br />
-&nbsp; &nbsp; setTimeout(callback, 1000)</div>
+&nbsp; &nbsp; setTimeout(callback, 1000)</code></div>
+
+<h3>Mixins</h3>
+
+<p>In most cases it is even easier using queue mixins. Any object with asynchronous classes can be given to the queue system and will be integrated for automatic sequential processing.</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>queue = require &#39;queue&#39;<br />
+files = require &#39;files&#39;</code><br />
+<span style="font-family: monospace; background-color: rgb(238, 238, 238);">patch = require &#39;common/patch&#39;</span>
+
+<p><code>module.exports = (exchange) -&gt; queue -&gt;<br />
+&nbsp; <span style="color:#0000CD;"># The context here is an instance of steps<br />
+&nbsp;&nbsp;# All the lines in yellow will occur one after the other<br />
+&nbsp;&nbsp;# whether they are asynchronous or not</span><br />
+&nbsp; name = exchange.request.url.query.name<br />
+&nbsp;&nbsp;<span style="color:#0000CD;"># Steps is an event emitter</span><br />
+&nbsp; <span style="background-color:#FFD700;">@on</span> &#39;error&#39;, (msg) -&gt;<br />
+&nbsp; &nbsp; console.log &quot;Save of #{name} failed: #{msg}&quot;<br />
+&nbsp; &nbsp; exchange.respond.error msg<br />
+&nbsp;&nbsp; &nbsp;<span style="color:#0000CD;"># No more asynchronous steps will be run</span><br />
+&nbsp; &nbsp; <span style="background-color:#FFD700;">@abort</span>()<br />
+<br />
+&nbsp;&nbsp;<span style="color:#0000CD;"># mixin added by files - waits for last step<br />
+&nbsp;&nbsp;# callback marks async and sets step var with result</span><br />
+&nbsp; <span style="background-color:#FFD700;">@files</span>.find name, <span style="background-color:#FFD700;">@next</span> (<span style="background-color:#FFD700;">@filename</span>) -&gt;<br />
+&nbsp;&nbsp; &nbsp;<span style="color:#0000CD;"># step var is available in call back and all future steps</span><br />
+&nbsp; &nbsp; if @filename<br />
+&nbsp;&nbsp; &nbsp; &nbsp;<span style="color:#0000CD;"># files also provide node fs mixin</span><br />
+&nbsp; &nbsp; &nbsp; <span style="background-color:#FFD700;">@fs</span>.readFile(@filename, &#39;utf8&#39;, <span style="background-color:#FFD700;">@next</span> (<span style="background-color:#FFD700;">@error</span>, @html) -&gt;)<br />
+<br />
+&nbsp;&nbsp;<span style="color:#0000CD;"># special case - instance mixin has reference to exchange</span><br />
+&nbsp; <span style="background-color:#FFD700;">@mixin</span>&nbsp;{&nbsp;exchange }<br />
+&nbsp; <span style="background-color:#FFD700;">@exchange.respond</span>.read_request <span style="background-color:#FFD700;">@next</span> (@changes) -&gt;<br />
+<br />
+&nbsp; <span style="background-color:#FFD700;">@patch</span>.apply @html ? &#39;&#39;, @changes, @next (@html) -&gt;<br />
+&nbsp; &nbsp; if not @html?.length then throw new Error(<br />
+&nbsp; &nbsp; &nbsp; &quot;source differs from expected for #{filename}&quot;)<br />
+&nbsp; <span style="background-color:#FFD700;">@fs</span>.writeFile name, @html, &#39;utf8&#39;, @next (@error) -&gt;<br />
+&nbsp; &nbsp; exchange.response.end()</code></p>
+</div>
+
+<p>Implementation is very easy. Adding the files mixin is as simple as:</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>fs - require &#39;fs&#39;; queue = require &#39;queue&#39;<br />
+module.exports = files =<br />
+&nbsp;...<br />
+<span style="background-color:#FFD700;">queue.mixin {files, fs}</span></code></div>
+
+<p>A running example:</p>
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee">queue = require(&#39;steps&#39;).queue
 
@@ -84,6 +132,6 @@ func = (data) -&gt; queue -&gt;
 gwt.code_tests -&gt;
   func value: 22</textarea></p>
 
-<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/server/steps.coffee',category:'server'})">steps.coffee</a></span><span class="line_reader"><a href="javascript:usdlc.edit_source({value:'line_reader.coffee',path:'../roaster/server/line_reader.coffee',category:'server'})">line_reader.coffee</a></span></div>
+<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/server/steps.coffee',category:'server'})">steps.coffee</a></span><span class="files"><a href="javascript:usdlc.edit_source({value:'files.coffee',path:'../roaster/server/files.coffee',category:'server'})">files.coffee</a></span><span class="newer"><a href="javascript:usdlc.edit_source({value:'newer.js',path:'../roaster/server/newer.js',category:'server'})">newer.js</a></span><span class="system"><a href="javascript:usdlc.edit_source({value:'system.coffee',path:'../roaster/server/system.coffee',category:'server'})">system.coffee</a></span><span class="templates"><a href="javascript:usdlc.edit_source({value:'templates.coffee',path:'../roaster/server/templates.coffee',category:'server'})">templates.coffee</a></span><span class="dirs"><a href="javascript:usdlc.edit_source({value:'dirs.js',path:'../roaster/server/dirs.js',category:'server'})">dirs.js</a></span></div>
 </body>
 </html>

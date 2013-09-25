@@ -1,6 +1,8 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-send = require 'send'; gzip = require 'morph/gzip'; fs = require 'fs'
-templates = require 'templates'; clients = {}
+# Copyright (C) 2012,13 paul@marrington.net, see /GPL license
+send = require 'send'; gzip = require 'morph/gzip'
+fs = require 'fs'; templates = require 'templates'
+
+clients = {}
 
 # http://localhost:9009/server/save?file=/My_Project/usdlc/Development/index.html
 # contents of the file is in the body of the request as a binary stream
