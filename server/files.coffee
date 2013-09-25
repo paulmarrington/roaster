@@ -5,7 +5,7 @@ dirs = require 'dirs'
 
 tmp_dir = os.tmpDir()
 
-module.exports =
+module.exports = files =
   # returns a file on one path or null if it can't be found
   # next(full_path, base_path, rest)
   find: (name, next) ->
@@ -31,7 +31,7 @@ module.exports =
   is_dir: (name, next) -> fs.stat name, (error, stat) ->
     next error, stat?.isDirectory()
 
-  save: (final_resting_place, input_streams..., next) ->
+  save: (final_resting_place, inputs..., next) ->
     target = path.basename final_resting_place
     building_place = path.join tmp_dir, target
 
@@ -39,8 +39,10 @@ module.exports =
       ->  @on 'error', (error) -> console.log error; @abort next, error
       ->  dirs.mkdirs path.dirname(final_resting_place), @next
       ->  @file = fs.createWriteStream(building_place)
-      ->  @cat input_streams..., @file
+      ->  @cat inputs..., @file
       ->  fs.unlink final_resting_place, @next
       ->  fs.rename building_place, final_resting_place, @next
       ->  next()
     )
+    
+steps.queue.mixin {dirs, files, fs}

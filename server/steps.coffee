@@ -88,3 +88,5 @@ module.exports = (steps...) -> (new ServerSteps(steps))
 module.exports.queue = (self..., action) ->
   steps = new Queue(self...)
   action.apply(steps, steps.self)
+# mixin to extend queue
+module.exports.queue.mixin = (packages) ->
