@@ -5,7 +5,7 @@
 #
 # Usage example:
 #   logger = require 'common/logger'
-#   
+#
 #   logger.log 'My value'
 #   # returns "29 July 2013 12:51:36 pm AEST My value"
 #   logger.log 'My value', true

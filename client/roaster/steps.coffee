@@ -28,39 +28,39 @@ module.exports = roaster.steps = (steps...) ->
             if parts[0].length then key = parts[0]
             else key = parts[1]
             type = parts.slice(-1)[0]
+            name = module
             # no extension is load with node require on server
-            if module.indexOf('.') is -1 and domain is 'client'
-              return acts.push (cb) =>
-                requests.requireAsync module, (imports) =>
+            if name.indexOf('.') is -1 and domain is 'client'
+              return acts.push ->
+                requests.requireAsync name, @next (imports) ->
                   @set_import key, imports
-                  cb()
             # See if it is script or style
             type = parts.slice(-1)[0]
             if roaster.environment?.extensions?[type] is 'css'
-              return requests.css module
+              return requests.css name
             # load third-party package from the server
-            name = module
             if domain is 'package'
-              return acts.push (cb) -> roaster.load name, cb
+              return acts.push -> roaster.load name, @next
             # so we can reference import before it is loaded
             # only works for function imports
             module_imports = null
-            @set_import key, -> module_imports.apply(@,arguments)
+            @set_import key, ->
+              module_imports.apply(@,arguments)
             # load from server then continue
-            acts.push (cb) =>
-              @long_operation()
+            acts.push =>
+              @long_operation @asynchronous()
               roaster.depends name, domain, (imports) =>
                 module_imports = imports
                 from = if name[0] is '/' then 1 else 0
                 name = name.slice(from, -(type.length+1))
                 roaster.cache[name] = @set_import key, imports
                 if imports.initialise
-                  imports.initialise(cb)
+                  imports.initialise(@next)
                 else
-                  cb()
-          # ready to load everything in order
-          acts.push => @next()
-          @sequence acts
+                  @next()
+          # load everything in order
+          @steps.unshift(acts.pop()) while acts.length
+          @next()
         # possibly asynchronous requires
         requires: (modules...) ->
           @depends 'client', modules

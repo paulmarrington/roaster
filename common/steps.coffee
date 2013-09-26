@@ -36,15 +36,15 @@ class Steps extends events.EventEmitter
     # if passed a callback closure, return it with an
     # @next() call if needed
     if callback and callback instanceof Function
-      step_number_for_this_callback = @steps.length
+      step_number_for_callback = @steps.length
       return =>
         if @tracing then console.log """
           Callback for step #{step_number_for_this_callback}:
           #{callback.toString()}"""
         callback.apply(@, arguments)
         # make sure next hasn't been called explicitly
-        if step_number_for_this_callback is @steps.length
-          @_next()
+        @_next() if step_number_for_callback <= @steps.length
+          
     # normal next will run the next function in the
     # call argument list.
     clearTimeout @step_timer
