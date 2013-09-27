@@ -1,4 +1,4 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2012,13 paul@marrington.net, see /GPL  license
 
 # Create a HTTP server that processes requests based on the extension (being
 # the characters after the final dot) - defaulting to 'html'. These drivers
