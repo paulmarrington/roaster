@@ -174,7 +174,7 @@ class Steps extends events.EventEmitter
           args[end] = => next_args = arguments; @next()
           # call with replacement callback to @next()
           @queue -> @asynchronous(); func.apply(@, args)
-          # fire off provided callback - add @next if needed
+          # fire off provided callback
           @queue -> next.apply(@, next_args)
         else # function does not provide callback
           # func itself will decide on async or sync

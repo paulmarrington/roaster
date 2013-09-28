@@ -80,58 +80,6 @@ module.exports = files =<br />
 
 <p>A running example:</p>
 
-<p><textarea readonly="readonly" source="true" type="gwt.coffee">queue = require(&#39;steps&#39;).queue
-
-func = (data) -&gt; queue -&gt;
-  # parameters available through closure
-  @fail() if data?.value isnt 22
-  # Anything run in the body happens immediately, just as
-  # it would with any standard function. This is a good place
-  # to define data available across asynchronous work
-  count = 0
-
-  @queue (next) -&gt;
-    # Code here will be run next, but following steps will
-    # not start until @next() is called.
-    count++
-    after_ten_ms = -&gt;
-      count++
-      next()
-    setTimeout after_ten_ms, 10
-
-  # This will be run when the step above waits for I/O.
-  # In this example it will run as soon as the timeout period
-  # starts. Data for following operations can be defined here.
-  
-  # count will be incremented by the queued operation above
-  @fail() if count isnt 1
-  count++
-
-  @queue -&gt;
-    # this step is synchronous, but will still only run after
-    # the step above completes. Note that &#39;next&#39; need not be
-    # referenced or called for synchronous code.
-    
-    # Count was incremented once at start of queue, then again
-    # in-line and yet a third time 10ms later - plus in-line
-    # below
-    @fail() if count isnt 4
-    count++
-    
-  # Back to in-line. Count should have been incremented by
-  # the first queue and the middle in-line.
-  @fail() if count isnt 2
-  count++
-  
-  @queue -&gt;
-    # one more for luck. It will be the last code executed
-    # in this function
-    return @fail() if count isnt 5
-    @pass()
-    
-gwt.code_tests -&gt;
-  func value: 22</textarea></p>
-
-<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/server/steps.coffee',category:'server'})">steps.coffee</a></span><span class="files"><a href="javascript:usdlc.edit_source({value:'files.coffee',path:'../roaster/server/files.coffee',category:'server'})">files.coffee</a></span><span class="newer"><a href="javascript:usdlc.edit_source({value:'newer.js',path:'../roaster/server/newer.js',category:'server'})">newer.js</a></span><span class="system"><a href="javascript:usdlc.edit_source({value:'system.coffee',path:'../roaster/server/system.coffee',category:'server'})">system.coffee</a></span><span class="templates"><a href="javascript:usdlc.edit_source({value:'templates.coffee',path:'../roaster/server/templates.coffee',category:'server'})">templates.coffee</a></span><span class="dirs"><a href="javascript:usdlc.edit_source({value:'dirs.js',path:'../roaster/server/dirs.js',category:'server'})">dirs.js</a></span><span class="go"><a href="javascript:usdlc.edit_source({value:'go.sh',path:'../roaster/go.sh',category:'roaster'})">go.sh</a></span><span class="load"><a href="javascript:usdlc.edit_source({value:'load.js',path:'../roaster/boot/load.js',category:'boot'})">load.js</a></span><span class="update-node-on-unix"><a href="javascript:usdlc.edit_source({value:'update-node-on-unix.sh',path:'../roaster/release/update-node-on-unix.sh',category:'release'})">update-node-on-unix.sh</a></span><span class="logger"><a href="javascript:usdlc.edit_source({value:'logger.coffee',path:'../roaster/common/logger.coffee',category:'common'})">logger.coffee</a></span><span class="request"><a href="javascript:usdlc.edit_source({value:'request.coffee',path:'../roaster/client/roaster/request.coffee',category:'roaster'})">request.coffee</a></span><span class="dialog"><a href="javascript:usdlc.edit_source({value:'dialog.coffee',path:'../roaster/client/dialog.coffee',category:'client'})">dialog.coffee</a></span></div>
+<div class="metadata Ref">Ref: <span class="client"><a href="javascript:usdlc.edit_source({value:'client.coffee',path:'../roaster/drivers/client.coffee',category:'drivers'})">client.coffee</a></span><span class="driver"><a href="javascript:usdlc.edit_source({value:'driver.coffee',path:'../roaster/server/http/driver.coffee',category:'http'})">driver.coffee</a></span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/drivers/server.coffee',category:'drivers'})">server.coffee</a></span><span class="templates"><a href="javascript:usdlc.edit_source({value:'templates.coffee',path:'../roaster/server/templates.coffee',category:'server'})">templates.coffee</a></span><span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/common/steps.coffee',category:'common'})">steps.coffee</a></span></div>
 </body>
 </html>

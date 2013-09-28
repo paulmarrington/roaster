@@ -16,11 +16,16 @@ module.exports = roaster.steps = (steps...) ->
         set_import: (key, value) -> @[key] = value
         # base requirement loader (client and server)
         depends: (domain, modules) ->
+          @long_operation(); @asynchronous()
           # actions that must be sequential
           acts = []
+          res = null; results = []
+          reserve = ->
+            results.push(null)
+            return results.length - 1
           # make them available for queueing before set
           for module in modules then do =>
-            return if module instanceof Function
+            return res = module if module instanceof Function
             # switch domains on the fly
             return domain = module if domains[module]
             # break up into key, inner and extension
@@ -31,36 +36,46 @@ module.exports = roaster.steps = (steps...) ->
             name = module
             # no extension is load with node require on server
             if name.indexOf('.') is -1 and domain is 'client'
-              return acts.push ->
-                requests.requireAsync name, @next (imports) ->
-                  @set_import key, imports
+              do =>
+                ri = reserve()
+                return acts.push (cb) =>
+                  requests.requireAsync name, (imports) =>
+                    results[ri] = imports
+                    @set_import key, imports
+                    cb()
             # See if it is script or style
             type = parts.slice(-1)[0]
             if roaster.environment?.extensions?[type] is 'css'
+              reserve()
               return requests.css name
             # load third-party package from the server
             if domain is 'package'
-              return acts.push -> roaster.load name, @next
+              reserve()
+              return acts.push (cb) -> roaster.load name, cb
             # so we can reference import before it is loaded
             # only works for function imports
             module_imports = null
             @set_import key, ->
-              module_imports.apply(@,arguments)
+              module_imports.apply(@, arguments)
             # load from server then continue
-            acts.push =>
-              @long_operation @asynchronous()
+            acts.push (cb) => do =>
+              ri = reserve()
               roaster.depends name, domain, (imports) =>
                 module_imports = imports
                 from = if name[0] is '/' then 1 else 0
                 name = name.slice(from, -(type.length+1))
+                console.log ri,imports
+                results[ri] = imports
                 roaster.cache[name] = @set_import key, imports
                 if imports.initialise
-                  imports.initialise(@next)
+                  imports.initialise(cb)
                 else
-                  @next()
+                  cb()
           # load everything in order
-          @steps.unshift(acts.pop()) while acts.length
-          @next()
+          acts.push(-> res(results...)) if res?
+          @sequence acts
+          #@steps.unshift(acts.pop()) while acts.length
+          #@next()
         # possibly asynchronous requires
         requires: (modules...) ->
           @depends 'client', modules
