@@ -64,7 +64,6 @@ module.exports = roaster.steps = (steps...) ->
                 module_imports = imports
                 from = if name[0] is '/' then 1 else 0
                 name = name.slice(from, -(type.length+1))
-                console.log ri,imports
                 results[ri] = imports
                 roaster.cache[name] = @set_import key, imports
                 if imports.initialise
