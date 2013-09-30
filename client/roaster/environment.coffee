@@ -21,8 +21,8 @@ add_restart_link = ->
   a.setAttribute 'style', restart_style
   a.setAttribute 'title', "Or press <esc><esc>"
   document.body.appendChild(a)
-  window.onkeydown = ->
-    if event.keyCode is 27
+  window.onkeydown = (evt) ->
+    if evt.keyCode is 27
       time = new Date().getTime()
       elapsed = time - key_time
       if 250 > elapsed > 50
