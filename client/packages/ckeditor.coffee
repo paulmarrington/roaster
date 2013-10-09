@@ -92,7 +92,9 @@ open = (id, options) ->
     onInstanceReady() for onInstanceReady in editor.onInstanceReady
   return editor
 
-roaster.message = (msg) -> $('span.messages').html(msg)
+roaster.message = (msg) ->
+  el = $('span.messages')
+  el.html(msg) if msg.length or el.html()[0] isnt '<'
 
 last_tab = 'Font'
 

@@ -61,7 +61,7 @@ class Steps extends events.EventEmitter
         @parallel fn
       else # normally sync, but checks @next access to be sure
         if @tracing then console.log """
-          Step #{@steps.length + 1}:
+          Step #{@steps.length + 1}/#{@total_steps}:
           #{fn.toString()}"""
         this_step = @steps.length
         # one parameter is @next
@@ -108,14 +108,16 @@ class Steps extends events.EventEmitter
   asynchronous: => @next_referenced = true
   # Given a list of closures, process then sequentially
   sequence: (list...) =>
-    list = list[0] if list.length is 1 and list[0] instanceof Array
+    if list.length is 1 and list[0] instanceof Array
+      list = list[0]
     @asynchronous()
     do process_next = =>
       return @next() if not list.length
       list.shift()(process_next)
   # Given one method and data list, call sequentially for each
   list: (list..., processor) =>
-    list = list[0] if list.length is 1 and list[0] instanceof Array
+    if list.length is 1 and list[0] instanceof Array
+      list = list[0]
     @asynchronous()
     do process_next = =>
       return @next() if not list.length
@@ -167,19 +169,44 @@ class Steps extends events.EventEmitter
   @modex: (func) ->
     if func instanceof Function
       return (args...) -> # wrap function to add modality
+        self = @
+        self = @__queue__ if self not instanceof Steps
         if (end = args.length - 1) >= 0 and
         (next = args[end]) instanceof Function
           # last argument is a callback
           next_args = null
-          args[end] = => next_args = arguments; @next()
+          args[end] = ->
+            next_args = arguments
+            if @tracing
+              console.log 'modex-last',self.next
+            self.next()
           # call with replacement callback to @next()
-          @queue -> @asynchronous(); func.apply(@, args)
+          self.queue ->
+#             @asynchronous()
+            console.log 'modex', args, func if @tracing
+            func.apply(self, args)
           # fire off provided callback
-          @queue -> next.apply(@, next_args)
+          self.queue ->
+            if @tracing
+              console.log 'modex-end', next_args, next
+            next.apply(self, next_args)
         else # function does not provide callback
           # func itself will decide on async or sync
-          @queue -> func.apply(@, args)
+          console.log 'modex-direct', args, func if @tracing
+          self.queue -> func.apply(self, args)
     else # not a function - use as-is
       return func
+      
+  @mixin: (Queue, packages) ->
+    for name, entry of packages then do =>
+      if entry instanceof Function
+        return Queue[name] = @modex(entry)
+      # so @files.rm will set rm context to steps/queue
+      mixin = {}
+      Object.defineProperty Queue::, name, get: ->
+        mixin.__queue__ = @
+        return mixin
+        
+      mixin[key] = @modex(value) for own key, value of entry
 
 module.exports = Steps

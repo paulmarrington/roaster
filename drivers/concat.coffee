@@ -1,6 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 morph = require('morph').multi_morph; path = require 'path'
 dirs = require 'dirs'; require 'common/strings'
+fs = require 'fs'
 
 joint = '.js': ';\n'
 
