@@ -56,6 +56,9 @@ module.exports = roaster.steps = (steps...) ->
             # only works for function imports
             module_imports = null
             @set_import key, ->
+              if @tracing
+                console.log 'module_imports',
+                  arguments, module_imports
               module_imports.apply(@, arguments)
             # load from server then continue
             acts.push (cb) => do =>
@@ -96,7 +99,9 @@ module.exports = roaster.steps = (steps...) ->
               done = @parallel()
               @key = base(url.split('?')[0]).split('.')[0]
               requests.data url, (@error, text) =>
-                @[@key] = parser text
+                resp = @[@key] = parser text
+                if resp.error
+                  roaster.message "<b>#{resp.error}</b>"
                 done()
         data: (urls...) ->
           @_data urls..., (text) -> text
@@ -131,5 +136,8 @@ module.exports = roaster.steps = (steps...) ->
       roaster.steps.queue = (self..., action) ->
         steps = new Queue(self...)
         action.apply(steps, steps.self)
+        # mixin to extend queue
+      roaster.steps.queue.mixin = (packages) ->
+        Steps.mixin(Queue, packages)
       # do the original request that sparked off the load...
       new roaster.steps(steps...)

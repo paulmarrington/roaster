@@ -90,3 +90,4 @@ module.exports.queue = (self..., action) ->
   action.apply(steps, steps.self)
 # mixin to extend queue
 module.exports.queue.mixin = (packages) ->
+  Steps.mixin(Queue, packages)
