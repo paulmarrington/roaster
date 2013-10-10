@@ -26,10 +26,10 @@ files =
     input.pipe output
 
   size: (name, next) ->
-    fs.stat name, (error, stat) -> next error, stat?.size
+    fs.stat name, (err, stat) -> next err, stat?.size
 
-  is_dir: (name, next) -> fs.stat name, (error, stat) ->
-    next error, stat?.isDirectory()
+  is_dir: (name, next) -> fs.stat name, (err, stat) ->
+    next err, stat?.isDirectory()
 
   save: (final_resting_place, inputs..., next) ->
     target = path.basename final_resting_place
@@ -61,15 +61,16 @@ files =
     do one = -> queue ->
       if not paths.length
         result = path.join parts..., last
-        @files.is_dir result, (is_dir) ->
+        return @files.is_dir result, (err, is_dir) ->
           if filename and is_dir
             result = path.join result, filename
-          return next(result)
+          next(result)
+
       part = paths.shift()
-      @files.is_dir part, (is_dir) ->
+      @files.is_dir part, (err, is_dir) ->
         if not is_dir
-          part = path.dirname part
           filename = path.basename part
+          part = path.dirname part
         parts.push part
         one()
     
