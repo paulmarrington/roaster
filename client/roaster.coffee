@@ -68,7 +68,8 @@ window.roaster =
           roaster.cache[url] ?= {}
           next()
     else # Other browsers
-      script.onload = ->
+      script.onload = script.onerror =
+      script.onabort = script.ontimeout = ->
         roaster.cache[url] ?= {}
         next()
 
