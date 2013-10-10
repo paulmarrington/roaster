@@ -182,7 +182,7 @@ class Steps extends events.EventEmitter
             self.next()
           # call with replacement callback to @next()
           self.queue ->
-#             @asynchronous()
+            @asynchronous()
             console.log 'modex', args, func if @tracing
             func.apply(self, args)
           # fire off provided callback
