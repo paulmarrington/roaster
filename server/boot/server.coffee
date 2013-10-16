@@ -22,7 +22,7 @@
 #   respond: method to call to send data back to the browser - chaining support
 #   faye: pubsub server-side client. Set to false for no pubsub on server
 #   config: Configuration file (<config>.config.coffee)
-# create_faye_server = require 'boot/create-faye-server'
+create_faye_server = require 'boot/create-faye-server'
 project_init = require 'boot/project-init'
 system = require 'system'; dirs = require 'dirs'
 
@@ -30,7 +30,7 @@ system = require 'system'; dirs = require 'dirs'
 environment = process.environment =
   base_dir: dirs.base ''# convenience path to server base directory
   config: 'base'        # used to load config settings (<name>.config.coffee)
-  # faye: true            # true to activate pubsub - set to faye.client
+  faye: true            # true to activate pubsub - set to faye.client
   user: 'Guest'         # default user if one is not logged in
   since: new Date().getTime()  # time of server start (epoch time)
   command_line: process.argv.join ' ' # full command line for identification
@@ -64,6 +64,7 @@ create_http_server = require('boot/create-http-server')
 create_http_server(environment)
 # kick-off
 environment.http_server.listen environment.port
+create_faye_server environment if environment.faye
 # lastly we do more project level initialisation
 project_init.post environment
 

@@ -1,16 +1,14 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
-dirs = require 'dirs'
+# Copyright (C) 2013 paul@marrington.net, see /GPL for license
+dirs = require 'dirs'; queue = require 'queue'
 # Using faye for pubsub.
 
 # client:
-# step(
-#   () ->
+#   queue ->
 #     @depends '/client/faye.coffee'
-#   (error, faye) ->
-#     faye.subscribe '/channel', (message) ->
+#     @faye.subscribe '/channel', (message) ->
 #       console.log message.text
 #     ...
-#     faye.publish '/channel', text: 'Hello'
+#     @faye.publish '/channel', text: 'Hello'
 # )
 
 # Same server:
@@ -18,7 +16,7 @@ dirs = require 'dirs'
 #   console.log message.text
 # ...
 # environment.faye.publish '/channel', text: 'Hello' # or
-# require('faye).local_client.publish '/channel', text: 'Hello'
+# require('faye').local_client.publish '/channel', text: '?'
 
 # Different server:
 # faye = require('faye')('http://localhost:9009/faye')
@@ -26,9 +24,8 @@ dirs = require 'dirs'
 #   console.log message.text
 #   ...
 # faye.publish '/channel', text: 'Hello'
-module.exports = (environment) ->
-  faye = require dirs.node 'ext/node_modules/faye'
-  bayeux = new faye.NodeAdapter mount: '/faye', timeout: 45
-  bayeux.attach environment.http_server
-  require 'faye'
-  return environment.faye = faye.local_client = bayeux.getClient()
+module.exports = (environment) -> queue ->
+  @requires dirs.node('ext/node_modules/faye'), ->
+    bayeux = new @faye.NodeAdapter mount: '/faye', timeout: 45
+    bayeux.attach environment.http_server
+    environment.faye = @faye.local_client = bayeux.getClient()
