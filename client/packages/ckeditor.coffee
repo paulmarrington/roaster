@@ -92,9 +92,14 @@ open = (id, options) ->
     onInstanceReady() for onInstanceReady in editor.onInstanceReady
   return editor
 
+roaster.default_message = ''
+
 roaster.message = (msg) ->
   el = $('span.messages')
-  el.html(msg) if msg.length or el.html()[0] isnt '<'
+  if not msg.length
+    return if el.html()[0] is '<' # error takes precedence
+    msg = roaster.default_message
+  el.html(msg)
 
 last_tab = 'Font'
 
