@@ -74,36 +74,29 @@ class Queue
   # Display each step before running it
   trace: (tracing = true) -> @tracing = tracing
 
-  # decide if a call is synchronous or async - for Queue
+  # convert methods with a callback to queue items
   @modex: (func) ->
     if func instanceof Function
       return (args...) -> # wrap function to add modality
         # already in queue - just do it now
-        #return func.apply(@, args) if @lock
-        self = @
-        self = @__queue__ if self not instanceof Steps
+        return func.apply(@, args) if @lock
+        self = @__queue__ ? @
         if (end = args.length - 1) >= 0 and
         (next = args[end]) instanceof Function
           # last argument is a callback
-          next_args = null
-          args[end] = ->
-            next_args = arguments
-            if @tracing
-              console.log 'modex-last',self.next
-            self.next()
+          @nargs = null
+          args[end] = (@nargs...) -> self.next()
           # call with replacement callback to @next()
           self.queue ->
-            @asynchronous()
             console.log 'modex', args, func if @tracing
             func.apply(self, args)
           # fire off provided callback
           self.queue ->
-            if @tracing
-              console.log 'modex-end', next_args, next
-            next.apply(self, next_args)
+            console.log 'modex-next', next, @nargs if @tracing
+            next.apply(self, @nargs)
         else # function does not provide callback
           # func itself will decide on async or sync
-          console.log 'modex-direct', args, func if @tracing
+          console.log 'modex-direct', func, args if @tracing
           self.queue -> func.apply(self, args)
     else # not a function - use as-is
       return func
@@ -117,7 +110,6 @@ class Queue
       Object.defineProperty Queue::, name, get: ->
         mixin.__queue__ = @
         return mixin
-        
       mixin[key] = @modex(value) for own key, value of entry
 
-module.exports = Steps
+module.exports = Queue
