@@ -170,7 +170,7 @@ class Steps extends events.EventEmitter
     if func instanceof Function
       return (args...) -> # wrap function to add modality
         # already in queue - just do it now
-        return func.apply(@, args) if @lock
+        #return func.apply(@, args) if @lock
         self = @
         self = @__queue__ if self not instanceof Steps
         if (end = args.length - 1) >= 0 and

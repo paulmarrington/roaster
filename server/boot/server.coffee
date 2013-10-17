@@ -64,7 +64,7 @@ create_http_server = require('boot/create-http-server')
 create_http_server(environment)
 # kick-off
 environment.http_server.listen environment.port
-create_faye_server environment if environment.faye
+#create_faye_server environment if environment.faye
 # lastly we do more project level initialisation
 project_init.post environment
 
