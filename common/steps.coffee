@@ -39,7 +39,7 @@ class Steps extends events.EventEmitter
       step_number_for_callback = @steps.length
       return =>
         if @tracing then console.log """
-          Callback for step #{step_number_for_this_callback}:
+          Callback for step #{step_number_for_callback}:
           #{callback.toString()}"""
         callback.apply(@, arguments)
         # make sure next hasn't been called explicitly
@@ -169,6 +169,8 @@ class Steps extends events.EventEmitter
   @modex: (func) ->
     if func instanceof Function
       return (args...) -> # wrap function to add modality
+        # already in queue - just do it now
+        return func.apply(@, args) if @lock
         self = @
         self = @__queue__ if self not instanceof Steps
         if (end = args.length - 1) >= 0 and

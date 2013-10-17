@@ -52,20 +52,20 @@ class ServerSteps extends Steps
   requires: (modules...) ->
     for name in modules
       key = path.basename(name).replace /\W/g, '_'
-      parallel = @parallel()
-      require_module = => @[key] = require(name); parallel()
-      try require_module()
-      catch error
-        @long_operation()
+      try @[key] = require(name) catch error
         npm.check_for_missing_requirement name, error
         if not loading[name]
+          @long_operation()
           load = (name, key, ready) =>
             npm.load key, (error, module) =>
               if error then @errors = error else @[key] = module
               ready()
           loading[name] =
             wait_for((next) -> load(name, key, next))
-        loading[name] require_module
+        parallel = @parallel()
+        loading[name] =>
+          @[key] ?= require(name)
+          parallel()
           
 class Queue extends ServerSteps
   # steps.queue -> @requires modules..., -> actions
