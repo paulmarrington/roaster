@@ -1,115 +1,100 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
-# unashamedly cribbed from http://github.com/creationix/step
-# in turn inspired by http://github.com/willconant/flow-js
 
-class Queue
-  constructor: () ->
-    @steps = []
-    @maximum_time_ms = 10000
-    @total_steps = 0
-    @results = []; @lock = false
-
-  # add additional steps
-  queue: (step, info = '') ->
-    @total_steps++
-    return if @aborted
-    step.info = info
-    @steps.push step
-    @next() if @idling
+class Queue extends require('events').EventEmitter
+  @instance: (action) ->
+    queue = new Queue()
+    action.apply(queue)
     
-  next: ->
+  constructor: ->
+    @reset()
+    @maximum_time_seconds = 15
+    Object.defineProperty @, "error", set: (value) =>
+      @emit('error', value) if value
+  # add additional steps
+  queue: (notes..., step) ->
+    return if @aborted
+    step.notes = notes
+    @steps.push step; @nexted++
+    @next() if @idling
+  # move to next item in queue with @next()
+  next: (cb) ->
+    return (=> cb.apply(@, arguments); @next()) if cb
+    return --@defer if @defer
+    return if @nexted isnt @steps.length
     clearTimeout @step_timer
     return if @idling = (@steps.length is 0)
-    @start_timer fn = @steps.shift()
-
-    @lock = true
-    if @tracing then console.log """
-      Queue step #{@total_steps}:
-      #{fn.toString()}
-      Info: #{info.toString()}"""
-    fn.call @, []
-    @lock = false
-  # see if there is more to done
-  empty: -> return not @steps.length
-  # @call -> actions - call with queue as this
-  # so you can use @next, etc
-  call: (func) => func.apply(@, arguments)
+    @nexted--; @start_timer fn = @steps.shift()
+    console.log "Queue step: #{fn.toString()}" if @tracing
+    @lock = true; fn.apply(@); @lock = false
   # Do not do any further steps
-  abort: =>
+  abort: -> @reset(@aborted = true)
+  # drop all outstanding steps
+  reset: ->
     clearTimeout @step_timer
-    @aborted = true
-    @steps = []
-  # Given a list of closures, process then sequentially
-  sequence: (ls...) =>
-    ls = ls[0] if ls.length is 1 and ls[0] instanceof Array
-    do process_next = =>
-      return @next() if not ls.length
-      ls.shift()(process_next)
+    @steps = []; @nexted = 0
+    @idling = true
   # Given one method and data list, call sequentially for each
   list: (ls..., processor) =>
     ls = ls[0] if ls.length is 1 and ls[0] instanceof Array
     do process_next = =>
       return @next() if not list.length
-      processor ls.shift(), process_next
+      processor(ls.shift(), process_next)
+  # Given a list of closures, process then sequentially
+  sequence: (ls...) ->
+    @list ls..., (item, next) -> item(next)
   # callbacks that are never called are invisible without this
-  start_timer: (fn = @last_timed_function) =>
+  start_timer: (fn = @last_timed_function) ->
+    #fn.notes = new Error('').stack
     @last_timed_function = fn
+    @restart_timer()
+  # stop timer for long operations
+  restart_timer: (seconds = @maximum_time_seconds) ->
     clearTimeout @step_timer
-    step = @total_steps - @steps.length
     @step_timer = setTimeout (=>
       err = new Error """\n
-        Step did not complete in #{@maximum_time_ms} ms
-        @next was not called
-        (change @maximum_time_ms if process needs more time)
-        Function being called in step #{step} was:
-
-        #{fn.notes ? ''}
-
-        #{fn.toString()}"""
+        ERROR: Queue step over #{seconds} seconds
+        #{@last_timed_function.name ? ''}
+        #{@last_timed_function.notes ? ''}
+        #{@last_timed_function.toString()}"""
+      console.log err.stack if @tracing
       @emit 'error', err
-      @next()
-      ), @maximum_time_ms
-  # stop timer for long operations
-  stop_timer: => clearTimeout @step_timer
+      ), seconds * 1000
   # Display each step before running it
   trace: (tracing = true) -> @tracing = tracing
-
   # convert methods with a callback to queue items
   @modex: (func) ->
-    if func instanceof Function
-      return (args...) -> # wrap function to add modality
-        # already in queue - just do it now
-        return func.apply(@, args) if @lock
-        self = @__queue__ ? @
-        if (end = args.length - 1) >= 0 and
-        (next = args[end]) instanceof Function
-          # last argument is a callback
-          @nargs = null
-          args[end] = (@nargs...) -> self.next()
-          # call with replacement callback to @next()
-          self.queue ->
-            console.log 'modex', args, func if @tracing
-            func.apply(self, args)
-          # fire off provided callback
-          self.queue ->
-            console.log 'modex-next', next, @nargs if @tracing
-            next.apply(self, @nargs)
-        else # function does not provide callback
-          # func itself will decide on async or sync
-          console.log 'modex-direct', func, args if @tracing
-          self.queue -> func.apply(self, args)
-    else # not a function - use as-is
-      return func
+    return (args...) -> # wrap function to add modality
+      # already in queue - just do it now
+      return func.apply(@, args) if @lock
+      self = @__queue__ ? @
+      if (end = args.length - 1) >= 0 and
+      (next = args[end]) instanceof Function
+        # last argument is a callback
+        @nargs = null
+        args[end] = (@nargs...) -> self.next()
+        # call with replacement callback to @next()
+        self.queue func, ->
+          console.log 'modex', args, func if @tracing
+          func.apply(self, args)
+        # fire off provided callback
+        self.queue func, ->
+          console.log 'modex-next', next, @nargs if @tracing
+          next.apply(self, @nargs)
+      else # function does not provide callback
+        console.log 'modex-direct', func, args if @tracing
+        self.queue func, -> func.apply(self, args); self.next()
       
-  @mixin: (Queue, packages) ->
+  @mixin: (packages) ->
     for name, entry of packages then do =>
       if entry instanceof Function
-        return Queue[name] = @modex(entry)
+        return Queue::[name] = Queue.modex(entry)
       # so @files.rm will set rm context to steps/queue
       mixin = {}
       Object.defineProperty Queue::, name, get: ->
         mixin.__queue__ = @
         return mixin
-      mixin[key] = @modex(value) for own key, value of entry
+      for own key, value of entry
+        if value instanceof Function and value.length
+          mixin[key] = Queue.modex(value)
 
 module.exports = Queue

@@ -20,15 +20,13 @@ for level in [1..4] then do ->
     tooltip: "Heading Level #{level}"
     exec: -> @execCommand 'formatBlock', h
 
-module.exports = (next) ->
-  steps(
-    ->  @package 'jquery', 'silk'
-    ->  roaster.dependency(
-          sceditor: 'https://codeload.github.com/samclarke/SCEditor/zip/v1.4.2'
-          '/ext/sceditor/SCEditor-1.4.2/minified/themes/default.min.css'
-          '/ext/sceditor/SCEditor-1.4.2/minified/jquery.sceditor.xhtml.min.js'
-          )(next)
-    )
+module.exports = (next) -> queue ->
+  @package 'jquery', 'silk', @next ->
+    roaster.dependency(
+      sceditor: 'https://codeload.github.com/samclarke/SCEditor/zip/v1.4.2'
+      '/ext/sceditor/SCEditor-1.4.2/minified/themes/default.min.css'
+      '/ext/sceditor/SCEditor-1.4.2/minified/jquery.sceditor.xhtml.min.js'
+      )(next)
 # # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 
 # toolbar =

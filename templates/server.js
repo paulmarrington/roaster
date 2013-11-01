@@ -1,3 +1,3 @@
-var steps = require('steps'), queue = steps.queue;
+var steps = require('steps'), queue = require('queue');
 
 #{script}

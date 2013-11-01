@@ -1,5 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see /GPL for license
-dirs = require 'dirs'; queue = require 'queue'
+dirs = require 'dirs'; queue = require('queue')
 # Using faye for pubsub.
 
 # client:
@@ -25,7 +25,7 @@ dirs = require 'dirs'; queue = require 'queue'
 #   ...
 # faye.publish '/channel', text: 'Hello'
 module.exports = (environment) -> queue ->
-  @requires dirs.node('ext/node_modules/faye'), ->
+  @requires dirs.node('ext/node_modules/faye'), @next ->
     bayeux = new @faye.NodeAdapter mount: '/faye', timeout: 45
     bayeux.attach environment.http_server
     environment.faye = @faye.local_client = bayeux.getClient()

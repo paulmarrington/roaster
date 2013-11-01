@@ -1,8 +1,5 @@
 # Copyright (C) 2012 paul@marrington.net, see GPL for license
 
-# Simple effective asynchronous module requirements
-# for the browser.
-
 window.slice$ = window['__slice'] = [].slice
 window['__bind'] = (fn, me) ->
   return -> return fn.apply(me, arguments)
@@ -37,17 +34,11 @@ window.roaster =
 
   load: (packages..., next) ->
     packages = packages[0].split(',') if packages.length is 1
-    roaster.ready ->
-      files = ("#{pkg_dir}/#{pkg}.coffee" for pkg in packages)
-      loader = (step, next) ->
+    roaster.ready -> roaster.queue ->
+      @requires ("#{pkg_dir}/#{pkg}.coffee" for pkg in packages)...,
+      @next -> do load_package = =>
         return next() if not packages.length
-        pkg = packages.shift()
-        step[pkg](-> loader(step, next))
-      roaster.steps(
-        ->  @requires files...
-        ->  loader(@, @next)
-        ->  next()
-        )
+        @[packages.shift()](load_package)
 
   script_loader: (url, domain, next) ->
     return next() if roaster.cache[url]
@@ -116,16 +107,23 @@ window.roaster =
 
 window.process = roaster.process
 
-load_requirements = ->
+load_libs = ->
   @requires(
     '/ext/node_modules/underscore/underscore.js'
+    'util', 'events', 'path',
+    '/common/queue.coffee')
+
+load_requirements = ->
+  roaster.path = @path; roaster.events = @events
+  roaster.util = @util; window._ = @underscore
+  @requires(
+    '/client/roaster/queue.coffee'
     '/client/roaster/environment.coffee'
     '/common/wait_for.coffee'
     '/client/dependency.coffee', '/app.coffee')
     
 load_environment = ->
   roaster.dependency = @dependency
-  window._ = @underscore
   @environment.load @next
 
 roaster_loaded = ->
@@ -141,6 +139,7 @@ roaster.depends '/client/roaster/request.coffee',
   'client', (steps) ->
     roaster.cache.steps = steps
     steps(
+      load_libs
       load_requirements
       load_environment
       roaster_loaded

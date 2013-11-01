@@ -1,7 +1,7 @@
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 fs = require 'fs'; path = require 'path'
 steps = require 'steps'; os = require 'os'
-dirs = require 'dirs'; queue = steps.queue
+dirs = require 'dirs'; queue = require 'queue'
 
 tmp_dir = os.tmpDir()
 
@@ -74,5 +74,5 @@ files =
         parts.push part
         one()
     
-steps.queue.mixin {dirs, files, fs}
+queue.mixin {dirs, files, fs}
 module.exports = files

@@ -1,6 +1,4 @@
 # Copyright (C) 2012 paul@marrington.net, see GPL for license
-queue = require('steps').queue
-
 module.exports = (args...) ->
   if process.env.DEBUG_NODE or args[0] is 'mode=gwt'
     require 'server/boot/server'
@@ -10,11 +8,12 @@ module.exports = (args...) ->
     server = dirs.node 'server/boot/server'
 
     node = processes('node')
+    insp = 'ext/node_modules/node-inspector/bin/inspector.js'
     if args[0] is 'config=debug'
       debug = ->
         try
-          inspector = processes('node').spawn dirs.node(
-            'ext/node_modules/node-inspector/bin/inspector.js'), '', ->
+          inspector = processes('node').
+            spawn dirs.node(insp), '', ->
         catch e
         node.respawn '--debug', load, server, args...
       

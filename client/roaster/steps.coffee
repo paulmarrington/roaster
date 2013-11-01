@@ -116,28 +116,28 @@ module.exports = roaster.steps = (steps...) ->
               if not value
                 @error = "No package #{packages[key]}"
   
-      class Queue extends ClientSteps
-        # imported code can be called asynchronously
-        set_import: (k, v) -> @[k] = Steps.modex(v)
-        # steps.queue -> @requires modules..., -> actions
-        requires: @modex(ClientSteps::requires)
-        package: @modex(ClientSteps::package)
-        libraries: @modex(ClientSteps::libraries)
-        service: @modex(ClientSteps::service)
-        data: @modex(ClientSteps::data)
-        json: @modex(ClientSteps::json)
+#       class Queue extends ClientSteps
+#         # imported code can be called asynchronously
+#         set_import: (k, v) -> @[k] = Steps.modex(v)
+#         # steps.queue -> @requires modules..., -> actions
+#         requires: @modex(ClientSteps::requires)
+#         package: @modex(ClientSteps::package)
+#         libraries: @modex(ClientSteps::libraries)
+#         service: @modex(ClientSteps::service)
+#         data: @modex(ClientSteps::data)
+#         json: @modex(ClientSteps::json)
       # over-ride loader and run it this first time
       roaster.Steps = ClientSteps
-      roaster.Queue = Queue
+#       roaster.Queue = Queue
       roaster.steps = (steps...) -> new ClientSteps(steps)
       # Used to integrate steps. Can have optional context
       # addressed by @self or as the parameter to the step
       # as in queue @, ->
-      roaster.steps.queue = (self..., action) ->
-        steps = new Queue(self...)
-        action.apply(steps, steps.self)
-        # mixin to extend queue
-      roaster.steps.queue.mixin = (packages) ->
-        Steps.mixin(Queue, packages)
+#       roaster.steps.queue = (self..., action) ->
+#         steps = new Queue(self...)
+#         action.apply(steps, steps.self)
+#         # mixin to extend queue
+#       roaster.steps.queue.mixin = (packages) ->
+#         Steps.mixin(Queue, packages)
       # do the original request that sparked off the load...
       new roaster.steps(steps...)

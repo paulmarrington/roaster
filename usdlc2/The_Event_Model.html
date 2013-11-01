@@ -6,38 +6,44 @@
 <body class="scayt-enabled">
 <h1>The Event Model</h1>
 
-<p>Roaster is yet another web server built on Node. Node relies on a single thread and an event model to allow effective developer controlled asynchronous processing.</p>
+<p>Roaster is yet another web server built on Node. Node relies on a single thread&nbsp;and an event model to allow effective developer controlled asynchronous processing.</p>
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
 
-<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/common/steps.coffee',category:'common'})">steps.coffee</a></span></div>
+<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/common/steps.coffee',category:'common'})">steps.coffee</a></span><span class="terminate"><a href="javascript:usdlc.edit_source({value:'terminate.coffee',path:'../roaster/server/http/terminate.coffee',category:'http'})">terminate.coffee</a></span></div>
 
-<h2>Integration</h2>
+<h2>Queues</h2>
 
-<p>One of the least painful ways to use steps is to integrate it into a function or method. The pattern is as follows:</p>
+<p>One of the least painful ways to use the queues module integrating&nbsp;a function or method. The pattern is as follows:</p>
 
 <div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>queue = require(&#39;queue&#39;)<br />
 ...<br />
 func = (data..., callback) -&gt; <span style="background-color:#FFD700;">queue -&gt;</span><br />
 &nbsp;&nbsp;# a good place to set variables available to all queued code<br />
 <br />
-&nbsp; <span style="background-color:#FFD700;">@queue (next) -&gt;</span><br />
-&nbsp;&nbsp; &nbsp;# asynchronous code - call next() to continue<br />
-&nbsp;&nbsp; &nbsp;setTimeout(next, 1000)<br />
+&nbsp; <span style="background-color:#FFD700;">@queue -&gt;</span><br />
+&nbsp;&nbsp; &nbsp;# asynchronous code - call @next() to continue<br />
+&nbsp;&nbsp; &nbsp;setTimeout(-&gt; @next()), 1000<br />
 <br />
 &nbsp;&nbsp;<span style="background-color:#FFD700;">@queue -&gt;</span><br />
 &nbsp;&nbsp; &nbsp;# synchronous code - runs in queued sequence<br />
+&nbsp;&nbsp; &nbsp;...<br />
+&nbsp; &nbsp; @next()<br />
 <br />
-&nbsp;&nbsp;<span style="background-color:#FFD700;">@queue (next)</span> -&gt;<br />
+&nbsp;&nbsp;<span style="background-color:#FFD700;">@queue</span>&nbsp;-&gt;<br />
 &nbsp;&nbsp; &nbsp;# Simulate asynchronous function complete to call callback.<br />
 &nbsp; &nbsp; setTimeout(callback, 1000)</code></div>
 
-<h3>Mixins</h3>
+<p>The three sections will occur sequentially, each waiting for the former to complete.</p>
 
-<p>In most cases it is even easier using queue mixins. Any object with asynchronous classes can be given to the queue system and will be integrated for automatic sequential processing.</p>
+<div class="metadata Ref">Ref: <span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/server/steps.coffee',category:'server'})">steps.coffee</a></span></div>
+
+<h3>Mix-ins</h3>
+
+<p>It is easy to mix-in other packages of utility functions. Any object with asynchronous classes can be given to the queue system and will be integrated for automatic sequential processing.</p>
 
 <div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>queue = require &#39;queue&#39;<br />
-files = require &#39;files&#39;</code><br />
+files = require &#39;files&#39; <span style="color:#0000CD;"># mix-in for files, dirs and fs</span></code><br />
 <span style="font-family: monospace; background-color: rgb(238, 238, 238);">patch = require &#39;common/patch&#39;</span>
 
 <p><code>module.exports = (exchange) -&gt; queue -&gt;<br />
@@ -45,12 +51,6 @@ files = require &#39;files&#39;</code><br />
 &nbsp;&nbsp;# All the lines in yellow will occur one after the other<br />
 &nbsp;&nbsp;# whether they are asynchronous or not</span><br />
 &nbsp; name = exchange.request.url.query.name<br />
-&nbsp;&nbsp;<span style="color:#0000CD;"># Steps is an event emitter</span><br />
-&nbsp; <span style="background-color:#FFD700;">@on</span> &#39;error&#39;, (msg) -&gt;<br />
-&nbsp; &nbsp; console.log &quot;Save of #{name} failed: #{msg}&quot;<br />
-&nbsp; &nbsp; exchange.respond.error msg<br />
-&nbsp;&nbsp; &nbsp;<span style="color:#0000CD;"># No more asynchronous steps will be run</span><br />
-&nbsp; &nbsp; <span style="background-color:#FFD700;">@abort</span>()<br />
 <br />
 &nbsp;&nbsp;<span style="color:#0000CD;"># mixin added by files - waits for last step<br />
 &nbsp;&nbsp;# callback marks async and sets step var with result</span><br />
@@ -62,14 +62,23 @@ files = require &#39;files&#39;</code><br />
 <br />
 &nbsp;&nbsp;<span style="color:#0000CD;"># special case - instance mixin has reference to exchange</span><br />
 &nbsp; <span style="background-color:#FFD700;">@mixin</span>&nbsp;{&nbsp;exchange }<br />
-&nbsp; <span style="background-color:#FFD700;">@exchange.respond</span>.read_request <span style="background-color:#FFD700;">@next</span> (@changes) -&gt;<br />
+&nbsp; <span style="background-color:#FFD700;">@exchange.respond</span>.read_request (@changes) -&gt;<br />
 <br />
-&nbsp; <span style="background-color:#FFD700;">@patch</span>.apply @html ? &#39;&#39;, @changes, @next (@html) -&gt;<br />
-&nbsp; &nbsp; if not @html?.length then throw new Error(<br />
+&nbsp; <span style="background-color:#FFD700;">@patch</span>.apply @html ? &#39;&#39;, @changes, (@html) -&gt;</code><br />
+<code>&nbsp; &nbsp; if not @html?.length then throw new Error(<br />
 &nbsp; &nbsp; &nbsp; &quot;source differs from expected for #{filename}&quot;)<br />
-&nbsp; <span style="background-color:#FFD700;">@fs</span>.writeFile name, @html, &#39;utf8&#39;, @next (@error) -&gt;<br />
+&nbsp; <span style="background-color:#FFD700;">@fs</span>.writeFile name, @html, &#39;utf8&#39;, (@error) -&gt;<br />
 &nbsp; &nbsp; exchange.response.end()</code></p>
 </div>
+
+<p>Note that mix-ins do not need to call @next(). It is wrapped up in the callback. If a mix-in does not have a callback then @next() is called immediately after the mix-in.</p>
+
+<p>A special case occurs for mix-ins that do not end in a callback, but do want to operate asynchronously. They need to defer calls to @next()</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>@my_mixin.func (a, b) -&gt;<br style="font-family: monospace; background-color: rgb(238, 238, 238);" />
+&nbsp; @defer = 1 # to ignore synchronous @next()<br />
+&nbsp;&nbsp;....<br />
+&nbsp;&nbsp;setTimeout (-&gt; @next()), 1000</code></div>
 
 <p>Implementation is very easy. Adding the files mixin is as simple as:</p>
 
@@ -80,6 +89,86 @@ module.exports = files =<br />
 
 <p>A running example:</p>
 
-<div class="metadata Ref">Ref: <span class="client"><a href="javascript:usdlc.edit_source({value:'client.coffee',path:'../roaster/drivers/client.coffee',category:'drivers'})">client.coffee</a></span><span class="driver"><a href="javascript:usdlc.edit_source({value:'driver.coffee',path:'../roaster/server/http/driver.coffee',category:'http'})">driver.coffee</a></span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/drivers/server.coffee',category:'drivers'})">server.coffee</a></span><span class="templates"><a href="javascript:usdlc.edit_source({value:'templates.coffee',path:'../roaster/server/templates.coffee',category:'server'})">templates.coffee</a></span><span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/common/steps.coffee',category:'common'})">steps.coffee</a></span><span class="dialog"><a href="javascript:usdlc.edit_source({value:'dialog.coffee',path:'../roaster/client/dialog.coffee',category:'client'})">dialog.coffee</a></span><span class="files"><a href="javascript:usdlc.edit_source({value:'files.coffee',path:'../roaster/server/files.coffee',category:'server'})">files.coffee</a></span><span class="read"><a href="javascript:usdlc.edit_source({value:'read.coffee',path:'../roaster/server/http/read.coffee',category:'http'})">read.coffee</a></span><span class="roaster"><a href="javascript:usdlc.edit_source({value:'roaster.coffee',path:'../roaster/client/roaster.coffee',category:'client'})">roaster.coffee</a></span><span class="request"><a href="javascript:usdlc.edit_source({value:'request.coffee',path:'../roaster/client/roaster/request.coffee',category:'roaster'})">request.coffee</a></span><span class="faye"><a href="javascript:usdlc.edit_source({value:'faye.coffee',path:'../roaster/client/faye.coffee',category:'client'})">faye.coffee</a></span></div>
+<div class="metadata Ref">Ref: <span class="queue"><a href="javascript:usdlc.edit_source({value:'queue.coffee',path:'../roaster/client/roaster/queue.coffee',category:'roaster'})">queue.coffee</a></span><span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/client/roaster/steps.coffee',category:'roaster'})">steps.coffee</a></span><span class="roaster"><a href="javascript:usdlc.edit_source({value:'roaster.coffee',path:'../roaster/client/roaster.coffee',category:'client'})">roaster.coffee</a></span><span class="requires"><a href="javascript:usdlc.edit_source({value:'requires.js',path:'../roaster/server/requires.js',category:'server'})">requires.js</a></span></div>
+
+<h3>Data Scope</h3>
+
+<p>Anything inside a <em>queue</em> or <em>mix-in</em> is not visible to other steps - except that they share the same context. So, keep common data in either the parent scope or context.</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>func = -&gt; queue -&gt;<br />
+&nbsp;&nbsp;parent_scope_var = null<br />
+&nbsp; @queue -&gt; ... step 1 ... parent_scope_var = 1<br />
+&nbsp; @queue -&gt; ... step 2 ... parent_scope_var++<br />
+&nbsp;&nbsp;@queue -&gt; ... step 3 ... @context_var = 1<br />
+&nbsp;&nbsp;@queue -&gt; ... step 4 ... @context_var++</code></div>
+
+<p>There is one nasty gotcha with mix-ins...</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><span style="font-family: monospace; background-color: rgb(238, 238, 238);">func = -&gt; queue -&gt;</span><br style="font-family: monospace; background-color: rgb(238, 238, 238);" />
+&nbsp;&nbsp;@queue -&gt; @var = 1<br />
+&nbsp;&nbsp;@mix_in.one(p1:&nbsp;@var)</div>
+
+<p>... won&#39;t work. The method mix_in wraps won&#39;t be called until the first step is complete, but it is passed a copy of @var before it has been set in the first step. This is one case where <em>@queue</em> is needed.</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><span style="background-color: rgb(238, 238, 238); font-family: monospace;">func = -&gt; queue -&gt;</span><br style="background-color: rgb(238, 238, 238); font-family: monospace;" />
+<span style="background-color: rgb(238, 238, 238);">&nbsp;&nbsp;@queue -&gt;&nbsp;</span>@var<span style="background-color: rgb(238, 238, 238);">&nbsp;= 1</span><br />
+<span style="background-color: rgb(238, 238, 238);">&nbsp; @queue -&gt; @mix_in.one(</span>p1<span style="background-color: rgb(238, 238, 238);">:&nbsp;</span>@var<span style="background-color: rgb(238, 238, 238);">)</span></div>
+
+<p>There can only be one inner context. This can prove troublesome if the function needing queues has context also.</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><font face="monospace">data: 1<br />
+method: -&gt; self = @; queue -&gt;<br />
+&nbsp;&nbsp;assert self.data is 1</font></div>
+
+<div class="metadata Ref">Ref: <span class="requires"><a href="javascript:usdlc.edit_source({value:'requires.coffee',path:'../roaster/server/requires.coffee',category:'server'})">requires.coffee</a></span><span class="queue"><a href="javascript:usdlc.edit_source({value:'queue.coffee',path:'../roaster/server/queue.coffee',category:'server'})">queue.coffee</a></span><span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/server/steps.coffee',category:'server'})">steps.coffee</a></span><span class="npm"><a href="javascript:usdlc.edit_source({value:'npm.js',path:'../roaster/server/npm.js',category:'server'})">npm.js</a></span></div>
+
+<h3>Events</h3>
+
+<p>The queue object is an event emitter, so it can be used to communicate between asynchronous functions.</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><span style="font-family: monospace; background-color: rgb(238, 238, 238);">@on &#39;change&#39;, (to) -&gt; data = to<br />
+...<br />
+@emit &#39;change&#39;, {...}</span></div>
+
+<div class="metadata Ref">Ref: <span class="queue"><a href="javascript:usdlc.edit_source({value:'queue.coffee',path:'../roaster/common/queue.coffee',category:'common'})">queue.coffee</a></span><span class="request"><a href="javascript:usdlc.edit_source({value:'request.coffee',path:'../roaster/client/roaster/request.coffee',category:'roaster'})">request.coffee</a></span></div>
+
+<h3>Errors</h3>
+
+<p>Event emitters treat the <em>error</em>&nbsp;event differently. If it is emitted and not caught an exception is thrown. In an event driven system exceptions can be bad as they are difficult to catch. Great for development as stack traces are useful, but difficult in production where continued operation is paramount.<br />
+<br />
+The example below is part of a HTTP conversation. If an error is emitted it is caught to send a message to the client, then <em>@abort()</em> is called so that no following queued steps are executed.<br />
+<br />
+Emit can be called for errors, or in short-hand, set&nbsp;@error. &nbsp;Standard asynchronous callbacks typically return an error condition as the first parameter.</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><span style="font-family: monospace; background-color: rgb(238, 238, 238);">&nbsp;&nbsp;</span><span style="font-family: monospace; background-color: rgb(255, 215, 0);">@on</span><span style="font-family: monospace; background-color: rgb(238, 238, 238);">&nbsp;&#39;error&#39;, (message</span><span style="font-family: monospace; background-color: rgb(238, 238, 238);">) -&gt;</span><br style="font-family: monospace; background-color: rgb(238, 238, 238);" />
+<span style="font-family: monospace; background-color: rgb(238, 238, 238);">&nbsp; &nbsp; console.log &quot;Save of #{name} failed: #{</span><span style="font-family: monospace; background-color: rgb(238, 238, 238);">message</span><span style="font-family: monospace; background-color: rgb(238, 238, 238);">}&quot;</span><br style="font-family: monospace; background-color: rgb(238, 238, 238);" />
+<span style="font-family: monospace; background-color: rgb(238, 238, 238);">&nbsp; &nbsp; exchange.respond.error(</span><span style="font-family: monospace; background-color: rgb(238, 238, 238);">message</span><span style="background-color: rgb(238, 238, 238);">)</span><br style="font-family: monospace; background-color: rgb(238, 238, 238);" />
+<span style="font-family: monospace; background-color: rgb(238, 238, 238);">&nbsp; &nbsp;&nbsp;</span><span style="font-family: monospace; background-color: rgb(255, 215, 0);">@abort</span><span style="font-family: monospace; background-color: rgb(238, 238, 238);">()&nbsp;</span><span style="color: rgb(0, 0, 205); font-family: monospace; background-color: rgb(238, 238, 238);"># No more asynchronous steps will be run<br />
+&nbsp;&nbsp;...</span><br />
+<code>&nbsp; @queue -&gt; my_func ..., (@error, @data) -&gt; @next()<br />
+&nbsp; ...<br />
+&nbsp; if (problem) then @error = problem</code></div>
+
+<div class="metadata Ref">Ref: <span class="faye"><a href="javascript:usdlc.edit_source({value:'faye.coffee',path:'../roaster/client/faye.coffee',category:'client'})">faye.coffee</a></span><span class="client"><a href="javascript:usdlc.edit_source({value:'client.js',path:'../roaster/templates/client.js',category:'templates'})">client.js</a></span></div>
+
+<h3>Long operations</h3>
+
+<p>Asynchronous functions without monitoring go invisible if they are never completed. The queue system will display an error if an operations exceeds 10 seconds - and then emit an error.</p>
+
+<p>Downloading data from the Internet, for example, can take longer than the timeout. To&nbsp;support this functionality, call <em>@restart_timer(seconds)</em>.</p>
+
+<p>If you need to extend the timeout before a&nbsp;step, set <em>@maximum_time_seconds</em>&nbsp;instead.</p>
+
+<div class="metadata Ref">Ref: <span class="queue"><a href="javascript:usdlc.edit_source({value:'queue.coffee',path:'../roaster/client/roaster/queue.coffee',category:'roaster'})">queue.coffee</a></span><span class="faye"><a href="javascript:usdlc.edit_source({value:'faye.coffee',path:'../roaster/client/faye.coffee',category:'client'})">faye.coffee</a></span><span class="roaster"><a href="javascript:usdlc.edit_source({value:'roaster.coffee',path:'../roaster/client/roaster.coffee',category:'client'})">roaster.coffee</a></span><span class="one_by_one"><a href="javascript:usdlc.edit_source({value:'one_by_one.js',path:'../roaster/common/one_by_one.js',category:'common'})">one_by_one.js</a></span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/scripts/server.coffee',category:'scripts'})">server.coffee</a></span><span class="create-faye-server"><a href="javascript:usdlc.edit_source({value:'create-faye-server.coffee',path:'../roaster/server/boot/create-faye-server.coffee',category:'boot'})">create-faye-server.coffee</a></span><span class="files"><a href="javascript:usdlc.edit_source({value:'files.coffee',path:'../roaster/server/files.coffee',category:'server'})">files.coffee</a></span><span class="streams"><a href="javascript:usdlc.edit_source({value:'streams.coffee',path:'../roaster/server/streams.coffee',category:'server'})">streams.coffee</a></span><span class="client"><a href="javascript:usdlc.edit_source({value:'client.js',path:'../roaster/templates/client.js',category:'templates'})">client.js</a></span></div>
+
+<h3>List Processing</h3>
+
+<p>List processing is supported with <em>@list(..., action)</em> and <em>@sequence(...)</em>. The former calls the provided action for each item in the list one after another. The latter assumes that each item is a function to be called in sequence.</p>
+
+<h3>Debugging</h3>
+
+<p>Tracing is enabled with <em>@trace()</em>.</p>
+
+<div class="metadata Ref">Ref: <span class="client"><a href="javascript:usdlc.edit_source({value:'client.coffee',path:'../roaster/drivers/client.coffee',category:'drivers'})">client.coffee</a></span><span class="driver"><a href="javascript:usdlc.edit_source({value:'driver.coffee',path:'../roaster/server/http/driver.coffee',category:'http'})">driver.coffee</a></span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/drivers/server.coffee',category:'drivers'})">server.coffee</a></span><span class="templates"><a href="javascript:usdlc.edit_source({value:'templates.coffee',path:'../roaster/server/templates.coffee',category:'server'})">templates.coffee</a></span><span class="steps"><a href="javascript:usdlc.edit_source({value:'steps.coffee',path:'../roaster/common/steps.coffee',category:'common'})">steps.coffee</a></span></div>
 </body>
 </html>

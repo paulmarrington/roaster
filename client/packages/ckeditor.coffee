@@ -97,7 +97,7 @@ roaster.default_message = ''
 roaster.message = (msg) ->
   el = $('span.messages')
   if not msg.length
-    return if el.html()[0] is '<' # error takes precedence
+    return if el.html()?[0] is '<' # error takes precedence
     msg = roaster.default_message
   el.html(msg)
 
