@@ -6,7 +6,7 @@ echo
 ##################################################
 # change this as new versions of node are released
 ##################################################
-nodeVersion=v0.10.20
+nodeVersion=v0.10.21
 
 ################################################
 # Now we download the correct version of node-js
