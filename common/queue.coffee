@@ -4,6 +4,7 @@ class Queue extends require('events').EventEmitter
   @instance: (action) ->
     queue = new Queue()
     action.apply(queue)
+    return queue
     
   constructor: ->
     @reset()
@@ -24,7 +25,7 @@ class Queue extends require('events').EventEmitter
     clearTimeout @step_timer
     return if @idling = (@steps.length is 0)
     @nexted--; @start_timer fn = @steps.shift()
-    console.log "Queue step: #{fn.toString()}" if @tracing
+    @tracer?("Queue step: #{fn.toString()}")
     @lock = true; fn.apply(@); @lock = false
   # Do not do any further steps
   abort: -> @reset(@aborted = true)
@@ -45,22 +46,35 @@ class Queue extends require('events').EventEmitter
   # callbacks that are never called are invisible without this
   start_timer: (fn = @last_timed_function) ->
     #fn.notes = new Error('').stack
-    @last_timed_function = fn
+    @context = @last_timed_function = fn
     @restart_timer()
   # stop timer for long operations
   restart_timer: (seconds = @maximum_time_seconds) ->
     clearTimeout @step_timer
     @step_timer = setTimeout (=>
       err = new Error """\n
-        ERROR: Queue step over #{seconds} seconds
-        #{@last_timed_function.name ? ''}
-        #{@last_timed_function.notes ? ''}
-        #{@last_timed_function.toString()}"""
-      console.log err.stack if @tracing
+        Queue step over #{seconds} seconds
+        #{@context.name ? ''}
+        #{@references()}
+        #{@context.notes ? ''}
+        #{@context.toString()}"""
+      @tracer?(err.stack)
       @emit 'error', err
       ), seconds * 1000
-  # Display each step before running it
-  trace: (tracing = true) -> @tracing = tracing
+  # Display each step before running it or notes on timeout
+  trace: (what = true) ->
+    if what instanceof Function
+      return @tracer(what) if @tracer # show immediately
+      # add reference data to be displayed on timeout
+      return @reference_list.push note_generator
+    return @tracer = null if not what
+    @tracer = (args...) ->
+      console.error @references()
+      console.error args...
+  reference_list: []
+  references: ->
+    [todo, @reference_list] = [@reference_list, []]
+    return (note().toString() for note in todo).join('\n')
   # convert methods with a callback to queue items
   @modex: (func) ->
     return (args...) -> # wrap function to add modality
@@ -74,14 +88,14 @@ class Queue extends require('events').EventEmitter
         args[end] = (@nargs...) -> self.next()
         # call with replacement callback to @next()
         self.queue func, ->
-          console.log 'modex', args, func if @tracing
+          @tracer?('modex', args, func)
           func.apply(self, args)
         # fire off provided callback
         self.queue func, ->
-          console.log 'modex-next', next, @nargs if @tracing
+          @tracer?('modex-next', next, @nargs)
           next.apply(self, @nargs)
       else # function does not provide callback
-        console.log 'modex-direct', func, args if @tracing
+        @tracer?('modex-direct', func, args)
         self.queue func, -> func.apply(self, args); self.next()
       
   @mixin: (packages) ->
