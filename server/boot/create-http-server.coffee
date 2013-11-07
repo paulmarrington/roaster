@@ -21,7 +21,8 @@ global.http_processors.push (exchange, next_processor) ->
     catch error
       errmsg = error.toString()
       console.log errmsg
-      exchange.response.write errmsg if environment.debug
+      if process.environment.debug
+        exchange.response.write errmsg
       # try the next one since this one failed
       next_processor()
 
