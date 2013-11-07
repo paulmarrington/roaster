@@ -2,7 +2,7 @@
 child_process = require 'child_process'; fs = require 'fs'
 dirs = require 'dirs'
 
-class Processes # proc = require('proc')() # sets default streaming and options
+class Processes
   constructor: (@program) ->
     @debug_flag = ''
     @options =
@@ -10,7 +10,8 @@ class Processes # proc = require('proc')() # sets default streaming and options
       env: process.env
       stdio: ['ignore', process.stdout, process.stderr]
 
-  # Fork off a separate node process to run the V8 scripts in a separate space
+  # Fork off a separate node process to run the V8
+  # scripts in a separate space
   node: (@args..., @next) ->
     @node_setup()
     @_exec(child_process.fork)
@@ -21,8 +22,8 @@ class Processes # proc = require('proc')() # sets default streaming and options
     @args.unshift 'boot/run' if @program isnt 'server'
     @program = dirs.node('boot/load.js')
 
-  # restart runs a node job and restarts it if and when it dies
-  # it can also be used to restart an existing process
+  # restart runs a node job and restarts it if and when it
+  # dies it can also be used to restart an existing process
   restart: (@args...) ->
     return @proc.kill() if @proc
     @node_setup()
@@ -35,12 +36,17 @@ class Processes # proc = require('proc')() # sets default streaming and options
     return @
 
   debug: (break_on_start = false) ->
-    @debug_flag = if break_on_start then '--debug-brk' else '--debug'
+    @debug_flag = if break_on_start then \
+    '--debug-brk' else '--debug'
 
-  # exec runs the provided command in a shell (next(error, stdout, stderr))
-  exec: (next) -> child_process.exec @program, @options, next; return @
+  # exec runs the provided command in a shell
+  # (next(error, stdout, stderr))
+  exec: (next) ->
+    child_process.exec @program, @options, next
+    return @
 
-  # half-way between a spawn and exec - it fires up a shell, but pipes I/o
+  # half-way between a spawn and exec - it fires up a shell,
+  # but pipes I/o
   cmd: (@args..., @next) ->
     @program = process.env.SHELL ? process.env.ComSpec
     is_unix = require('system').expecting 'unix'
@@ -67,7 +73,8 @@ class Processes # proc = require('proc')() # sets default streaming and options
       @proc = null
       return if signal is 'SIGKILL'
       # restarting fails if service ran less than 5 seconds
-      if signal or (new Date().getTime() - @start_time) > minimum_run_time
+      run_time = new Date().getTime() - @start_time
+      if signal or run_time > minimum_run_time
         @_respawn(action, minimum_run_time)
     return @proc
 
@@ -86,7 +93,8 @@ class Processes # proc = require('proc')() # sets default streaming and options
       @args = @args[0]?.split ' '
     @proc = action @program, @args, @options
     @proc.on 'exit', (@code, @signal) =>
-      return @next(new Error("return code #{@code}", @args)) if @code
+      if @code
+        return @next(new Error("return code #{@code}", @args))
       return @next(new Error(@signal, @args)) if @signal
       return @next(null)
     return @proc
