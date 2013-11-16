@@ -8,7 +8,7 @@ class Processes
     @options =
       cwd: process.cwd()
       env: process.env
-      stdio: ['ignore', process.stdout, process.stderr]
+      stdio: 'pipe'
 
   # Fork off a separate node process to run the V8
   # scripts in a separate space
@@ -53,9 +53,6 @@ class Processes
     if @args.length
       c_switch = if is_unix then '-c' else '/c'
       @args = [c_switch, @args...]
-    else if is_unix
-      @args = ['-c', 'bash -i'] if @program[-4..-1] is 'fish'
-      #@args.push('-i')
     @_exec(child_process.spawn)
     return @
 
@@ -86,12 +83,20 @@ class Processes
   on: (args...) ->
     @proc?.on(args...)
     return @
+    
+  send: (line) -> @proc.stdin.write line
+  send_file: (name, extra) =>
+    input = fs.createReadStream(name)
+    input.on 'end', => @send extra + '\n'
+    input.pipe @proc.stdin, end: false
 
   # private DRY helper
   _exec: (action) ->
     if @args.length is 1 and typeof @args[0] is 'string'
       @args = @args[0]?.split ' '
     @proc = action @program, @args, @options
+    @proc.stdout?.pipe process.stdout
+    @proc.stderr?.pipe process.stderr
     @proc.on 'exit', (@code, @signal) =>
       if @code
         return @next(new Error("return code #{@code}", @args))

@@ -55,24 +55,16 @@ files =
   mv: (from, to, next) ->
     files.join from, to, (to) -> fs.rename from, to, next
   # join paths - dropping file names until last...
-  join: (paths..., last, next) ->
-    parts = []
-    filename = null
-    do one = -> queue ->
-      if not paths.length
-        result = path.join parts..., last
-        return @files.is_dir result, (err, is_dir) ->
-          if filename and is_dir
-            result = path.join result, filename
-          next(result)
-
-      part = paths.shift()
-      @files.is_dir part, (err, is_dir) ->
-        if not is_dir
-          filename = path.basename part
-          part = path.dirname part
-        parts.push part
-        one()
+  join: (base_path, last, next) ->
+    files.is_dir base_path, (err, is_dir) ->
+      if not is_dir
+        filename = path.basename base_path
+        base_path = path.dirname base_path
+      result = path.join base_path, last
+      files.is_dir result, (err, is_dir) ->
+        if filename and is_dir
+          result = path.join result, filename
+        next(result)
     
 queue.mixin {dirs, files, fs}
 module.exports = files

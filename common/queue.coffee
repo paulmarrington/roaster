@@ -1,9 +1,11 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
 
 class Queue extends require('events').EventEmitter
-  @instance: (action) ->
+  @instance: (owner..., action) ->
     queue = new Queue()
-    action.apply(queue)
+    queue.owner = owner[0] ? queue
+    queue.owner.q = queue
+    action.apply(queue.owner)
     return queue
     
   constructor: ->
@@ -26,7 +28,7 @@ class Queue extends require('events').EventEmitter
     return if @idling = (@steps.length is 0)
     @nexted--; @start_timer fn = @steps.shift()
     @tracer?("Queue step: #{fn.toString()}")
-    @lock = true; fn.apply(@); @lock = false
+    @lock = true; fn.apply(@owner); @lock = false
   # Do not do any further steps
   abort: -> @reset(@aborted = true)
   # drop all outstanding steps
@@ -64,7 +66,7 @@ class Queue extends require('events').EventEmitter
   # Display each step before running it or notes on timeout
   trace: (what = true) ->
     if what instanceof Function
-      return @tracer(what) if @tracer # show immediately
+      return @tracer?(what) if @tracer # show immediately
       # add reference data to be displayed on timeout
       return @reference_list.push note_generator
     return @tracer = null if not what
@@ -85,7 +87,10 @@ class Queue extends require('events').EventEmitter
       (next = args[end]) instanceof Function
         # last argument is a callback
         @nargs = null
-        args[end] = (@nargs...) -> self.next()
+        args[end] = (nargs...) ->
+          self.nargs = nargs
+          self.tracer?('modex-orig-cb', nargs, self.next)
+          self.next()
         # call with replacement callback to @next()
         self.queue func, ->
           @tracer?('modex', args, func)
@@ -108,7 +113,7 @@ class Queue extends require('events').EventEmitter
         mixin.__queue__ = @
         return mixin
       for own key, value of entry
-        if value instanceof Function and value.length
+        if value instanceof Function
           mixin[key] = Queue.modex(value)
 
 module.exports = Queue

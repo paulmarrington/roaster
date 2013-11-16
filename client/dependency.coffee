@@ -20,10 +20,3 @@ module.exports = (packages, libraries...) ->
   return wait_for (on_complete) -> queue ->
     @dependency packages, @next ->
     @libraries libraries..., @next on_complete
-
-#   return wait_for (on_complete) ->
-#     steps(
-#       ->  @dependency packages
-#       ->  @libraries libraries...
-#       ->  on_complete()
-#     )
