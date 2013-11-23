@@ -79,8 +79,8 @@ module.exports = requests =
       type = parts.slice(-1)[0]
       # no extension is load with node require on server
       if module.indexOf('.') is -1 and domain is 'client'
-        requests.requireAsync module, (imports) =>
-          return next_one(refs[key] = imports)
+        return requests.requireAsync module, (imports) =>
+          next_one(refs[key] = imports)
       # See if it is script or style
       type = parts.slice(-1)[0]
       if roaster.environment?.extensions?[type] is 'css'
