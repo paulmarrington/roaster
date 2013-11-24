@@ -31,6 +31,8 @@
 # "minimize" : function(evt, dlg){ alert(evt.type); },
 # "restore" : function(evt, dlg){ alert(evt.type); }
 dialogs = roaster.dialogs = {}
+roaster.dialog_position ?= ->
+  my: "center top", at: "center top", of: window
 default_options =
   closable:         false
   maximizable:      true
@@ -60,12 +62,20 @@ module.exports = (options..., next) ->
     options = _.extend {}, default_options, options...
     dlg = dialogs[name] = $('<div>').addClass('dialog').appendTo(document.body)
     dlg.dialog(options).dialogExtend(options)
-    if options.fix_height_to_window
-      set_height = ->
-        height = $(window).height() - options.fix_height_to_window
-        dlg.dialog 'option', 'height', height
-        options.resizeStop?(dlg)
-      setTimeout(set_height, 500)
+    dlg.on 'resize', ->
+      here = dlg.dialog "option", "position"
+      dlg.dialog "option", "position", here
+    dlg.click -> dlg.trigger 'resize'
+    dlg.keyup -> dlg.trigger 'resize'
+
+    set_height = ->
+      height = $(window).height()
+      dlg.dialog 'option', 'maxHeight', height - 10
+      options.resizeStop?(dlg)
+      if not options.position
+        dlg.dialog "option", "position",
+          roaster.dialog_position()
+    setTimeout(set_height, 500)
     options?.init(dlg)
   else
     options = options[0]
