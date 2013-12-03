@@ -1,5 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
-version = "4.2.1"
+version = "4.3"
 pkg = "full"
 base = "http://download.cksource.com/CKEditor/"+
   "CKEditor/CKEditor "
@@ -12,6 +12,12 @@ packages =
     "tableresize_#{version}.zip|#{plugin_dir}"
   placeholder: "#{ckurl}/placeholder/releases/"+
     "placeholder_#{version}.zip|#{plugin_dir}"
+  widget: "#{ckurl}/widget/releases/"+
+    "widget_#{version}.zip|#{plugin_dir}"
+  lineutils: "#{ckurl}/lineutils/releases/"+
+    "lineutils_#{version}.zip|#{plugin_dir}"
+  find: "#{ckurl}/find/releases/"+
+    "find_#{version}.zip|#{plugin_dir}"
 
 toolbarGroups = [
   { name: 'document' }
@@ -49,7 +55,7 @@ default_options =
   toolbarGroups: toolbarGroups
   toolbarViews: toolbarViews
   toolbarViewsOrder: toolbarViewsOrder
-  extraPlugins: 'tableresize,placeholder'
+  extraPlugins: 'tableresize,placeholder,widget,lineutils,find'
 
 editor = null
 

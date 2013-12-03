@@ -21,22 +21,3 @@ module.exports = (next) -> queue ->
   @script_loader keymap, 'client,library', @next
   @css "#{base}/theme.css.concat"
   @queue @next next
-
-# module.exports = (next) ->
-#   steps(
-#     ->  @long_operation()
-#     ->  @package 'coffeelint', 'jshint', 'jsonlint'
-#     ->  @asynchronous roaster.dependency(
-#           codemirror: 'https://codeload.github.com/marijnh'+
-#             '/CodeMirror/zip/master|codemirror'
-#           "#{base}/lib/codemirror.css"
-#           "#{base}/lib/codemirror.js"
-#           "#{base}/mode/coffeescript/coffeescript.js"
-#           "#{base}/mode/javascript/javascript.js"
-#         )(@next)
-#     ->  roaster.request.css addon('css')
-#     ->  roaster.script_loader addon('js'), 'client', @next
-#     ->  roaster.script_loader keymap, 'client,library', @next
-#     ->  roaster.request.css "#{base}/theme.css.concat"
-#     ->  next()
-#     )
