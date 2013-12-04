@@ -34,7 +34,7 @@ dialogs = roaster.dialogs = {}
 roaster.dialog_position ?= ->
   my: "center top", at: "center top", of: window
 default_options =
-  closable:         false
+  closable:         true
   maximizable:      true
   minimizable:      true
   collapsable:      true
@@ -58,6 +58,13 @@ module.exports = (options..., next) ->
     options.push next
     next = ->
   name = options[0].name
+  set_height = ->
+    height = $(window).height()
+    dlg.dialog 'option', 'maxHeight', height - 20
+    options.resizeStop?(dlg)
+    if not options.position
+      dlg.dialog "option", "position",
+        roaster.dialog_position()
   if not dlg = dialogs[name]
     options = _.extend {}, default_options, options...
     dlg = dialogs[name] = $('<div>').
@@ -68,15 +75,6 @@ module.exports = (options..., next) ->
       dlg.dialog "option", "position", here
     dlg.click -> dlg.trigger 'resize'
     dlg.keyup -> dlg.trigger 'resize'
-
-    set_height = ->
-      height = $(window).height()
-      dlg.dialog 'option', 'maxHeight', height - 20
-      options.resizeStop?(dlg)
-      if not options.position
-        dlg.dialog "option", "position",
-          roaster.dialog_position()
-    setTimeout(set_height, 500)
     options?.init(dlg)
   else
     options = options[0]
@@ -87,4 +85,5 @@ module.exports = (options..., next) ->
       dlg.dialog('option', 'position', options.position)
   dlg.dialog('option', 'closeOnEscape', false)
   options?.fill(dlg)
+  setTimeout(set_height, 500)
   next(dlg)
