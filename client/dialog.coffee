@@ -1,4 +1,4 @@
-# Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
+# Copyright (C) 2013 paul@marrington.net, see /GPL for license
 
 # @window
 #   name:   "Instrument",
@@ -60,7 +60,8 @@ module.exports = (options..., next) ->
   name = options[0].name
   if not dlg = dialogs[name]
     options = _.extend {}, default_options, options...
-    dlg = dialogs[name] = $('<div>').addClass('dialog').appendTo(document.body)
+    dlg = dialogs[name] = $('<div>').
+      addClass('dialog').appendTo(document.body)
     dlg.dialog(options).dialogExtend(options)
     dlg.on 'resize', ->
       here = dlg.dialog "option", "position"
@@ -70,7 +71,7 @@ module.exports = (options..., next) ->
 
     set_height = ->
       height = $(window).height()
-      dlg.dialog 'option', 'maxHeight', height - 10
+      dlg.dialog 'option', 'maxHeight', height - 20
       options.resizeStop?(dlg)
       if not options.position
         dlg.dialog "option", "position",
@@ -82,7 +83,8 @@ module.exports = (options..., next) ->
     dlg.dialog 'option', 'title', options.title
     dlg.dialogExtend('restore')
     dlg.dialog('open').dialog('moveToTop')
-    dlg.dialog('option', 'position', options.position) if options.position
+    if options.position
+      dlg.dialog('option', 'position', options.position)
   dlg.dialog('option', 'closeOnEscape', false)
   options?.fill(dlg)
   next(dlg)
