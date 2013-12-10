@@ -4,8 +4,7 @@
 # is replaced by data element A function can be used
 # if the key and arguments are separates by spaces or comma
 # as in #{my_func a,1,34}
-steps = require 'steps'; fs = require 'fs'
-files = require 'files'
+fs = require 'fs'; files = require 'files'
 
 process = (template, options) ->
   return template.toString().replace /#{(.*?)}/g, (all, key) ->
@@ -14,23 +13,21 @@ process = (template, options) ->
     return data[key](args...) if key of options
     return ''
 
-process_text = (options, processed) ->
-  steps(
-    ->  files.find options.template_name, @next (@template_name) ->
-    ->  if not @template_name then processed(null); @abort()
-    ->  fs.readFile @template_name, @next (@error, @template) ->
-    ->  @merged = process @template, options
-    ->  processed(@merged)
-    )
+process_text = (options, done) ->
+  files.find options.template_name, (template_path) ->
+    return done() if not template_path
+    fs.readFile template_path, (err, template) ->
+      return done() if err
+      done process template, options
 
 process_file = (options, done) ->
-  steps(
-    ->  files.find options.script_name @next @script_name
-    ->  fs.readFile @script_name, @next (@error, @script) =>
-    ->  options.script = @script; process_text options, @next (@merged) ->
-    ->  fs.writeFile options.output_name, @merged, @next
-    ->  done()
-    )
+  files.find options.script_name, (script_path) ->
+    return done("No #{script_name}") if not script_path
+    fs.readFile script_path, (err, script) ->
+      return done(err) if err
+      options.script = script
+      process_text options, (merged) ->
+        fs.writeFile options.output_name, merged, done
 
 module.exports =
   process_text: process_text
