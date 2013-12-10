@@ -40,8 +40,8 @@ default_options =
   collapsable:      true
   minimizeLocation: 'right'
   dblclick:         'maximize'
-  icons:            {collapse: "ui-icon-close"}
-  collapse:         (evt, dlg) -> $(evt.target).dialog('close')
+#   icons:            {collapse: "ui-icon-close"}
+#   collapse:         (evt, dlg) -> $(evt.target).dialog('close')
 
 roaster.zindex = 200
 
