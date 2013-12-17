@@ -1,4 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
+dependency = require 'dependency'
 
 plugins = "
 common/ui,common/format,common/highlighteditables,common/link,
@@ -11,7 +12,7 @@ extra/metaview,extra/numerated-headers,extra/ribbon,extra/toc"
 #common/dom-to-xml,extra/browser,extra/comments,
 #extra/draganddropfiles,extra/validation,extra/sourceview
 
-module.exports = roaster.dependency(
+module.exports = dependency(
   aloha:
     'http://aloha-editor.org/builds/stable/alohaeditor-0.23.3-cdn.zip'
   # 'aloha/plugins/community/colorselector':

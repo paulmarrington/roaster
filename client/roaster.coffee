@@ -1,4 +1,4 @@
-# Copyright (C) 2012 paul@marrington.net, see GPL for license
+# Copyright (C) 2012,14 paul@marrington.net, see /GPL license
 
 window.slice$ = window['__slice'] = [].slice
 window['__bind'] = (fn, me) ->
@@ -12,10 +12,37 @@ window.roaster =
   context: {}
   # run code sequentially once roaster is ready
   on_ready: []
+  file_type: (name) ->
+    name.substr((~-name.lastIndexOf(".") >>> 0) + 2)
   ready: (func) ->
     return func(->) if not roaster.on_ready
     return roaster.on_ready.push(func) if func.length
     roaster.on_ready.push (next) -> func(); next()
+  preload: (modules...) ->
+    return roaster.cache.wait_for (next) ->
+      roaster.clients modules..., next
+  clients: (paths..., next) ->
+    modules = []
+    do load_one = ->
+      return next(modules...) if not paths.length
+      client paths.shift(), (module) ->
+        modules.push module
+        load_one()
+  # load list of packages
+  packages: (packages..., next) ->
+    do load_one = ->
+      return next() if not packages.length
+      pkg = "#{pkg_dir}/#{packages.shift()}.coffee"
+      roaster.clients pkg, (pkg) -> pkg(load_one)
+  libraries: (libraries..., next) ->
+    do load_one = ->
+      return next() if not libraries.length
+      lib = libraries.shift()
+      switch roaster.file_type(lib)
+        when 'css'
+          roaster.request.css(lib); load_one()
+        else
+          roaster.depends lib, 'client,library', load_one
   # Basic dependency loading for scripts
   depends: (url, domain, next) ->
     # see if we are loaded and ready to go
@@ -31,14 +58,6 @@ window.roaster =
       callbacks = roaster.loading[url]
       cb imports while cb = callbacks.pop() when cb
       delete roaster.loading[url]
-
-  load: (packages..., next) ->
-    packages = packages[0].split(',') if packages.length is 1
-    roaster.ready -> roaster.queue ->
-      @requires ("#{pkg_dir}/#{pkg}.coffee" for pkg in packages)...,
-      @next -> do load_package = =>
-        return next() if not packages.length
-        @[packages.shift()](load_package)
 
   script_loader: (url, domain, next) ->
     return next() if roaster.cache[url]
@@ -107,40 +126,33 @@ window.roaster =
 
 window.process = roaster.process
 
-load_libs = ->
-  @requires(
-    '/ext/node_modules/underscore/underscore.js'
-    'util', 'events', 'path',
-    '/common/queue.coffee')
-
-load_requirements = ->
-  roaster.path = @path; roaster.events = @events
-  roaster.util = @util; window._ = @underscore
-  @requires(
-    '/client/roaster/queue.coffee'
-    '/client/roaster/environment.coffee'
-    '/common/wait_for.coffee'
-    '/client/dependency.coffee', '/app.coffee')
+client = (path, next) ->
+  match = /.*\/([\w\-]+)\.\w*/.exec(path)
+  return console.log "No client '#{path}'" if not match
+  roaster.depends path, 'client', (module) ->
+    roaster.cache[match[1]] = module
+    if module.initialise
+      module.initialise -> next(module)
+    else
+      next(module)
     
-load_environment = ->
-  roaster.dependency = @dependency
-  @environment.load @next
-
-roaster_loaded = ->
-  do on_ready = ->
-    if not roaster.on_ready.length
-      return roaster.on_ready = null
-    roaster.on_ready.shift()(on_ready)
-
-roaster.depends '/client/roaster/request.coffee',
-'client', (request) ->
+client '/client/roaster/request.coffee', (request) ->
   roaster.request = request
-  roaster.depends '/client/roaster/steps.coffee',
-  'client', (steps) ->
-    roaster.cache.steps = steps
-    steps(
-      load_libs
-      load_requirements
-      load_environment
-      roaster_loaded
-    )
+  roaster.cache.requires = request.requireAsync
+  libs = ['util', 'events', 'path']
+  request.requireAsync libs..., (err, imports...) ->
+    roaster[lib] = imports.shift() for lib in libs
+    requirements = [
+      '/ext/node_modules/underscore/underscore.js'
+      '/client/roaster/environment.coffee'
+      '/common/wait_for.coffee'
+      '/client/dependency.coffee'
+      '/app.coffee'
+    ]
+    roaster.clients requirements..., ->
+      window._ = roaster.cache.underscore
+      roaster.cache.environment.load ->
+        do on_ready = ->
+          if not roaster.on_ready.length
+            return roaster.on_ready = null
+          roaster.on_ready.shift()(on_ready)

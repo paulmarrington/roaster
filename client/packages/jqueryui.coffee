@@ -1,9 +1,10 @@
 # Copyright (C) 2013 paul@marrington.net, see /GPL for license
+dependency = require 'dependency'
 
 base = 'http://code.jquery.com/ui/1.10.3'
 # https://github.com/ROMB/jquery-dialogextend
 
-module.exports = roaster.dependency(
+module.exports = dependency(
   jqueryui: "#{base}/jquery-ui.js|jquery/jquery-ui"
   jqueryuithemes: "http://jqueryui.com/resources/download/"+
     "jquery-ui-themes-1.10.3.zip|jquery/themes|themes"

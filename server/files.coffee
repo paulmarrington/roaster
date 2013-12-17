@@ -1,7 +1,7 @@
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 fs = require 'fs'; path = require 'path'
-steps = require 'steps'; os = require 'os'
-dirs = require 'dirs'; queue = require 'queue'
+os = require 'os'; dirs = require 'dirs'
+streams = require 'streams'
 
 tmp_dir = os.tmpDir()
 
@@ -34,22 +34,17 @@ files =
   save: (final_resting_place, inputs..., next) ->
     target = path.basename final_resting_place
     building_place = path.join tmp_dir, target
-
-    steps(
-      ->  @on 'error', (error) -> console.log error; @abort next, error
-      ->  dirs.mkdirs path.dirname(final_resting_place), @next
-      ->  @file = fs.createWriteStream(building_place)
-      ->  @cat inputs..., @file
-      ->  fs.unlink final_resting_place, @next
-      ->  fs.rename building_place, final_resting_place, @next
-      ->  next()
-    )
+    dirs.mkdirs path.dirname(final_resting_place), ->
+      file = fs.createWriteStream(building_place)
+      streams.cat inputs..., file, (error) ->
+        return next(error) if error
+        fs.unlink final_resting_place, ->
+          fs.rename building_place, final_resting_place, next
   # delete target if dir or file
-  rm: (name, next) -> queue ->
-    @on 'error', (error) -> @abort -> next(error)
-    @files.is_dir name, (@error, @is_dir) ->
-      return if @error
-      return @dirs.rmdirs(name, next) if @is_dir
+  rm: (name, next) ->
+    files.is_dir name, (error, is_dir) ->
+      return next(error) if error
+      return dirs.rmdirs(name, next) if is_dir
       fs.unlink name, next
   # move or rename a file
   mv: (from, to, next) ->
@@ -65,6 +60,5 @@ files =
         if filename and is_dir
           result = path.join result, filename
         next(result)
-    
-queue.mixin {dirs, files, fs}
+
 module.exports = files

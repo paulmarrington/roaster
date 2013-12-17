@@ -1,15 +1,16 @@
-# Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
-wait_for = require 'common/wait_for'; steps = require 'steps'
+# Copyright (C) 2013 paul@marrington.net, see /GPL license
+wait_for = require 'wait_for'
+requires = require 'requires'
 
-patch = null
-diff = wait_for (next) ->
-  steps(
-    ->  @requires 'diff'
-    ->  patch = @diff; next()
-  )
+preload = wait_for (next) ->
+  requires 'diff', (error, patch) -> next(patch)
 
 module.exports =
-  create: (filename, old_string, new_string, next) ->
-    diff -> next patch.createPatch filename, old_string, new_string, '', ''
-  apply: (old_string, diff_string, next) ->
-    diff -> next patch.applyPatch old_string, diff_string
+  create: (args...) -> preload (patch) ->
+    module.exports.create = (name, oldst, newst, next) ->
+      next patch.createPatch name, oldst, newst, '', ''
+    module.exports.create(args...)
+  apply: (args...) -> preload (patch) ->
+    module.exports.apply = (oldst, diffst, next) ->
+      next patch.applyPatch oldst, diffst
+    module.exports.apply(args...)

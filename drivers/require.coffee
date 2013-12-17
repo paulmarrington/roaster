@@ -15,9 +15,9 @@ module.exports = (exchange, next) ->
   try
     module_path = require.resolve module_name
     if module_path.indexOf('/') isnt -1
-      return done(module_path) # in mode_modules
+      return done(module_path) # in node_modules
     node_library.resolve_built_in module_name,
-      (module_path) -> done module_path
+      (err, module_path) -> done module_path
   catch err
     npm module_name, (error, module) ->
       if error

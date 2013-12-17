@@ -1,4 +1,4 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 Processes = require 'processes'
 
 module.exports = (exchange) ->
@@ -7,8 +7,9 @@ module.exports = (exchange) ->
   exchange.respond.set_mime_type 'txt'
   url = exchange.request.url
   args = [url.pathname, url.query, url.hash]
-  proc.options.stdio = ['ignore', exchange.response, exchange.response]
+  proc.options.stdio =
+    ['ignore', exchange.response, exchange.response]
   proc.program = program
-  proc.spawn ...@args, (error) =>
+  proc.spawn @args..., (error) =>
     @exchange.response.end()
     throw error if error

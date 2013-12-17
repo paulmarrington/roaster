@@ -1,5 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
-steps = require 'steps'; stream = require 'stream'
+stream = require 'stream'; requires = require 'requires'
 
 # Websocket wrapper includes a duplex stream (for pipes mainly)
 class FromBrowserStream extends stream.Readable
@@ -22,15 +22,8 @@ class ToBrowserStream extends stream.Writable
 module.exports = (environment) ->
   options = server: environment.http_server
   
-  requirements = -> @requires 'ws'
-  
-  start_websocket_server = ->
-    (new @ws.Server(options)).on 'connection', (ws) ->
-      ws.from_browser = new FromBrowserStream(ws)
-      ws.to_browser = new ToBrowserStream(ws)
-      require(ws.upgradeReq.url[1..-1].split('?')[0])(ws)
-  
-  steps(
-    requirements
-    start_websocket_server
-  )
+  requires 'ws', (error, ws) ->
+    (new ws.Server(options)).on 'connection', (wss) ->
+      wss.from_browser = new FromBrowserStream(wss)
+      wss.to_browser = new ToBrowserStream(wss)
+      require(wss.upgradeReq.url[1..-1].split('?')[0])(wss)

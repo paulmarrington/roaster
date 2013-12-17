@@ -1,12 +1,12 @@
 // Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 var path = require('path');
-var One_By_One = require('common/one_by_one');
+var Sequential = require('common/Sequential');
 var prefix = path.join(process.env.uSDLC_node_path, "ext");
 
-one_by_one = new One_By_One();
+sequential = new Sequential();
 
 load = function(name, on_loaded) {
-  one_by_one.add(function(next) {
+  sequential.add(function(next) {
     var npm = require("ext/node/lib/node_modules/npm");
     npm.load({prefix: prefix}, function(err, npm) {
         try {

@@ -1,23 +1,27 @@
-# Copyright (C) 2012,13 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 
 secondsFrom = (start) ->
-   return Math.floor((new Date().getTime() - start.getTime()) / 1000)
+  now = new Date().getTime()
+  return Math.floor((now - start.getTime()) / 1000)
 
 class Timer # Use to report elapsed times
-  # Timer = require 'common/timer'; timer = Timer() # creates a new instance and prints current date
+  # Timer = require 'common/timer'
+  # timer = Timer() # creates instance and prints current date
   # options.silent = true to stop logging of results
   constructor: (@options) ->
     @log = (->) if @options?.silent
     options.pre ?= ''; options.post ?= ''
     @start = @now = new Date()
     @log "#{@now}"
-  # timer.elapsed() # will print seconds since start or last elapsed
+  # timer.elapsed()
+  # will print seconds since start or last elapsed
   elapsed: ->
     time = secondsFrom @now
     @log "#{@hms(time)} elapsed" if time > 0
     @now = new Date()
     return time
-  # timer.total() # will print seconds since timer was instantiated
+  # timer.total()
+  # will print seconds since timer was instantiated
   total: ->
     time = secondsFrom @start
     @log "#{@hms(time)} seconds total"
@@ -34,6 +38,7 @@ class Timer # Use to report elapsed times
     hours = if hours then "#{hours}:" else ''
     return "#{hours}#{minutes}:#{seconds}"
   # display results - if needed
-  log: (message) -> console.log "#{@options.pre}#{message}#{@options.post}"
+  log: (message) ->
+    console.log "#{@options.pre}#{message}#{@options.post}"
 
 module.exports = (options) -> new Timer(options)

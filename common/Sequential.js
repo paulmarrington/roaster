@@ -1,13 +1,12 @@
 // Copyright (C) 2013 paul@marrington.net, see /GPL license
-// Use steps.add(->) unless you need a js solution (startup)
-function OneByOne() {
+function Sequential() {
   this.queue = [];
 }
-OneByOne.prototype.add = function(action, next) {
+Sequential.prototype.add = function(action, next) {
   this.queue.push({action:action, next:next});
   if (this.queue.length === 1) this.next();
 };
-OneByOne.prototype.next = function() {
+Sequential.prototype.next = function() {
   if (!this.queue.length) return;
   var one = this.queue[0];
   var my = this;
@@ -19,4 +18,4 @@ OneByOne.prototype.next = function() {
   one.action.call(this, next);
 };
 
-module.exports = OneByOne;
+module.exports = Sequential;

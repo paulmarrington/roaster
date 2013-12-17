@@ -1,7 +1,0 @@
-#!/bin/bash
-#touch server
-#sleep 1
-#curl -D /dev/stdout http://localhost:9009/gen/test/test$1.coffee
-#curl -D /dev/stdout http://localhost:9009/gen/test/index.html
-#curl "http://localhost:9009/server/http/wrap_client_dependency.coffee?url=/common/step.coffee&global_var=_dependency_0"
-curl http://localhost:9009/scratch/test.web

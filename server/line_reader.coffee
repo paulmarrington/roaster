@@ -1,5 +1,5 @@
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
-fs = require 'fs'; stream = require('stream')
+fs = require 'fs'; stream = require 'stream'
 
 # Read lines from a stream -
 # with the same stream pattern of pause and resume.

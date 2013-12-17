@@ -1,28 +1,15 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
-steps = require 'steps';
-morph = require 'morph'; path = require 'path'; dirs = require 'dirs'
+morph = require 'morph'; path = require 'path'
+dirs = require 'dirs'; requires = require 'requires'
 
 module.exports = (source, css_created) ->
-
-  load_libraries = -> @requires 'stylus'
-
-  morph_stylus = -> morph source, '.css',
-    @next (@error, @css_filename, @content, @write_css) =>
-
-  render_css = ->
-    return @skip() if not @content  # up to date
-    @stylus(@content).set('filename', @css_filename).
+  requires 'stylus', (error, stylus) ->
+    return css_created(error) if error
+    morph source, '.css', (err, name, content, writer) ->
+      return css_created(null, name) if not content
+      stylus(content).set('filename', name).
       set('paths', [path.dirname source, dirs.base()]).
-        render @next (@error, @css) =>
-
-  write = -> @write_css null, @css
-
-  parsing_complete = -> css_created null, @css_filename
-
-  steps(
-    load_libraries
-    morph_stylus
-    render_css
-    write
-    parsing_complete
-  )
+      render (error, css) ->
+        return css_created(error) if err
+        writer null, css
+        css_created(null, name)

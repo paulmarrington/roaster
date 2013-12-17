@@ -1,5 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
-version = "4.3"
+dependency = require 'dependency'
+
+version = "4.3.1"
 pkg = "full"
 base = "http://download.cksource.com/CKEditor/"+
   "CKEditor/CKEditor "
@@ -116,7 +118,7 @@ show_tab = (tab_name) ->
   return last
 
 read_only = (read_only = true) -> editor.setReadOnly read_only
-loader = roaster.dependency(packages, '/ext/ckeditor/ckeditor.js')
+loader = dependency(packages, '/ext/ckeditor/ckeditor.js')
 
 toolbar = (group, tab, items...) ->
   external = (item) ->

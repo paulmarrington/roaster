@@ -1,5 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
-stream = require 'stream'; queue = require 'queue'
+stream = require 'stream'
   
 class StringToStream extends stream.Readable
   constructor: (@string) ->
@@ -48,7 +48,3 @@ streams = module.exports =
         console.log(err.stack); nextq(err); output.end()
       input.on 'end', piper
       input.pipe output, end:false
-
-queue.mixin {streams, stream}
-
-module.exports =

@@ -1,15 +1,13 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
-steps = require 'steps'; EventEmitter = require('events').EventEmitter
-fs = require 'fs'
+EventEmitter = require('events').EventEmitter
+fs = require 'fs'; requires = require 'requires'
 
 module.exports = (ready) ->
   parser = new EventEmitter
-
-  load_Libraries = -> @requires 'htmlparser2'
-
-  convert_parser_to_event_emitter = ->
+  requires 'htmlparser2', (error, htmlparser2) ->
     parser.stream = new @htmlparser2.Parser(
-      onopentag: (name, attributes) -> parser.emit('open', name, attributes)
+      onopentag: (name, attributes) ->
+        parser.emit('open', name, attributes)
       ontext: (text) -> parser.emit('text', text)
       onclosetag: (name) -> parser.emit('close', name)
       onend: -> parser.emit('end')
@@ -20,8 +18,6 @@ module.exports = (ready) ->
       oncommentend: -> parser.emit('comment-end')
       onerror: (error) -> parser.emit('error', error)
       )
-
-  set_file_parser = ->
     parser.file = (name) ->
       reader = fs.createReadStream(name)
       reader.on 'data', (data) -> parser.stream.write data
@@ -29,12 +25,5 @@ module.exports = (ready) ->
         parser.stream.end data
         parser.emit 'end'
 
-  parser_ready_for_use = -> ready parser
-
-  steps(
-    load_Libraries
-    convert_parser_to_event_emitter
-    set_file_parser
-    parser_ready_for_use
-    )
+    ready parser
   return parser
