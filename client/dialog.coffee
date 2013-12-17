@@ -1,4 +1,4 @@
-# Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
+# Copyright (C) 2013 paul@marrington.net, see /GPL for license
 
 # @window
 #   name:   "Instrument",
@@ -31,15 +31,17 @@
 # "minimize" : function(evt, dlg){ alert(evt.type); },
 # "restore" : function(evt, dlg){ alert(evt.type); }
 dialogs = roaster.dialogs = {}
+roaster.dialog_position ?= ->
+  my: "center top", at: "center top", of: window
 default_options =
-  closable:         false
+  closable:         true
   maximizable:      true
   minimizable:      true
   collapsable:      true
   minimizeLocation: 'right'
   dblclick:         'maximize'
-  icons:            {collapse: "ui-icon-close"}
-  collapse:         (evt, dlg) -> $(evt.target).dialog('close')
+#   icons:            {collapse: "ui-icon-close"}
+#   collapse:         (evt, dlg) -> $(evt.target).dialog('close')
 
 roaster.zindex = 200
 
@@ -56,23 +58,32 @@ module.exports = (options..., next) ->
     options.push next
     next = ->
   name = options[0].name
+  set_height = ->
+    height = $(window).height()
+    dlg.dialog 'option', 'maxHeight', height - 20
+    options.resizeStop?(dlg)
+    if not options.position
+      dlg.dialog "option", "position",
+        roaster.dialog_position()
   if not dlg = dialogs[name]
     options = _.extend {}, default_options, options...
-    dlg = dialogs[name] = $('<div>').addClass('dialog').appendTo(document.body)
+    dlg = dialogs[name] = $('<div>').
+      addClass('dialog').appendTo(document.body)
     dlg.dialog(options).dialogExtend(options)
-    if options.fix_height_to_window
-      set_height = ->
-        height = $(window).height() - options.fix_height_to_window
-        dlg.dialog 'option', 'height', height
-        options.resizeStop?(dlg)
-      setTimeout(set_height, 500)
+    dlg.on 'resize', ->
+      here = dlg.dialog "option", "position"
+      dlg.dialog "option", "position", here
+    dlg.click -> dlg.trigger 'resize'
+    dlg.keyup -> dlg.trigger 'resize'
     options?.init(dlg)
   else
     options = options[0]
     dlg.dialog 'option', 'title', options.title
     dlg.dialogExtend('restore')
     dlg.dialog('open').dialog('moveToTop')
-    dlg.dialog('option', 'position', options.position) if options.position
+    if options.position
+      dlg.dialog('option', 'position', options.position)
   dlg.dialog('option', 'closeOnEscape', false)
   options?.fill(dlg)
+  setTimeout(set_height, 500)
   next(dlg)

@@ -3,9 +3,7 @@
 # Return a faye client - loading and creating as necessary
 client = null
 
-module.exports = (next) -> queue ->
+module.exports = (next) ->
   return next(client) if client
-  @requires '/faye/client.js?domain=client', ->
-    next new Faye.Client '/faye'
-    
-queue.mixin faye: module.exports
+  roaster.clients '/faye/client.js', ->
+    next client = new Faye.Client '/faye'

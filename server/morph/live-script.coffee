@@ -1,4 +1,4 @@
-# Copyright (C) 2013 Paul Marrington (paul@marrington.net), see uSDLC2/GPL for license
+# Copyright (C) 2013 paul@marrington.net, see /GPL for license
 morph = require 'morph'; livescript = require 'LiveScript'
 
 module.exports = (source, next) ->

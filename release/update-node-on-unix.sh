@@ -6,7 +6,11 @@ echo
 ##################################################
 # change this as new versions of node are released
 ##################################################
+<<<<<<< HEAD
 nodeVersion=v0.10.21
+=======
+nodeVersion=v0.10.22
+>>>>>>> queue
 
 ################################################
 # Now we download the correct version of node-js

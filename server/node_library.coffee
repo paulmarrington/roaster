@@ -1,6 +1,6 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
 fs = require 'fs'; Internet = require('internet')
-dirs = require 'dirs'; steps = require 'steps'
+dirs = require 'dirs'
 
 joyent = "https://raw.github.com/joyent/node/master/lib"
 
@@ -12,9 +12,8 @@ module.exports =
     url = "#{joyent}/#{module_name}.js"
     download = new Internet().download
 
-    steps(
-      -> dirs.mkdirs library_path, @next
-      -> fs.exists local, @next (exists) => @skip() if exists
-      -> download.from(url).to local, @next (@error) ->
-      -> on_resolve(local)
-    )
+    dirs.mkdirs library_path, ->
+      fs.exists local, (exists) ->
+        return on_resolve(null, local) if exists
+        download.from(url).to local, (err) ->
+          on_resolve(err, local)

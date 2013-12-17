@@ -1,6 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
-
-module.exports =
+module.exports = requests =
   data: (url, next) ->
     contents = []
     @stream url, (error, text, is_complete) ->
@@ -40,22 +39,35 @@ module.exports =
   requireSync: (module_name) ->
     # see if we are loaded and ready to go
     return imports if imports = roaster.cache[module_name]
-    console.log "If possible move to async step(->@requires"+
-      "'#{module_name}')"
     request = new XMLHttpRequest()
     request.open 'GET',
       "/#{module_name}.require.js?domain=client", false
     request.send null
-    eval request.responseText
+    try eval request.responseText catch err
+      console.log "require '#{module_name}'", err.stack
 
   requireAsync: (module_names..., on_loaded) ->
     modules = []
     do require_module = =>
-      return on_loaded(modules...) if not module_names.length
+      return on_loaded(null, modules...) if not module_names.length
       name = module_names.shift()
       if imports = roaster.cache[name]
         return require_module modules.push(imports)
-      roaster.depends "/#{name}.require.js",
-      'client', (imports) =>
+      roaster.clients "/#{name}.require.js", (imports) =>
         roaster.cache[name] = imports
         require_module modules.push(imports)
+
+  # load static data asynchronously
+  data_loader: (urls, next) ->
+    refs = {}
+    base = roaster.path.basename
+    do next_one = ->
+      return next(null, refs) if not urls.length
+      url = urls.shift()
+      @key = base(url.split('?')[0]).split('.')[0]
+      requests.data url, (error, text) =>
+        return next(error) if error
+        refs[@key] = text
+        next_one()
+
+require = module.exports.requireSync
