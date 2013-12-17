@@ -19,14 +19,9 @@ global.http_processors.push (exchange, next_processor) ->
       # kick off exchange
       driver(exchange)
     catch error
-      errmsg = error.toString()
-<<<<<<< HEAD
-      console.log errmsg
-      if process.environment.debug
-        exchange.response.write errmsg
-=======
       console.log error.stack
->>>>>>> queue
+      if process.environment.debug
+        exchange.response.write error.stack
       # try the next one since this one failed
       next_processor()
 
