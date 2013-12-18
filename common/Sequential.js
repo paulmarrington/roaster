@@ -11,7 +11,7 @@ Sequential.prototype.next = function() {
   var one = this.queue[0];
   var my = this;
   var next = function() {
-    one.next();
+    one.next.apply(one, arguments);
     my.queue.shift();
     my.next();
   };
