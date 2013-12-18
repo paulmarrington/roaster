@@ -9,7 +9,7 @@ usage = ->
   cmds = [name.split('.')[0]\
           for name in cmds when name[0] isnt '.'].sort()
   console.log(
-    "usage: #{dirs.node()}/go.sh [node,#{cmds}] [args]")
+    "usage: #{dirs.base()}/go.sh [node,#{cmds}] [args]")
   process.exit(0)
 
 usage() if process.argv.length < 4
