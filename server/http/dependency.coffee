@@ -20,12 +20,12 @@ module.exports = (exchange) ->
     base = dirs.base 'ext', to
     npm 'adm-zip', (error, adm_zip) ->
       return next(error) if error
-      new @adm_zip(file).extractAllTo base, true
+      new adm_zip(file).extractAllTo base, true
       fs.readdir base, (error, files) ->
         return next(error) if error
         files = files.filter (file) -> file[0] isnt '.'
-        return next() if @files.length isnt 1 or not rename
-        fs.rename path.join(base,@files[0]),
+        return next() if files.length isnt 1 or not rename
+        fs.rename path.join(base,files[0]),
         path.join(base, rename), next
 
   process_file = (file, to, rename, next) ->
