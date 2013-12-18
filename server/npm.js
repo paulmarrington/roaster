@@ -10,7 +10,7 @@ load = function(name, on_loaded) {
     var npm = require("ext/node/lib/node_modules/npm");
     npm.load({prefix: prefix}, function(err, npm) {
         try {
-            npm.commands.install([name], function() {
+            npm.commands.install([path.basename(name)], function() {
                 next(null, require(name));});
         } catch(error) {
             return next(error);
