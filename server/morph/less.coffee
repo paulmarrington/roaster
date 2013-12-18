@@ -1,9 +1,9 @@
 # Copyright (C) 2012 paul@marrington.net, see GPL for license
-requires = require 'requires'; morph = require 'morph'
+npm = require 'npm'; morph = require 'morph'
 path = require 'path'; dirs = require 'dirs'
 
 module.exports = (source, css_created) ->
-  requires 'less',(error, less) ->
+  npm 'less',(error, less) ->
     return css_created(error) if error
     morph source, '.css', (err, name, content, writer) ->
       return css_created(null, name) if not content

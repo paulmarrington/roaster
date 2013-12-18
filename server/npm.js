@@ -31,12 +31,11 @@ check_missing = function(name, error) {
 module.exports = function(name, on_loaded) {
     var required;
     try {
-        required = require(name);
+        on_loaded(null, require(name));
     } catch(error) {
         check_missing(name, error);
         return load(name, on_loaded);
     }
-    on_loaded(null, required);
 };
 
 module.exports.load = load;

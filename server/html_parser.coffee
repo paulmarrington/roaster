@@ -1,10 +1,10 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
 EventEmitter = require('events').EventEmitter
-fs = require 'fs'; requires = require 'requires'
+fs = require 'fs'; npm = require 'npm'
 
 module.exports = (ready) ->
   parser = new EventEmitter
-  requires 'htmlparser2', (error, htmlparser2) ->
+  npm 'htmlparser2', (error, htmlparser2) ->
     parser.stream = new @htmlparser2.Parser(
       onopentag: (name, attributes) ->
         parser.emit('open', name, attributes)

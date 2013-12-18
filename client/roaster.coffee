@@ -138,7 +138,7 @@ client = (path, next) ->
     
 client '/client/roaster/request.coffee', (request) ->
   roaster.request = request
-  roaster.cache.requires = request.requireAsync
+  roaster.cache.npm = request.requireAsync
   libs = ['util', 'events', 'path']
   request.requireAsync libs..., (err, imports...) ->
     roaster[lib] = imports.shift() for lib in libs

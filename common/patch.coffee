@@ -1,9 +1,9 @@
 # Copyright (C) 2013 paul@marrington.net, see /GPL license
 wait_for = require 'wait_for'
-requires = require 'requires'
+npm = require 'npm'
 
 preload = wait_for (next) ->
-  requires 'diff', (error, patch) -> next(patch)
+  npm 'diff', (error, patch) -> next(patch)
 
 module.exports =
   create: (args...) -> preload (patch) ->

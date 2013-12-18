@@ -1,6 +1,6 @@
 # Copyright (C) 2013 paul@marrington.net, see /GPL for license
 dirs = require 'dirs'
-requires = require 'requires'
+npm = require 'npm'
 
 # Using faye for pubsub.
 
@@ -26,7 +26,7 @@ requires = require 'requires'
 # faye.publish '/channel', text: 'Hello'
 
 module.exports = (environment) ->
-  requires 'ext/node_modules/faye', (error, faye) ->
+  npm 'ext/node_modules/faye', (error, faye) ->
     module.exports = (environment) ->
       bayeux = new faye.NodeAdapter mount: '/faye', timeout: 45
       bayeux.attach environment.http_server

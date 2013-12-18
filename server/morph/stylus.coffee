@@ -1,9 +1,9 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
 morph = require 'morph'; path = require 'path'
-dirs = require 'dirs'; requires = require 'requires'
+dirs = require 'dirs'; npm = require 'npm'
 
 module.exports = (source, css_created) ->
-  requires 'stylus', (error, stylus) ->
+  npm 'stylus', (error, stylus) ->
     return css_created(error) if error
     morph source, '.css', (err, name, content, writer) ->
       return css_created(null, name) if not content

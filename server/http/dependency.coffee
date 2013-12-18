@@ -1,7 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 Internet = require 'internet'; path = require 'path'
 dirs = require 'dirs'; fs = require 'fs'
-files = require 'files'; requires = require 'requires'
+files = require 'files'; npm = require 'npm'
 
 module.exports = (exchange) ->
   results = {}
@@ -18,7 +18,7 @@ module.exports = (exchange) ->
 
   process_zip = (file, to, rename, next) ->
     base = dirs.base 'ext', to
-    requires 'adm-zip', (error, adm_zip) ->
+    npm 'adm-zip', (error, adm_zip) ->
       return next(error) if error
       new @adm_zip(file).extractAllTo base, true
       fs.readdir base, (error, files) ->
