@@ -19,6 +19,7 @@ class LineReader extends stream.Stream
       @emit('data', buffer) if buffer.length
       @emit('end')
 
+    @reader.on 'error', => @emit 'close'
     @reader.on 'close', => @emit 'close'
 
   pause: -> @paused = true; @reader.pause()
