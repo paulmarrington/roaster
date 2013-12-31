@@ -1,44 +1,46 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body class="scayt-enabled">
 <h1 id="pageTitle">Preface</h1>
-    <p>
-	    Roaster is a application server for browser based clients. It is designed for, but not limited to, single-page intranet applications using the concept of micro-apps to represent active GUI elements.
-    </p>
-    <h2>Reason<span style="font-size:14px;"> - notes of why this project is needed</span></h2>
-      <p>
-        <b>uSDLC2</b> required a light-weight self-installing application server. Originally built-in, I refactored it into a separate package called roaster because it suited the needs of other applications I was working on.
-      </p>
-    <h2>Investigation<span style="font-size: 14px; ">&nbsp;- the path to a decision</span></h2>
-      <p>
-	      I wanted a system that would handle web-sockets and streaming as well as HTML. It should also be a small basic install with only modules required to be installed on demand. As uSDLC is a one-page application, complex templating and application server frameworks are not required. In this repect even Django can be considered heavy-weight. I am sure there are others available, but the two main contenders I knew of were twisted and node-js. Twisted is an excellent lightweight TCP/HTTP solution and Python a good language (although the lack of easy closures is a limitation I would prefer not to have). In the end Node-JS is supported on more platforms, is easier to install and has a more vibrant support and extension community.
-      </p>
-    <h2>Result<span style="font-size:14px;"> - a high level description of what the finished project will look like</span></h2>
-      <p>
-	      A light-weight application server with the following features:
-      </p>
-      <ul>
-        <li>
-          Installation from a single script that fetches required components from the Internet</li>
-        <li>
-          A package-on-demand system that will only download lesser-used packages when they are first needed.</li>
-        <li>
-          In-built pub-sub support</li>
-        <li>
-          Serving static resources</li>
-        <li>
-          Serving dynamic resources in javascript, coffee-script, live-script or Kaffeine or from external applications</li>
-      </ul>
-    <h2>User Interface<span style="font-size:14px;"> - technology, look and feel, user experience</span></h2>
-      <p>
-	      Roaster does not have a user interface - it is concerned with providing efficient server for differing user interfaces. It is designed to effectively support single-page browser applications.
-      </p>
-    <h2>Language<span style="font-size:14px;"> - computer languages and libraries decided upon</span></h2>
-      <p>
-	      The client browser and the server (node-js) use javascript as the native language. Roaster also support languages that compile to Javascript - such as coffee-script, live-script and Kaffeine. Roaster's JIT compiler also supports other related languages such as Less and Stylus for CSS. Server side execution can use other languages that are run as scripts or application servers.
-      </p>
-    <h2>Frameworks<span style="font-size:14px;"> - hardware and software frameworks anticipated</span></h2>
-      <p>
-    	  The core framework is Node-JS that itself wraps a copy of Googles V8 Javascript engine. Roaster adds tool to make asynchronous programming easier.
-      </p>
-    <h2>Deployment<span style="font-size:14px;"> - envisioned deployment environment</span></h2>
-      <p>
-	      Roaster is installed with a single system-dependent script - one for Windows and one for *nix. It will download and unpack roaster into the target directory. It will then download and install Node and the core requisite node packages. Any systems built with roaster will wrap these scripts on others for the larger application.
-      </p>
+
+<p>Roaster is a application server for browser based clients. It is designed for, but not limited to, single-page intranet applications using the concept of micro-apps to represent active GUI elements.</p>
+
+<h2>Reason<span style="font-size:14px;"> - notes of why this project is needed</span></h2>
+
+<p><b>uSDLC2</b> required a light-weight self-installing application server. Originally built-in, I refactored it into a separate package called roaster because it suited the needs of other applications I was working on.</p>
+
+<h2>Investigation<span style="font-size: 14px; ">&nbsp;- the path to a decision</span></h2>
+
+<p>I wanted a system that would handle web-sockets and streaming as well as HTML. It should also be a small basic install with only modules required to be installed on demand. As uSDLC is a one-page application, complex templating and application server frameworks are not required. In this repect even Django can be considered heavy-weight. I am sure there are others available, but the two main contenders I knew of were twisted and node-js. Twisted is an excellent lightweight TCP/HTTP solution and Python a good language (although the lack of easy closures is a limitation I would prefer not to have). In the end Node-JS is supported on more platforms, is easier to install and has a more vibrant support and extension community.</p>
+
+<h2>Result<span style="font-size:14px;"> - a high level description of what the finished project will look like</span></h2>
+
+<p>A light-weight application server with the following features:</p>
+
+<ul>
+	<li>Installation from a single script that fetches required components from the Internet</li>
+	<li>A package-on-demand system that will only download lesser-used packages when they are first needed.</li>
+	<li>In-built pub-sub support</li>
+	<li>Serving static resources</li>
+	<li>Serving dynamic resources in javascript, coffee-script, live-script or Kaffeine or from external applications</li>
+</ul>
+
+<h2>User Interface<span style="font-size:14px;"> - technology, look and feel, user experience</span></h2>
+
+<p>Roaster does not have a user interface - it is concerned with providing efficient server for differing user interfaces. It is designed to effectively support single-page browser applications.</p>
+
+<h2>Language<span style="font-size:14px;"> - computer languages and libraries decided upon</span></h2>
+
+<p>The client browser and the server (node-js) use javascript as the native language. Roaster also support languages that compile to Javascript - such as coffee-script, live-script and Kaffeine. Roaster&#39;s JIT compiler also supports other related languages such as Less and Stylus for CSS. Server side execution can use other languages that are run as scripts or application servers.</p>
+
+<h2>Frameworks<span style="font-size:14px;"> - hardware and software frameworks anticipated</span></h2>
+
+<p>The core framework is Node-JS that itself wraps a copy of Googles V8 Javascript engine. Roaster adds tool to make asynchronous programming easier.</p>
+
+<h2>Deployment<span style="font-size:14px;"> - envisioned deployment environment</span></h2>
+
+<p>Roaster is installed with a single system-dependent script - one for Windows and one for *nix. It will download and unpack roaster into the target directory. It will then download and install Node and the core requisite node packages. Any systems built with roaster will wrap these scripts on others for the larger application.</p>
+</body>
+</html>

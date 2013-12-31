@@ -2,12 +2,13 @@
 module.exports = requests =
   data: (url, next) ->
     contents = []
-    @stream url, (error, text, is_complete) ->
+    @stream url, pragma: "no-cache",
+    (error, text, is_complete) ->
       contents.push text
       contents = [] if error
       next(error, contents.join('')) if is_complete
 
-  stream: (url, onData) ->
+  stream: (url, headers..., onData) ->
     request = new XMLHttpRequest()
     previous_length = 0
     request.onreadystatechange = ->
@@ -22,6 +23,8 @@ module.exports = requests =
           error = request.statusText
       onData(error, text, is_complete)
     request.open 'GET', url, true
+    for header in headers
+      request.setRequestHeader(k, v) for k, v of header
     request.send null
 
   css: (url) ->
