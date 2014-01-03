@@ -19,7 +19,7 @@ class ToBrowserStream extends stream.Writable
   _write: (chunk, encoding, next) => @ws.send(chunk, next)
 
 # calls web service - events message, close, error
-module.exports = (environment) ->
+module.exports = (environment, next) ->
   options = server: environment.http_server
   
   npm 'ws', (error, ws) ->
@@ -27,3 +27,4 @@ module.exports = (environment) ->
       wss.from_browser = new FromBrowserStream(wss)
       wss.to_browser = new ToBrowserStream(wss)
       require(wss.upgradeReq.url[1..-1].split('?')[0])(wss)
+    next()
