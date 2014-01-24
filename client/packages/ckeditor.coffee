@@ -1,7 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
 dependency = require 'dependency'
 
-version = "4.3.1"
+version = "4.3.2"
 pkg = "full"
 base = "http://download.cksource.com/CKEditor/"+
   "CKEditor/CKEditor "
