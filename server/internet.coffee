@@ -56,15 +56,20 @@ class Internet extends events.EventEmitter
   get_stream: (address, @options..., on_connect) ->
     @once 'connect', on_connect
     @send_request 'GET', address
-  # helper to get a JSON response - in-memory so size limited
-  get_json: (address, @options..., next) ->
+  # helper to get content - in-memory so size limited
+  get_response: (address, @options..., next) ->
     @once 'request', => @request.end()
     check = (err) => if err then @request?.abort(); next(err)
     @once 'error', check
-    @read_response (data) =>
-      next null, '' if not data?.length
+    @read_response (data) -> next null, data
+    @send_request 'GET', address
+  # helper to get a JSON response - in-memory so size limited
+  get_json: (address, @options..., next) ->
+    @get_response address, @options..., (err, data) =>
+      return if err
+      return next null, '' if not data?.length
       try next null, JSON.parse data
-      catch error then check data
+      catch error then @request?.abort(); next(error)
     @send_request 'GET', address
   # set how many seconds we keep retrying
   retry: (seconds) -> @retry_for = seconds; return @
