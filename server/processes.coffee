@@ -84,10 +84,12 @@ class Processes
     @proc?.on(args...)
     return @
     
-  send: (line) -> @proc.stdin.write line
-  send_file: (name, extra) =>
+  send: (line) -> @proc.stdin.write line+'\n'
+  send_file: (name, extra..., next) ->
     input = fs.createReadStream(name)
-    input.on 'end', => @send extra + '\n'
+    input.on 'end', =>
+      @send(extra.join('\n')+'\n')
+      next()
     input.pipe @proc.stdin, end: false
 
   # private DRY helper
