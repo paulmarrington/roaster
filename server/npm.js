@@ -19,13 +19,17 @@ load = function(name, on_loaded) {
   }, on_loaded);
 };
 check_missing = function(name, error) {
-    // error can be in required code or because code
-    // does not exist
-    if (error.code !== 'MODULE_NOT_FOUND') throw error;
-    // must check it is the asked for not found,
-    // not inner require
-    if (error.toString().indexOf(name + "'") === -1)
-      throw error;
+  // error can be in required code or because code
+  // does not exist
+  if (error.code !== 'MODULE_NOT_FOUND') {
+    console.error("Error for "+name);
+    console.log(error.stack);
+    throw error;
+  }
+  // must check it is the asked for not found,
+  // not inner require
+  if (error.toString().indexOf(name + "'") === -1)
+    throw error;
 };
 // Load npm module if new, otherwise behave as require does
 module.exports = function(name, on_loaded) {
