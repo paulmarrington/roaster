@@ -1,7 +1,8 @@
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 fs = require 'fs'; path = require 'path'
 os = require 'os'; dirs = require 'dirs'
-streams = require 'streams'
+streams = require 'streams'; newer = require 'newer'
+walk = require 'walk'
 
 tmp_dir = os.tmpDir()
 
@@ -17,13 +18,23 @@ files =
         return next(full_path, base, name) if exists
         find_one(bases)
     find_one dirs.bases.slice(0)
-
+  # Copy one file
   copy: (source, target, next) ->
     done = (error = null) -> next error; done = ->
     input = fs.createReadStream(source).on 'error', done
-    output = fs.createWriteStream(target)
-    output.on('error', done).on('close', done)
-    input.pipe output
+    dirs.mkdirs path.dirname(target), ->
+      output = fs.createWriteStream(target)
+      output.on('error', done).on('close', done)
+      input.pipe output
+  # check all files in directory tree and update changed/new
+  update: (source, target, next) ->
+    walk source, next, (file, stats, next) ->
+      from = "#{source}#{file}"
+      to = "#{target}#{file}"
+      if newer(from, to)
+        files.copy from, to, next
+      else
+        process.nextTick next
 
   size: (name, next) ->
     fs.stat name, (err, stat) -> next err, stat?.size
