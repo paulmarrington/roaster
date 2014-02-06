@@ -1,5 +1,6 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
 stream = require 'stream'; npm = require 'npm'
+url = require 'url'; files = require 'files'
 
 # Websocket wrapper includes a duplex stream (for pipes mainly)
 class FromBrowserStream extends stream.Readable
@@ -24,7 +25,12 @@ module.exports = (environment, next) ->
   
   npm 'ws', (error, ws) ->
     (new ws.Server(options)).on 'connection', (wss) ->
-      wss.from_browser = new FromBrowserStream(wss)
-      wss.to_browser = new ToBrowserStream(wss)
-      require(wss.upgradeReq.url[1..-1].split('?')[0])(wss)
+      wss.url = url.parse wss.upgradeReq.url, true
+      wss.streams = ->
+        wss.from_browser = new FromBrowserStream(wss)
+        wss.to_browser = new ToBrowserStream(wss)
+      files.find wss.url.pathname, (filename) ->
+        filename ?= wss.url.pathname
+        action = require filename
+        action(wss)
     next()
