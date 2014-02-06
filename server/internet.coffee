@@ -148,6 +148,9 @@ class Internet extends events.EventEmitter
       response_stream = new ResponseStream()
       response_stream.on 'finish', (data) -> next(data)
       @response.pipe response_stream
+      
+  build_url: (url, query) ->
+    return "#{url}?#{querystring.stringify query}"
 
 class ResponseStream extends require('stream').Writable
   constructor: -> @chunks = []
