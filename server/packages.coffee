@@ -24,13 +24,13 @@ module.exports = (packages, next) ->
     downloader = new Internet().download
     
     fs.exists file, (exists) ->
-      return next() if exists
+      return processed(file) if exists
       downloader.from(url).to file, ->
         if path.extname(url) is '.zip' or
         url.indexOf('/zip/') isnt -1
           base = dirs.base 'ext', to
           npm 'adm-zip', (error, adm_zip) ->
-            return processed(error) if error
+            return processed() if error
             new adm_zip(file).extractAllTo base, true
             return processed(base) if not rename
             fs.readdir base, (error, files) ->
@@ -39,7 +39,7 @@ module.exports = (packages, next) ->
                 return processed()
               files = files.filter (file) -> file[0] isnt '.'
               return processed() if files.length isnt 1
-              fs.rename path.join(base,files[0]),
+              fs.rename path.join(base, files[0]),
                 path.join(base, rename), -> processed(base)
         else # not an archive
           extname = path.extname(file)
