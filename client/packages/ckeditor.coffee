@@ -52,7 +52,7 @@ default_options =
   fullPage: true
   allowedContent: true
   browserContextMenuOnCtrl: true
-  scayt_autoStartup: true
+  scayt_autoStartup: false
   removeButtons: ''
   toolbarGroups: toolbarGroups
   toolbarViews: toolbarViews
