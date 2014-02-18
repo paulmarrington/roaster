@@ -10,7 +10,7 @@ module.exports = (packages, next) ->
   results = {}
 
   count = 0; loaded = false
-  for key, url of packages
+  packager = (key, url) ->
     [url, to, rename] = url.split '|'; to ?= key
     count++
     
@@ -52,4 +52,6 @@ module.exports = (packages, next) ->
               return processed(name_to_use) if not rename
               rename = rename.split('=')
               fs.rename rename..., -> processed(rename[1])
+
+  packager(key, url) for key, url of packages
   loaded = true
