@@ -8,13 +8,18 @@ class WaitForIt
   constructor: (long_running_action) ->
     @waiting = []
     long_running_action.call @, (args...) =>
-      @get = (next) ->
-        next.apply(@, args)
+      @get = (self, next) ->
+        next.apply(self, args)
         return @waiting.length
-      next.apply(@, args) for next in @waiting
+      while @waiting.length
+        next = @waiting.pop()
+        self = @waiting.pop()
+        next.apply(self, args)
   # get returns the number of items waiting - so caller can decide to give up
-  get: (next) -> @waiting.push(next); return @waiting.length
+  get: (self, next) ->
+    @waiting.push(self, next)
+    return @waiting.length
 
 module.exports = wait_for = (long_running_action) ->
   waiter = new WaitForIt long_running_action
-  return (next) -> waiter.get next
+  return (next) -> waiter.get @, next
