@@ -71,5 +71,8 @@ files =
         if filename and is_dir
           result = path.join result, filename
         next(result)
+  # change file extension
+  change_ext: (filename, ext) ->
+    return /(.*)\./.exec(filename)[1] + ext
 
 module.exports = files
