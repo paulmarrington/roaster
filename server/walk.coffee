@@ -1,6 +1,6 @@
 # Copyright (C) 2014 paul@marrington.net, see GPL for license
 path = require 'path'; newer = require 'newer'
-fs = require 'fs'
+fs = require 'fs'; files = require 'files'
 
 module.exports = walk = (from, complete, found) ->
   base = from.length
@@ -19,15 +19,3 @@ module.exports = walk = (from, complete, found) ->
         return dir_read() if not files?.length
         process_file files.shift(), process_one
   read_dir(from, complete)
-
-walk.newer = (sources..., target, filter, next) ->
-  list = []
-  do next_source = ->
-    return next(list) if not sources.length
-    source = sources.shift()
-    walk source, next_source, (file, stats, next) =>
-      from = "#{source}#{file}"
-      if filter.test(from)
-        to = "#{target}#{file}".replace(/\.java$/, '.class')
-        list.push from if newer(from, to)
-      next()
