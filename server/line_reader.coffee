@@ -33,6 +33,8 @@ module.exports = (reader) -> new LineReader(reader)
 module.exports.for_file = (name, action_per_line) ->
   @reader = new LineReader(fs.createReadStream(name))
   @reader.on 'data', action_per_line
-  @reader.on 'close', => @reader.destroy(); action_per_line(null)
+  @reader.on 'close', =>
+    @reader.destroy()
+    action_per_line(null)
   return @reader
 module.exports.for_text = (text) -> lines = text.split(/\r?\n/)
