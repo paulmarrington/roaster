@@ -10,6 +10,10 @@ os.expecting = (system) ->
   return system is runningOn or
          system is 'unix' and runningOn isnt 'windows'
 
+# unix systems don't have an extension for executables
+os.executable_extension =
+  if os.expecting('windows') then '.exe' else ''
+    
 # process a command line of the form 'a=b c=d' into a map - with defaults
 os.command_line = ->
   return querystring.parse(process.argv[3..].join('&'))
