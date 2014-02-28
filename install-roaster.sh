@@ -16,7 +16,11 @@ echo
 mkdir -p $ext 2>/dev/null
 
 echo "Download $from"
-curl -sOL -z $from $from
+if hash curl 2>/dev/null; then
+  curl -sOL $from $from
+else
+  wget -N $from
+fi
 echo "Unpack $unzipped"
 rm -rf $unzipped
 unzip -qu $archive
