@@ -28,7 +28,11 @@ filename=node-$nodeVersion-$os
 if [ ! -e $filename.tar.gz ]
 then
     echo "download $filename.tar.gz from nodejs.org"
-    curl -sOL http://nodejs.org/dist/$nodeVersion/$filename.tar.gz
+    if hash curl 2>/dev/null; then
+      curl -sOL http://nodejs.org/dist/$nodeVersion/$filename.tar.gz
+    else
+      wget -N http://nodejs.org/dist/$nodeVersion/$filename.tar.gz
+    fi
     echo "unpack $filename"
     tar -xzf $filename.tar.gz
     rm -r node 2>/dev/null
