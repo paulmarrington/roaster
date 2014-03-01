@@ -2,7 +2,7 @@
 dependency = require 'dependency'
 
 roaster.codemirror_base = base =
-  '/ext/codemirror/Codemirror-master'
+  '/ext/codemirror/CodeMirror-master'
 addon = (type) -> return "#{base}/addon.#{type}.concat?
 exclude=(standalone.js$|_test.js$|pig-hint.js)"
 keymap = "#{base}/keymap.js.concat"
