@@ -31,4 +31,4 @@ rm -rf $unzipped
 
 cd $base
 echo "Configure $base"
-./go.sh
+./go.sh update
