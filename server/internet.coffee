@@ -78,8 +78,8 @@ class Internet extends events.EventEmitter
   fetch: (on_download_complete) ->
     return if not on_download_complete
     console.log "Downloading #{@from}..."
-    to = @to; count = 0; opts = {}
-    do getter = => @get opts, @from, (error) =>
+    to = @to; from = @from; count = 0; opts = {}
+    do getter = => @get from, opts, (error) =>
       if error
         console.log error
         console.log error.trace if error.trace
@@ -94,7 +94,7 @@ class Internet extends events.EventEmitter
             else
               console.log "...failed (empty)"
               return on_download_complete() if ++count >= 5
-              opts = "Cache-Control": "no-cache"
+              opts["Cache-Control"] = "no-cache"
               setTimeout getter, 500
     @from = @to = ''
 
@@ -141,6 +141,7 @@ class Internet extends events.EventEmitter
         if error?.code is 'ECONNREFUSED' and
         clock.total() < @retry_for
           return setTimeout requesting, 500
+        delete options.agent
         options = JSON.stringify options
         error = new Error(
           "#{error?.code} for #{address.href}\n#{options}")
