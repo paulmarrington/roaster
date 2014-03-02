@@ -23,12 +23,12 @@ class LineReader extends stream.Transform
     done()
 
 module.exports = line_reader = (reader, action_per_line) ->
-  line_reader = new LineReader(reader)
-  line_reader.on 'readable', ->
-    action_per_line(line) while line = reader.read()
-  line_reader.on 'error', -> action_per_line(null)
-  line_reader.on 'end', -> action_per_line(null)
-  return line_reader
+  lr = new LineReader(reader)
+  lr.on 'readable', ->
+    action_per_line(line) while line = lr.read()
+  lr.on 'error', -> action_per_line(null)
+  lr.on 'end', -> action_per_line(null)
+  return lr
 
 module.exports.for_file = (name, action_per_line) ->
   line_reader fs.createReadStream(name), action_per_line
