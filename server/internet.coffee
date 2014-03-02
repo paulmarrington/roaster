@@ -4,7 +4,8 @@ http = require 'http'; https = require 'https'
 fs = require 'fs'; querystring = require 'querystring'
 url = require 'url'; timer = require 'common/timer'
 _ = require 'underscore'; dirs = require 'dirs'
-events = require 'events'
+events = require 'events'; streams = require 'streams'
+files = require 'files'
 
 class Internet extends events.EventEmitter
   constructor: (@base = '') ->
@@ -77,19 +78,24 @@ class Internet extends events.EventEmitter
   fetch: (on_download_complete) ->
     return if not on_download_complete
     console.log "Downloading #{@from}..."
-    to = @to
-    @get @from, (error) =>
+    to = @to; count = 0; opts = {}
+    do getter = => @get opts, @from, (error) =>
       if error
         console.log error
         console.log error.trace if error.trace
         return on_download_complete error
       dirs.mkdirs path.dirname(to), =>
         writer = fs.createWriteStream to
-        @response.on 'end', => writer.end()
-        writer.on 'finish', =>
-          console.log '...done'
-          on_download_complete()
-        @response.pipe writer
+        streams.pipe @response, writer, =>
+          files.size to, (error, size) ->
+            if size
+              console.log '...done'
+              on_download_complete()
+            else
+              console.log "...failed (empty)"
+              return on_download_complete() if ++count >= 5
+              opts = "Cache-Control": "no-cache"
+              setTimeout getter, 500
     @from = @to = ''
 
   send_request: (method, address) ->
