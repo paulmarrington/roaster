@@ -24,10 +24,7 @@ class LineReader extends stream.Transform
 module.exports = line_reader = (reader, action_per_line) ->
   reader = new LineReader(reader)
   reader.on 'readable', ->
-#     action_per_line(line) while line = reader.read()
-    while line = reader.read()
-      console.log "&&&&&",line
-      action_per_line line
+    action_per_line(line) while line = reader.read()
   reader.on 'end', -> action_per_line(null)
   return reader
 
