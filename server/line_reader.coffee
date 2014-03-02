@@ -8,7 +8,7 @@ class LineReader extends stream.Transform
     super objectMode: true
     @buffer = ''
     reader.setEncoding 'utf8'
-    reader.on 'error', (err) -> @emit 'error', err
+    reader.on 'error', (err) => @emit 'error', err
     reader.pipe @
     
   _transform: (chunk, encoding, done) ->
@@ -23,12 +23,12 @@ class LineReader extends stream.Transform
     done()
 
 module.exports = line_reader = (reader, action_per_line) ->
-  reader = new LineReader(reader)
-  reader.on 'readable', ->
+  line_reader = new LineReader(reader)
+  line_reader.on 'readable', ->
     action_per_line(line) while line = reader.read()
-  reader.on 'error', -> action_per_line(null)
-  reader.on 'end', -> action_per_line(null)
-  return reader
+  line_reader.on 'error', -> action_per_line(null)
+  line_reader.on 'end', -> action_per_line(null)
+  return line_reader
 
 module.exports.for_file = (name, action_per_line) ->
   line_reader fs.createReadStream(name), action_per_line
