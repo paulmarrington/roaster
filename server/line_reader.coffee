@@ -4,11 +4,12 @@ fs = require 'fs'; stream = require 'stream'
 # Read lines from a stream -
 # with the same stream pattern of pause and resume.
 class LineReader extends stream.Transform
-  constructor: (@reader) ->
+  constructor: (reader) ->
     super objectMode: true
     @buffer = ''
-    @reader.setEncoding 'utf8'
-    @reader.pipe @
+    reader.setEncoding 'utf8'
+    reader.on 'error', (err) -> @emit 'error', err
+    reader.pipe @
     
   _transform: (chunk, encoding, done) ->
     data = chunk.toString()
