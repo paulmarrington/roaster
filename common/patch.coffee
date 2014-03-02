@@ -1,6 +1,5 @@
 # Copyright (C) 2013 paul@marrington.net, see /GPL license
-wait_for = require 'wait_for'
-npm = require 'npm'
+wait_for = require 'wait_for'; npm = require 'npm'
 
 preload = wait_for (next) ->
   npm 'diff', (error, patch) -> next(patch)
