@@ -3,38 +3,35 @@ fs = require 'fs'; stream = require 'stream'
 
 # Read lines from a stream -
 # with the same stream pattern of pause and resume.
-class LineReader extends stream.Stream
+class LineReader extends stream.Transform
   constructor: (@reader) ->
-    @paused = false
-    @lines = []
-    buffer = ''
+    super objectMode: true
+    @buffer = ''
     @reader.setEncoding 'utf8'
+    @reader.pipe @
+    
+  _transform: (chunk, encoding, done) ->
+    data = chunk.toString()
+    lines = (@buffer + data).split(/\r?\n/)
+    @buffer = lines.pop()
+    @push line for line in lines
+    done()
+    
+  _flush: (done) ->
+    @push @buffer if @buffer?.length
+    done()
 
-    @reader.on 'data', (data) =>
-      @lines = @lines.concat (buffer + data).split(/\r?\n/)
-      buffer = @lines.pop()
-      @emitLines()
+module.exports = line_reader = (reader, action_per_line) ->
+  reader = new LineReader(reader)
+  reader.on 'readable', ->
+#     action_per_line(line) while line = reader.read()
+    while line = reader.read()
+      console.log "&&&&&",line
+      action_per_line line
+  reader.on 'end', -> action_per_line(null)
+  return reader
 
-    @reader.on 'end', =>
-      @emit('data', buffer) if buffer.length
-      @emit('end')
-
-    @reader.on 'error', => @emit 'close'
-    @reader.on 'close', => @emit 'close'
-
-  pause: -> @paused = true; @reader.pause()
-  resume: -> @paused = false; @emitLines(); @reader.resume()
-  destroy: -> @reader.destroy()
-  emitLines: ->
-    while @lines.length and not @paused
-      @emit('data', @lines.shift())
-
-module.exports = (reader) -> new LineReader(reader)
 module.exports.for_file = (name, action_per_line) ->
-  @reader = new LineReader(fs.createReadStream(name))
-  @reader.on 'data', action_per_line
-  @reader.on 'close', =>
-    @reader.destroy()
-    action_per_line(null)
-  return @reader
-module.exports.for_text = (text) -> lines = text.split(/\r?\n/)
+  line_reader fs.createReadStream(name), action_per_line
+
+module.exports.LineReader = LineReader
