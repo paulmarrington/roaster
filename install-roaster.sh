@@ -26,7 +26,11 @@ rm -rf $unzipped
 unzip -qu $archive
 rm $archive
 echo "Update $base"
-rsync -qrulpt $unzipped/ $base
+if hash curl 2>/dev/null; then
+  rsync -qrulpt $unzipped/ $base
+else
+  robocopy $unzipped $base /E /XO
+fi
 rm -rf $unzipped
 
 cd $base
