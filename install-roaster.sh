@@ -19,7 +19,7 @@ echo "Download $from"
 if hash curl 2>/dev/null; then
   curl -sOL $from $from
 else
-  wget -N $from
+  wget -N -O master.zip $from
 fi
 echo "Unpack $unzipped"
 rm -rf $unzipped
