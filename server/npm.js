@@ -22,8 +22,6 @@ check_missing = function(name, error) {
   // error can be in required code or because code
   // does not exist
   if (error.code !== 'MODULE_NOT_FOUND') {
-//     console.log("Error for "+name);
-//     console.log(error.stack);
     throw error;
   }
   // must check it is the asked for not found,
