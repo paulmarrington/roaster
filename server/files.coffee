@@ -24,11 +24,11 @@ files =
     input = fs.createReadStream(source).on 'error', done
     dirs.mkdirs path.dirname(target), ->
       output = fs.createWriteStream(target)
-      output.on('error', done).on('close', done)
+      output.on('error', done).on('finish', done)
       input.pipe output
   # check all files in directory tree and update changed/new
-  update: (source, target, next) ->
-    walk source, next, (file, stats, next) ->
+  update: (source, target, update_complete) ->
+    walk source, update_complete, (file, stats, next) ->
       from = "#{source}#{file}"
       to = "#{target}#{file}"
       if newer(from, to)
@@ -73,6 +73,7 @@ files =
         next(result)
   # change file extension
   change_ext: (filename, ext) ->
-    return /(.*)\./.exec(filename)[1] + ext
+    return base[1] + ext if base = /(.*)\./.exec(filename)
+    return filename
 
 module.exports = files
