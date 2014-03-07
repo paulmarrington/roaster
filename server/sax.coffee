@@ -15,7 +15,7 @@ class Sax extends Writable
   _write: (data, encoding, next) ->
     data = @partial + data.toString()
     start = 0
-    done = ->
+    done = =>
       @partial = data[start..]
       next()
     do next_tag = =>
