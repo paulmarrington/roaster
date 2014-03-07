@@ -24,7 +24,10 @@ function (source, reader, target_ext, builder) {
       }
       dirs.mkdirsSync(path.dirname(target));
       builder(null, target, code, function(error, built) {
-        fs.writeFileSync(target, built, 'utf8');
+        if (error)// || !built.trim())
+          fs.unlinkSync(target);
+        else
+          fs.writeFileSync(target, built, 'utf8');
       });
   } else {
     builder(null, target);
