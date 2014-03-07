@@ -3,6 +3,7 @@ http = require 'http'; url = require 'url'
 files = require 'files'; driver = require 'http/driver'
 respond = require 'http/respond'
 fs = require 'fs'; util = require 'util'
+querystring = require 'querystring'
 
 global.http_processors.push (exchange, next_processor) ->
   files.find exchange.request.url.pathname, (filename) ->
@@ -40,6 +41,14 @@ module.exports = (environment) ->
           "<script>setTimeout('window.location.href = "+
           "window.location.href', 2000)</script>")
         process.exit(0)
+    # integrate post data into the query string
+    request.post = (next) ->
+      if request.method is 'POST'
+        body = []
+        request.on 'readable', ->
+          body.push data while (data = request.read()) isnt null
+        request.on 'end', ->
+          next querystring.parse body.join('')
     # an exchange object that is passed to http processors
     exchange = { request, response, environment }
     exchange.respond = respond(exchange)
