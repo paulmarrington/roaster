@@ -29,7 +29,7 @@ echo "Update $base"
 if hash curl 2>/dev/null; then
   rsync -qrulpt $unzipped/ $base
 else
-  robocopy $unzipped $base /E /XO
+  robocopy $unzipped $base /E /XO /nfl
 fi
 rm -rf $unzipped
 
