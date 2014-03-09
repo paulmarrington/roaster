@@ -7,4 +7,4 @@ cd "$np"
 "release/update-node.sh"
 cd "$bp"
 
-$np/ext/node/bin/node $DEBUG_NODE "boot/load.js" "boot/run" $@
+"$np/ext/node/bin/node" $DEBUG_NODE "$np/boot/load.js" "boot/run" $@
