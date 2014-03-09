@@ -1,7 +1,7 @@
 // Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 var path = require('path');
 var Sequential = require('common/Sequential');
-var prefix = path.join(process.env.uSDLC_node_path, "ext");
+var prefix = path.join(process.env.rwd, "ext");
 
 sequential = new Sequential();
 
@@ -10,8 +10,8 @@ load = function(name, on_loaded) {
     var npm = require("ext/node/lib/node_modules/npm");
     npm.load({prefix: prefix}, function(err, npm) {
         try {
-            npm.commands.install([path.basename(name)], function() {
-                next(null, require(name));});
+            npm.commands.install([path.basename(name)],
+              function() {next(null, require(name));});
         } catch(error) {
             return next(error);
         }

@@ -80,21 +80,15 @@ var node = function() {
   var names = (1 <= arguments.length) ?
       __slice.call(arguments, 0) : [];
   return path.join.apply(path,
-             [process.env.uSDLC_node_path].concat(names));
+             [process.env.rwd].concat(names));
 };
 
 var base = function() {
   var names = (1 <= arguments.length) ?
       __slice.call(arguments, 0) : [];
   return path.join.apply(path,
-             [process.env.uSDLC_base_path].concat(names));
+             [process.env.cwd].concat(names));
 };
-
-// bases used to find relative address files
-process.env.uSDLC_base_path =
-  fs.realpathSync(process.env.uSDLC_base_path);
-process.env.uSDLC_node_path =
-  fs.realpathSync(process.env.uSDLC_node_path);
 
 // split and return [base,relative] based on known bases
 var split = function(full_path) {
@@ -117,6 +111,5 @@ module.exports = {
   in_directory: in_directory,
   split: split,
   node: node, base: base, 
-  bases: ['',process.env.uSDLC_base_path,
-             process.env.uSDLC_node_path]
+  bases: ['',process.env.cwd, process.env.rwd]
 };

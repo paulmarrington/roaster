@@ -1,6 +1,27 @@
 /* Copyright (C) 2013 paul@marrington.net, see /GPL license */
+// tweak module loading path
+var module = require('module'), path = require('path');
+globalPaths = [];
+var dlm = path.delimiter, sep = path.sep;
+var ext = path.resolve(process.execPath, "..", "..", "..");
+var rwd = path.resolve(ext, ".."); process.env.rwd = rwd;
+var cwd = process.cwd(); process.env.cwd = cwd;
+function ap(p) { globalPaths.push(p); }
+function nwd(bwd) {
+  ap(bwd);
+  globalPaths.push(
+    bwd+sep+"server", bwd+sep+"common", bwd+sep+"scripts");
+}
+nwd(cwd); nwd(rwd);
+ap([ext,"node_modules"].join(sep));
+ap([ext,"node","lib","node_modules"].join(sep));
+// var np = ext+"/node/bin".replace(/\//g, sep);
+var np = [ext,"node","bin"].join(sep);
+process.env.PATH = np + dlm + process.env.PATH;
+process.env.NODE_PATH = globalPaths.join(dlm);
+module._initPaths();
 
-// start by loading modules required for base operation
+// load modules required for base operation
 var modules = [
   'send', 'coffee-script', 'underscore'
 ];
@@ -38,4 +59,4 @@ loader = function(index) {
     }
   });
 };
-loader(0); // kick off the module loadingls
+loader(0); // kick off the module loading

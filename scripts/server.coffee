@@ -9,7 +9,7 @@ module.exports = (args...) ->
 
     node = processes('node')
     insp = 'ext/node_modules/node-inspector/bin/inspector.js'
-    if args[0] is 'config=debug'
+    if args[0] is 'config=inspect'
       debug = ->
         try
           inspector = processes('node').

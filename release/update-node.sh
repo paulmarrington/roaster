@@ -7,6 +7,7 @@ echo
 # change this as new versions of node are released
 ##################################################
 nodeVersion=v0.10.26
+npmVersion=v1.4.3
 
 ################################################
 # Now we download the correct version of node-js
@@ -35,6 +36,13 @@ case $os in
        mkdir node/bin
        cp node.exe node/bin
        mv node.exe $ar
+
+       wget -H http://nodejs.org/dist/npm/npm-${npmVersion}.zip
+       unzip npm-${npmVersion}.zip
+       mkdir node/lib
+       mkdir node/lib/node_modules
+       mv  npm-${npmVersion}/node_modules/npm node/lib/node_modules
+       rm -rf npm-${npmVersion}
      }
      ;;
 	*) echo "Unknown OS version - '$os'"
