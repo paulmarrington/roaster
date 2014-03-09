@@ -1,13 +1,12 @@
 #!/bin/bash
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 base=$(cd $(dirname "$0"); pwd)
-echo
 
 ##################################################
 # change this as new versions of node are released
 ##################################################
 nodeVersion=v0.10.26
-npmVersion=v1.4.3
+npmVersion=1.4.3
 
 ################################################
 # Now we download the correct version of node-js
@@ -38,11 +37,8 @@ case $os in
        mv node.exe $ar
 
        wget -H http://nodejs.org/dist/npm/npm-${npmVersion}.zip
-       unzip npm-${npmVersion}.zip
        mkdir node/lib
-       mkdir node/lib/node_modules
-       mv  npm-${npmVersion}/node_modules/npm node/lib/node_modules
-       rm -rf npm-${npmVersion}
+       unzip -q npm-${npmVersion}.zip -d node/lib
      }
      ;;
 	*) echo "Unknown OS version - '$os'"
@@ -59,5 +55,6 @@ then
     fi
     rm -r node 2>/dev/null
     unpack $fn
+    ../go.sh update
 fi
 echo
