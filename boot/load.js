@@ -1,7 +1,7 @@
 /* Copyright (C) 2013 paul@marrington.net, see /GPL license */
 // tweak module loading path
 var module = require('module'), path = require('path');
-globalPaths = [];
+globalPaths = ['.'];
 var dlm = path.delimiter, sep = path.sep;
 var ext = path.resolve(process.execPath, "..", "..", "..");
 var rwd = path.resolve(ext, ".."); process.env.rwd = rwd;
