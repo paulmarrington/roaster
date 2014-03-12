@@ -17,7 +17,7 @@ mkdir -p $ext 2>/dev/null
 
 echo "Download $from"
 if hash curl 2>/dev/null; then
-  curl -sOL $from $from
+  curl -sOL $from
 else
   wget -N -O master.zip $from
 fi
@@ -26,11 +26,7 @@ rm -rf $unzipped
 unzip -qu $archive
 rm $archive
 echo "Update $base"
-if hash curl 2>/dev/null; then
-  rsync -qrulpt $unzipped/ $base
-else
-  robocopy $unzipped $base /E /XO /nfl /ndl
-fi
+cp -Rf $unzipped/* $base
 rm -rf $unzipped
 
 cd $base

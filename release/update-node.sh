@@ -2,15 +2,9 @@
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 base=$(cd $(dirname "$0"); pwd)
 
-##################################################
-# change this as new versions of node are released
-##################################################
 nodeVersion=v0.10.26
 npmVersion=1.4.3
 
-################################################
-# Now we download the correct version of node-js
-################################################
 mkdir "$base/../ext" 2>/dev/null
 cd "$base/../ext"
 
@@ -27,7 +21,7 @@ case $os in
 	Darwin-i386) fn=node-$nodeVersion-darwin-x86.tar.gz ;;
 	Linux-x86_64) fn=node-$nodeVersion-linux-x64.tar.gz ;;
 	Linux-i386) fn=node-$nodeVersion-linux-x86.tar.gz ;;
-    Windows*) fn=node.exe
+    MINGW32_NT*) fn=node.exe
      ar=node-$nodeVersion-windows-x86.exe
      function unpack() {
        echo "prepare $ar"
@@ -39,6 +33,7 @@ case $os in
        wget -H http://nodejs.org/dist/npm/npm-${npmVersion}.zip
        mkdir node/lib
        unzip -q npm-${npmVersion}.zip -d node/lib
+       ln node/lib/node_modules/npm/bin/npm-cli.js node/bin/npm
      }
      ;;
 	*) echo "Unknown OS version - '$os'"
