@@ -33,7 +33,7 @@ case $os in
        wget -H http://nodejs.org/dist/npm/npm-${npmVersion}.zip
        mkdir node/lib
        unzip -q npm-${npmVersion}.zip -d node/lib
-       ln node/lib/node_modules/npm/bin/npm-cli.js node/bin/npm
+       # ln node/lib/node_modules/npm/bin/npm-cli.js node/bin/npm
      }
      ;;
 	*) echo "Unknown OS version - '$os'"
