@@ -5,7 +5,7 @@
 # add &signal=SIGKILL if you don't want the server to restart
 module.exports = (exchange) ->
   exchange.respond.json pid:process.pid
-  return if exchange.environment.config isnt 'debug'
+  return if exchange.environment.terminate isnt "allowed"
 
   console.log
   "Terminate called for roaster:#{exchange.environment.port}"
