@@ -13,7 +13,7 @@ files =
     find_one = (bases) ->
       return next() if bases.length is 0
       full_path = path.join (base = bases.shift()), name
-      return find_one(bases) if full_path is '/'
+      return find_one(bases) if full_path is path.sep
       fs.exists full_path, (exists) ->
         return next(full_path, base, name) if exists
         find_one(bases)

@@ -4,7 +4,7 @@ bp="$(pwd)"
 np="$(cd $(dirname "$0"); pwd)"
 
 cd "$np"
-"release/update-node.sh"
+"install/update-node.sh"
 cd "$bp"
 
 "$np/ext/node/bin/node" $DEBUG_NODE "$np/boot/load.js" "boot/run" $@

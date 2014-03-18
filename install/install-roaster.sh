@@ -1,5 +1,6 @@
 #!/bin/bash
-# Copyright (C) 2012,13 paul@marrington.net, see GPL license
+# Copyright (C) 2012,14 paul@marrington.net, see GPL license
+cd "$(cd $(dirname "$0"); pwd)"
 
 parent=${1:-.}
 project=${2:-roaster}
