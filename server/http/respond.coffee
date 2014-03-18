@@ -1,11 +1,13 @@
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 send = require 'send'; gzip = require 'morph/gzip'
 fs = require 'fs'; templates = require 'templates'
+path = require 'path'
 
 clients = {}
 
-# http://localhost:9009/server/save?file=/My_Project/usdlc/Development/index.html
-# contents of the file is in the body of the request as a binary stream
+# http://localhost:9009/server/save?file=
+#  /My_Project/usdlc/Development/index.html
+# contents of file is in the body of request as a binary stream
 class Respond
   constructor: (@exchange) ->
     @exchange.response.setHeader(
@@ -13,7 +15,7 @@ class Respond
       exchange.environment.cors_whitelist.join ' ')
     @exchange.response.setHeader(
       'Access-Control-Allow-Headers', 'Content-Type')
-  # by default we send it as static content where the browser caches it forever
+  # by default send it as static content - browser caches forever
   static_file: (file_path) ->
     @exchange.request.filename = file_path if file_path
     @exchange.domain = 'client'
@@ -21,13 +23,17 @@ class Respond
     return @
   send_static: (next = ->) ->
     fs.stat name = @exchange.request.filename, (err, stats) =>
-      name += '/' if stats?.isDirectory() and name.slice(-1) != '/'
+      if stats?.isDirectory() and name.slice(-1) != path.sep
+        name += path.sep
+      if path.sep isnt '/'
+        name = name.replace new RegExp("\\#{path.sep}","g"), "/"
       # gzip name, (error, zipped-name) =>
       #   @exchange.response.setHeader 'Content-Encoding', 'gzip'
       #   @set_mime_type name
       sender = send(@exchange.request, name)
       sender.isMalicious = -> return false
-      sender.maxage(@exchange.environment.maximum_browser_cache_age)
+      sender.maxage(@exchange.environment.
+                    maximum_browser_cache_age)
       sender.pipe(@exchange.response)
       next()
   # respond to client with code to run in a sandbox

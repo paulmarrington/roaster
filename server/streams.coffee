@@ -13,7 +13,7 @@ class StringToStream extends stream.Readable
 String::to_stream = -> new StringToStream(@.toString())
 
 streams = module.exports =
-  from_string: (data) -> new StringToStream string.toString()
+  from_string: (data) -> new StringToStream data.toString()
   # similarly when we pipe we need to wait for it to complete.
   # This version will take any number of pipes - inner ones
   # must both read and write.
