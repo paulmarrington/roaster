@@ -26,7 +26,7 @@ module.exports = line_reader = (reader, action_per_line) ->
   lr = new LineReader(reader)
   lr.on 'readable', ->
     action_per_line(line) while line = lr.read()
-  lr.on 'error', -> action_per_line(null)
+  lr.on 'error', (e) -> action_per_line(null)
   lr.on 'end', -> action_per_line(null)
   return lr
 
