@@ -14,7 +14,8 @@ ext=$base/ext
 echo "Installing '$project' to '$base'"
 echo
 
-mkdir -p $ext 2>/dev/null
+mkdir $base 2>/dev/null
+mkdir $ext 2>/dev/null
 
 echo "Download $from"
 if hash curl 2>/dev/null; then
