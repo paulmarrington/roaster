@@ -67,7 +67,7 @@ class Respond
     @exchange.respond.set_mime_type 'html'
     @text data.join('')
   # string representation of data that changes on every request
-  text: (text) ->
+  text: (text = '') ->
     @exchange.response.setHeader 'Cache-Control', 'public, no-cache'
     @exchange.response.setHeader 'content-length', text.length
     @exchange.response.end text

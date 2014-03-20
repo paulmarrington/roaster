@@ -30,11 +30,12 @@ class Internet extends events.EventEmitter
     @send_request 'HEAD', url
 
   # Post known static data as either a string or url-encoded
-  post: (address, data, @options..., on_connect) ->
-    if typeof data isnt 'string'
-      data = querystring.stringify data
-    @options.headers['Content-Length'] = data.length
-    @once 'request', => @request.end data
+  post: (address, content, @options..., on_connect) ->
+    if typeof content isnt 'string'
+      content = querystring.stringify content
+    console.log "@@@@@ length",content
+    @options.headers['Content-Length'] = content.length
+    @once 'request', => @request.end content
     @once 'connect', on_connect
     @send_request 'POST', address
 
@@ -61,17 +62,17 @@ class Internet extends events.EventEmitter
   get_response: (address, @options..., next) ->
     @once 'request', => @request.end()
     check = (err) => if err then @request?.abort(); next(err)
-    @once 'error', check
+    @once 'error', (err) =>
+      if err then @request?.abort(); next(err)
     @read_response (data) -> next null, data
     @send_request 'GET', address
   # helper to get a JSON response - in-memory so size limited
-  get_json: (address, @options..., next) ->
-    @get_response address, @options..., (err, data) =>
+  get_json: (address, options..., next) ->
+    @get_response address, options..., (err, data) =>
       return if err
       return next null, '' if not data?.length
       try next null, JSON.parse data
       catch error then @request?.abort(); next(error)
-    @send_request 'GET', address
   # set how many seconds we keep retrying
   retry: (seconds) -> @retry_for = seconds; return @
 

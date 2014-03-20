@@ -43,12 +43,13 @@ module.exports = (environment) ->
         process.exit(0)
     # integrate post data into the query string
     request.post = (next) ->
-      if request.method is 'POST'
-        body = []
-        request.on 'readable', ->
-          body.push data while (data = request.read()) isnt null
-        request.on 'end', ->
-          next querystring.parse body.join('')
+      return false if request.method isnt 'POST'
+      body = []
+      request.on 'readable', ->
+        body.push data while (data = request.read()) isnt null
+      request.on 'end', ->
+        next querystring.parse body.join('')
+      return true
     # an exchange object that is passed to http processors
     exchange = { request, response, environment }
     exchange.respond = respond(exchange)
