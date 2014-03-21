@@ -39,11 +39,6 @@ class Internet extends events.EventEmitter
     @once 'connect', on_connect
     @send_request 'POST', address
 
-  # prepare to post a stream of data
-  post_stream: (address, @options..., on_request) ->
-    @once 'request', on_request
-    @send_request 'POST', address
-
   # put a stream down the http line
   put:  (address, @options..., on_request) ->
     @once 'request', on_request

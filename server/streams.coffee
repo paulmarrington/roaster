@@ -16,10 +16,9 @@ streams = module.exports =
   from_string: (data) -> new StringToStream data.toString()
   to_string: (input, next) ->
     buffer = []
-    request.on 'readable', ->
-      buffer.push data while (data = request.read()) isnt null
-    request.on 'end', ->
-      next buffer.join('')
+    input.on 'data', (data) -> buffer.push data.toString()
+    input.on 'end', -> next buffer.join('')
+    input.resume()
 
   # similarly when we pipe we need to wait for it to complete.
   # This version will take any number of pipes - inner ones
