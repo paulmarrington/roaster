@@ -33,7 +33,6 @@ class Internet extends events.EventEmitter
   post: (address, content, @options..., on_connect) ->
     if typeof content isnt 'string'
       content = querystring.stringify content
-    console.log "@@@@@ length",content
     @options.headers['Content-Length'] = content.length
     @once 'request', => @request.end content
     @once 'connect', on_connect
@@ -79,8 +78,7 @@ class Internet extends events.EventEmitter
       if error
         console.log error
         console.log error.trace if error.trace
-        return on_download_complete error
-      dirs.mkdirs path.dirname(to), =>
+      else dirs.mkdirs path.dirname(to), =>
         writer = fs.createWriteStream to
         streams.pipe @response, writer, =>
           files.size to, (error, size) ->
@@ -88,10 +86,12 @@ class Internet extends events.EventEmitter
               console.log '...done'
               on_download_complete()
             else
-              console.log "...failed (empty)"
-              return on_download_complete() if ++count >= 5
-              opts["Cache-Control"] = "no-cache"
-              setTimeout getter, 500
+              error = "empty"
+      if error
+        console.log "...failed (#{error})"
+        return on_download_complete(error) if ++count >= 5
+        opts["Cache-Control"] = "no-cache"
+        setTimeout getter, 500
     @from = @to = ''
 
   send_request: (method, address) ->

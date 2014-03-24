@@ -42,6 +42,8 @@ module.exports = requests =
   requireSync: (module_name) ->
     # see if we are loaded and ready to go
     return imports if imports = roaster.cache[module_name]
+    # CodeMirror insists of CommonJS with a mixed-up path
+    return roaster.cache[module_name] = {} if module_name[0] is '.'
     request = new XMLHttpRequest()
     request.open 'GET',
       "/#{module_name}.require.js?domain=client", false

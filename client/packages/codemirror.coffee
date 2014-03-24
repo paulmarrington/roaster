@@ -3,8 +3,8 @@ dependency = require 'dependency'
 
 roaster.codemirror_base = base =
   '/ext/codemirror/CodeMirror-master'
-addon = (type) -> return "#{base}/addon.#{type}.concat?
-exclude=(standalone.js$|_test.js$|pig-hint.js)"
+addon = (type) -> return "#{base}/addon.#{type}.concat?"+
+  "exclude=(standalone\.js|_test\.js|pig-hint\.js|\.node\.js)"
 keymap = "#{base}/keymap.js.concat"
 
 module.exports = (next) ->
@@ -17,6 +17,8 @@ module.exports = (next) ->
       "#{base}/mode/coffeescript/coffeescript.js"
       "#{base}/mode/javascript/javascript.js"
     ) ->
+      roaster.cache['../../lib/codemirror'] = CodeMirror
+
       roaster.request.css addon('css')
       roaster.script_loader addon('js'), 'client', ->
         roaster.script_loader keymap, 'client,library', ->
