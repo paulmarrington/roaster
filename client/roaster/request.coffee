@@ -43,18 +43,21 @@ module.exports = requests =
     # see if we are loaded and ready to go
     return imports if imports = roaster.cache[module_name]
     # CodeMirror insists of CommonJS with a mixed-up path
-    return roaster.cache[module_name] = {} if module_name[0] is '.'
+    if module_name[0] is '.'
+      return roaster.cache[module_name] = {}
     request = new XMLHttpRequest()
     request.open 'GET',
       "/#{module_name}.require.js?domain=client", false
     request.send null
     try eval request.responseText catch err
       console.log "require '#{module_name}'", err.stack
+    return roaster.cache[module_name]
 
   requireAsync: (module_names..., on_loaded) ->
     modules = []
     do require_module = =>
-      return on_loaded(null, modules...) if not module_names.length
+      if not module_names.length
+        return on_loaded(null, modules...)
       name = module_names.shift()
       if imports = roaster.cache[name]
         return require_module modules.push(imports)
@@ -74,5 +77,3 @@ module.exports = requests =
         return next(error) if error
         refs[@key] = text
         next_one()
-
-require = module.exports.requireSync

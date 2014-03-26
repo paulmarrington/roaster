@@ -5,5 +5,5 @@ client = null
 
 module.exports = (next) ->
   return next(client) if client
-  roaster.clients '/faye/client.js', ->
+  roaster.script_loader '/faye/client.js', ->
     next client = new Faye.Client '/faye'

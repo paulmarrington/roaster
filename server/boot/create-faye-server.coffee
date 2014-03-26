@@ -30,4 +30,5 @@ module.exports = (environment, next) ->
     bayeux = new faye.NodeAdapter mount: '/faye', timeout: 45
     bayeux.attach environment.http_server
     environment.faye = faye.local_client = bayeux.getClient()
+    environment.faye.bayeux = bayeux
     next()

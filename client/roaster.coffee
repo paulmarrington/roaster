@@ -22,6 +22,8 @@ window.roaster =
     return roaster.cache.wait_for (next) ->
       roaster.clients modules..., next
   clients: (paths..., next) ->
+    if paths.length is 0 # no cb means synchronous
+      return roaster.request.requireSync next
     modules = []
     do load_one = ->
       return next(modules...) if not paths.length
@@ -59,7 +61,7 @@ window.roaster =
       cb imports while cb = callbacks.pop() when cb
       delete roaster.loading[url]
 
-  script_loader: (url, domain, next) ->
+  script_loader: (url, domain..., next) ->
     return next() if roaster.cache[url]
     script = document.createElement("script")
     script.type = "text/javascript"
@@ -83,16 +85,16 @@ window.roaster =
         roaster.cache[url] ?= {}
         next()
 
-    if domain?.length
+    if domain.length
       if src[0] == '/' # absolute
         # domain in command over-rides earlier reference
         if src[1] is '!'
           src = src.slice src.indexOf('/', 2) + 1
         # domain in query string takes precedence
         if src.indexOf('domain=') == -1
-          src = "/!#{domain}#{src}"
+          src = "/!#{domain[0]}#{src}"
       else # relative, use query form of domain
-        src = roaster.add_command_line src, domain: domain
+        src = roaster.add_command_line src, domain: domain[0]
 
     script.src = src
     document.getElementsByTagName("head")[0].
@@ -125,6 +127,7 @@ window.roaster =
   request: {}
 
 window.process = roaster.process
+window.require = roaster.clients
 
 client = (path, next) ->
   match = /.*\/([\w\-]+)\.\w*/.exec(path)
