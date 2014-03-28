@@ -1,4 +1,4 @@
-# Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
+# Copyright (C) 2013 paul@marrington.net, see GPL for license
 morph = require('morph').multi_morph; path = require 'path'
 dirs = require 'dirs'; require 'common/strings'
 fs = require 'fs'
@@ -7,10 +7,11 @@ joint = '.js': ';\n'
 
 # Given a base path and mask an file-type, concatenate
 module.exports = (exchange, next) ->
+  query = exchange.request.url.query
   parts = exchange.request.filename.split '.'
   base = dirs.base parts[0]
   type = '.' + parts[parts.length - 2]
-  exclude = new RegExp(exchange.request.url.query.exclude ? '^$')
+  exclude = new RegExp(query.exclude ? '^$')
   exchange.respond.set_mime_type type
   exchange.respond.static_file()
 
