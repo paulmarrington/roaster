@@ -90,6 +90,14 @@ var base = function() {
              [process.env.cwd].concat(names));
 };
 
+var home = function() {
+  var home = process.env.HOME || process.env.HOMEPATH ||
+    process.env.USERPROFILE;
+  var names = (1 <= arguments.length) ?
+      __slice.call(arguments, 0) : [];
+  return path.join.apply(path, [home].concat(names));
+};
+
 // split and return [base,relative] based on known bases
 var split = function(full_path) {
   var to_find = path.resolve(full_path);
@@ -110,6 +118,6 @@ module.exports = {
   rmdirs: rmdirs,
   in_directory: in_directory,
   split: split,
-  node: node, base: base, 
+  node: node, base: base, home: home, 
   bases: ['',process.env.cwd, process.env.rwd]
 };
