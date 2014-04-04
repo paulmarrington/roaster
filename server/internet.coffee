@@ -74,24 +74,23 @@ class Internet extends events.EventEmitter
     return if not on_download_complete
     console.log "Downloading #{@from}..."
     to = @to; from = @from; count = 0; opts = {}
-    do getter = => @get from, opts, (error) =>
-      if error
-        console.log error
-        console.log error.trace if error.trace
-      else dirs.mkdirs path.dirname(to), =>
+    error = (err) ->
+      console.log "...failed (#{err})"
+      return on_download_complete(err) if ++count >= 5
+      opts["Cache-Control"] = "no-cache"
+      setTimeout getter, 500
+    do getter = => @get from, opts, (err) =>
+      return error err if err
+      dirs.mkdirs path.dirname(to), =>
         writer = fs.createWriteStream to
         streams.pipe @response, writer, =>
-          files.size to, (error, size) ->
+          files.size to, (err, size) ->
+            return error err if err
             if size
               console.log '...done'
               on_download_complete()
             else
-              error = "empty"
-      if error
-        console.log "...failed (#{error})"
-        return on_download_complete(error) if ++count >= 5
-        opts["Cache-Control"] = "no-cache"
-        setTimeout getter, 500
+              error "empty"
     @from = @to = ''
 
   send_request: (method, address) ->
