@@ -53,11 +53,12 @@ $.widget "ui.dialog", $.ui.dialog,
     @_trigger("focus", event) if not silent
     return true
 
-module.exports = (options..., next) ->
+module.exports = (options_list..., next) ->
   if next not instanceof Function
-    options.push next
+    options_list.push next
     next = ->
-  name = options[0].name
+  options_list.unshift default_options
+  options = _.extend {}, default_options, options_list...
   set_height = ->
     height = $(window).height()
     dlg.dialog 'option', 'maxHeight', height - 20
@@ -65,9 +66,8 @@ module.exports = (options..., next) ->
     if not options.position
       dlg.dialog "option", "position",
         roaster.dialog_position()
-  if not dlg = dialogs[name]
-    options = _.extend {}, default_options, options...
-    dlg = dialogs[name] = $('<div>').
+  if not dlg = dialogs[options.name]
+    dlg = dialogs[options.name] = $('<div>').
       addClass('dialog').appendTo(document.body)
     dlg.dialog(options).dialogExtend(options)
     dlg.on 'resize', ->
@@ -77,7 +77,6 @@ module.exports = (options..., next) ->
     dlg.keyup -> dlg.trigger 'resize'
     options?.init(dlg)
   else
-    options = options[0]
     dlg.dialog 'option', 'title', options.title
     dlg.dialogExtend('restore')
     dlg.dialog('open').dialog('moveToTop')
