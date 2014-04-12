@@ -41,3 +41,10 @@ module.exports = function(name, on_loaded) {
 
 module.exports.load = load;
 module.exports.check_for_missing_requirement = check_missing;
+module.exports.outstanding = function() {
+  return sequential.queue.length;
+};
+module.exports.on_complete = function(action) {
+  sequential.queue.on_empty = action;
+  if (!sequential.queue.length) action();
+};

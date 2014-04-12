@@ -2,7 +2,7 @@
 dependency = require 'dependency'
 
 module.exports = dependency(
-  ztree: "http://destroydrop.com/javascripts/tree/dtree.zip|dtree"
+  dtree: "http://destroydrop.com/javascripts/tree/dtree.zip|dtree"
   "/ext/dtree/dtree.js"
   "/ext/dtree/dtree.css"
 )
