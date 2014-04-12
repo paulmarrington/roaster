@@ -21,7 +21,7 @@
 #     user: Object containing details for a guest or logged in user
 #   respond: method to call to send data back to the browser - chaining support
 #   config: Configuration file (<config>.config.coffee)
-project_init = require 'boot/project-init'
+project_init = require 'boot/project-init'; npm = require "npm"
 system = require 'system'; dirs = require 'dirs'
 
 # process the command line
@@ -66,9 +66,15 @@ project_init.post environment
 
 console.log """
 
-uSDLC2 running on http://localhost:#{environment.port}
+http://localhost:#{environment.port}
 
-usage: go server [name=value]...
+usage: ./go.sh server [name=value]...
     #{default_environment.join '\n    '}
 
 """
+
+if npm.outstanding()
+  console.log "Loading dependencies..."
+  npm.on_complete -> console.log "Ready..."
+else
+  console.log "Ready..."
