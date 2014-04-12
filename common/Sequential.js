@@ -6,8 +6,9 @@ Sequential.prototype.add = function(action, next) {
   this.queue.push({action:action, next:next});
   if (this.queue.length === 1) this.next();
 };
+Sequential.prototype.on_empty = function() {};
 Sequential.prototype.next = function() {
-  if (!this.queue.length) return;
+  if (!this.queue.length) return this.on_empty();
   var one = this.queue[0];
   var my = this;
   var next = function() {
