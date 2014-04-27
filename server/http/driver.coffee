@@ -28,7 +28,8 @@ module.exports = (exchange) ->
         npm.check_for_missing_requirement(name, error)
     if driver = cache[name]
       do (driver) ->
-        drivers.push fn = (next) -> driver(exchange, next)
+        drivers.push fn = (next) ->
+          driver(exchange, next, add_driver)
         fn.notes =
           "#{exchange.request.filename}: driver '#{name}'"
   # pull drivers from query string key 'domain'

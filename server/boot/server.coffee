@@ -66,7 +66,7 @@ project_init.post environment
 
 console.log """
 
-http://localhost:#{environment.port}
+http://#{require('system').hosts()[0]}:#{environment.port}
 
 usage: ./go.sh server [name=value]...
     #{default_environment.join '\n    '}

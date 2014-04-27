@@ -150,8 +150,7 @@ client '/client/roaster/request.coffee', (request) ->
       '/client/roaster/environment.coffee'
       '/common/wait_for.coffee'
       '/client/dependency.coffee'
-      '/client/index.coffee'
-      '/app.coffee'
+       '/app.coffee'
     ]
     roaster.clients requirements..., ->
       window._ = roaster.cache.underscore

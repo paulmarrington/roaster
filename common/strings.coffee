@@ -4,7 +4,7 @@ module.exports =
   csv:
     split: (strings...) ->
       split = []
-      split.append string.split ',' for string in strings
+      split.push string.split(',')... for string in strings
       return split
       
   from_map: (map) ->

@@ -1,0 +1,190 @@
+<html>
+<head>
+	<title></title>
+	<link href="document.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<h1>Roaster Client Support</h1>
+
+<p>Roaster is designed to support single-page applications. To this end it provides:</p>
+
+<ul>
+	<li>Framework for compiling to browser supported formats. Out of the box Coffeescript to Javascript and Less to CSS are available.</li>
+	<li>Package management and load-on-demand support for project and third-party code. Many prepared packages such as those for jquery, ckeditor and codemirror.</li>
+	<li>A very very lightweight solution for separation of concerns providing the value of MVC without the overheads in both understanding and code.</li>
+	<li>Simplified single-script installation for roaster and any system built with it. Works with OS-X, Linux and Windows.</li>
+	<li>Common module support for sharing code between Node and the browser.</li>
+</ul>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee">browser = gwt.browser()
+gwt.open_page = (path = 'index.html') -&gt; gwt.preactions.push -&gt;
+  url = "http://localhost:9010/#{path}"
+  @page = browser.page('live').open url, retain: true
+  @page.once 'open', =&gt; @next()
+  @page.once 'error', =&gt; @fail()</textarea></p>
+
+<div class="metadata Ref">Ref: <span class="index"><a href="javascript:usdlc.edit_source({value:'index.html',path:'../roaster/index.html',category:'roaster'})">index.html</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/bootstrap/init.coffee',category:'bootstrap'})">init.coffee</a> </span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a>&nbsp;</span></div>
+
+<h2>Initialisation</h2>
+
+<p>Every project starts at <em>/index.html</em>. For a 'standard' roaster based project this is an empty document that loads&nbsp;/client/bootstrap.coffee to start the heavy lifting. This script initialises a requires keyword anc calls another roaster specific script <em>/client/bootstrap/init.coffee</em>. All if this is just preparation. A project specific <em>/client/app.coffee</em>&nbsp;prepares the application and loads the screen.</p>
+
+<div class="metadata Ref">Ref: <span class="app"><a href="javascript:usdlc.edit_source({value:'app.coffee',path:'../roaster/client/app.coffee',category:'client'})">app.coffee</a> </span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/bootstrap/init.coffee',category:'bootstrap'})">init.coffee</a></span><span class="dependency"><a href="javascript:usdlc.edit_source({value:'dependency.coffee',path:'../roaster/server/http/dependency.coffee',category:'http'})">dependency.coffee</a> </span><span class="require"><a href="javascript:usdlc.edit_source({value:'require.coffee',path:'../roaster/drivers/require.coffee',category:'drivers'})">require.coffee</a> </span><span class="concat"><a href="javascript:usdlc.edit_source({value:'concat.coffee',path:'../roaster/drivers/concat.coffee',category:'drivers'})">concat.coffee</a> </span><span class="driver"><a href="javascript:usdlc.edit_source({value:'driver.coffee',path:'../roaster/server/http/driver.coffee',category:'http'})">driver.coffee</a> </span><span class="create-http-server"><a href="javascript:usdlc.edit_source({value:'create-http-server.coffee',path:'../roaster/server/boot/create-http-server.coffee',category:'boot'})">create-http-server.coffee</a> </span><span class="respond"><a href="javascript:usdlc.edit_source({value:'respond.coffee',path:'../roaster/server/http/respond.coffee',category:'http'})">respond.coffee</a> </span><span class="client"><a href="javascript:usdlc.edit_source({value:'client.coffee',path:'../roaster/drivers/client.coffee',category:'drivers'})">client.coffee</a> </span></div>
+
+<h2>Script and CSS Pre-compilation</h2>
+
+<h2>Support</h2>
+
+<h3>Page Arguments</h3>
+
+<p>Page arguments provide controlled application operation from either the html or the search part of the url.</p>
+
+<pre title="html" type="html">
+&lt;!DOCTYPE HTML&gt;
+
+
+  
+    roaster = { opts: { 'test-arg': '23' } };
+  &lt;/script&gt;
+  &lt;script src='/client/bootstrap.coffee?domain=client,library'&gt;
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+
+<p>&nbsp;</p>
+
+<pre title="coffee" type="coffee">
+gwt.open_page "gen/usdlc2/Roaster_Client_Support/"+
+              "Support/Page_Arguments.html?test-arg2=45"
+  
+gwt.add -&gt;
+  console.log "#2 Embedded Page Arguments"
+  @page.test -&gt;
+    usdlc2.check roaster.page_arg('test-arg'), '23'
+gwt.add -&gt;
+  console.log "#2 Address Page Arguments"
+  @page.test -&gt;
+    usdlc2.check roaster.page_arg('test-arg2'), '45'
+gwt.add -&gt;
+  console.log "#2 Default Page Arguments"
+  @page.test -&gt;
+    usdlc2.check roaster.page_arg('unknown', '12'), '12'
+</pre>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="index"><a href="javascript:usdlc.edit_source({value:'index.html',path:'../roaster/index.html',category:'roaster'})">index.html</a> </span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a> </span><span class="create-http-server"><a href="javascript:usdlc.edit_source({value:'create-http-server.coffee',path:'../roaster/server/boot/create-http-server.coffee',category:'boot'})">create-http-server.coffee</a> </span><span class="less"><a href="javascript:usdlc.edit_source({value:'less.coffee',path:'../roaster/drivers/less.coffee',category:'drivers'})">less.coffee</a> </span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/server/boot/server.coffee',category:'boot'})">server.coffee</a> </span><span class="internet"><a href="javascript:usdlc.edit_source({value:'internet.coffee',path:'../roaster/server/internet.coffee',category:'server'})">internet.coffee</a> </span><span class="system"><a href="javascript:usdlc.edit_source({value:'system.coffee',path:'../roaster/server/system.coffee',category:'server'})">system.coffee</a> </span><span class="processes"><a href="javascript:usdlc.edit_source({value:'processes.coffee',path:'../roaster/server/processes.coffee',category:'server'})">processes.coffee</a> </span></div>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
+
+<h3>Important Elements</h3>
+
+<p>Roaster keeps a reference to the head element in <em>roaster.head</em>. This is used for adding script and style elements to the document.</p>
+
+<pre title="coffee" type="coffee">
+gwt.open_page "index.html"
+
+gwt.add -&gt;
+  console.log "#2 Header Element"
+  @page.test -&gt;
+    usdlc2.check roaster.head.nodeName, 'HEAD'</pre>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
+
+<h2>Package Management</h2>
+
+<h3>Requires</h3>
+
+<p>Roaster provides an extended version of the CommonJS approach to modules and package management. To support client/server common code and library code, the global require function can take a single module name and return a reference to the code.</p>
+
+<pre title="coffee" type="coffee">
+gwt.open_page "index.html"
+
+gwt.add -&gt;
+  console.log "#2 CommonJS Requires"
+  @page.test -&gt;
+    util = require('util')
+    usdlc2.test(util.isDate(new Date()))</pre>
+
+<p>The downside is that if the module must be loaded from the server, a synchronous call will be needed - and will freeze the browser until completed. Given that most loads happen when accessing new functionality, and that roaster is designed for local network or same machine use, &nbsp;these freezes are both short and happen at a time when it should not be an annoyance.</p>
+
+<p>In practice module loading should be asynchronous. Roaster supports load-on-demand and asynchronous loading will improve the user experience. Any call to require with multiple parameters will expect the last to be a callback. The other arguments are comma separated lists of modules. The callback returns a single argument being an object with members for each module loaded.</p>
+
+<pre title="coffee" type="coffee">
+gwt.add -&gt;
+  console.log "#2 Asynchronous Requires"
+  @page.test -&gt;
+    require "util,strings", "faye", (a) -&gt;
+      try
+        csv = a.strings.csv.split("1,3", "2,4")
+        if not a.util.isArray([1,2])
+          return usdlc2.fail("isArray")
+        console.log csv
+        if (csv.length isnt 4 or
+        csv[0] isnt "1" or csv[1] isnt "3" or
+        csv[2] isnt "2" or csv[3] isnt "4")
+          return usdlc2.fail("csv")
+        if typeof(a.faye) isnt "function"
+          return usdlc2.fail("faye")
+        usdlc2.pass()
+      catch e
+        usdlc2.fail(e)</pre>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a>&nbsp;</span><span class="require"><a href="javascript:usdlc.edit_source({value:'require.coffee',path:'../roaster/drivers/require.coffee',category:'drivers'})">require.coffee</a> </span></div>
+
+<h3>Module Path Conventions</h3>
+
+<p>As with server files, <em>requires</em>&nbsp;searches well-known paths first on the target project and second on <em>roaster</em>. First it looks in <em>/client/</em>, then on the server paths, being <em>/common/, /server/ </em>and<em> /</em>.</p>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a>&nbsp;</span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a> </span></div>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
+
+<h3>Client Server Hybrid Modules</h3>
+
+<p>It is often clearest to implement the two sides of a client/server communication in a single file. For this reason <em>module.exports.client</em> is used if it exists - otherwise <em>module.exports</em> is used as usual.</p>
+
+<p>In the example, uSDLC2 executes which causes the test page to load (1) which in turn creates a requires to the server to (2).</p>
+
+<pre title="coffee" type="coffee">
+# (2) This code will be executed on the server
+module.exports = (exchange) -&gt;
+  exchange.respond.json server: 'called'
+
+# (1) This code will be executed on the client
+module.exports.client = -&gt;
+  require.json "gen/usdlc2/Roaster_Client_Support/"+
+  "Package_Management/Client_Server_Hybrid_Modules",
+  (error, data_from_server) -&gt;
+    usdlc2.check data_from_server.server, 'called'</pre>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/bootstrap/init.coffee',category:'bootstrap'})">init.coffee</a> </span><span class="loaders"><a href="javascript:usdlc.edit_source({value:'loaders.coffee',path:'../roaster/client/bootstrap/loaders.coffee',category:'bootstrap'})">loaders.coffee</a>&nbsp;</span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a>&nbsp;</span></div>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee">gwt.open_page "index.html"
+
+gwt.add -&gt;
+  console.log "#2 Client/Server Hybrid Module"
+  @page.test -&gt;
+    a = require "gen/usdlc2/Roaster_Client_Support/"+
+    "Package_Management/Client_Server_Hybrid_Modules"
+    a()
+</textarea></p>
+
+<h3>Basic Loading Support</h3>
+
+<h4>Scripts</h4>
+
+<h4>CSS</h4>
+
+<h4>JSON</h4>
+
+<h4>Text</h4>
+
+<h4>Streamed</h4>
+
+<h2>MVC - Separation of Concerns</h2>
+</body>
+</html>

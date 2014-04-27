@@ -29,5 +29,12 @@ os.throwError = (next) ->
   return (error, args...) ->
     throw error if error
     next(args...)
+    
+os.hosts = ->
+  hosts = []
+  for dev,cons of os.networkInterfaces() then for host in cons
+    if not host.internal and host.family is 'IPv4'
+      hosts.push host.address
+  return hosts
 
 module.exports = os

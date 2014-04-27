@@ -47,7 +47,7 @@ module.exports = requests =
       return roaster.cache[module_name] = {}
     request = new XMLHttpRequest()
     request.open 'GET',
-      "/#{module_name}.require.js?domain=client", false
+      "/#{module_name}.require?domain=client", false
     request.send null
     try eval request.responseText catch err
       console.log "require '#{module_name}'", err.stack
@@ -61,7 +61,7 @@ module.exports = requests =
       name = module_names.shift()
       if imports = roaster.cache[name]
         return require_module modules.push(imports)
-      roaster.clients "/#{name}.require.js", (imports) =>
+      roaster.clients "/#{name}.require", (imports) =>
         roaster.cache[name] = imports
         require_module modules.push(imports)
 
