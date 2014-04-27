@@ -9,6 +9,9 @@ cache = {}
 module.exports = (exchange, next, add_driver) ->
   add_driver 'client'
   path_name = exchange.request.url.pathname
+  if path_name[0] is '/'
+    path_name = path_name[1..-1]
+    exchange.request.url.pathname = path_name
   
   done = (module_path) ->
     dot = module_path.lastIndexOf('.')
@@ -17,7 +20,7 @@ module.exports = (exchange, next, add_driver) ->
     next()
   return done(module) if module = cache[path_name]
   
-  module_name = path_name.replace(/\.[^\/]*$/, '')[1..]
+  module_name = path_name.replace(/\.[^\/]*$/, '')
     
   try
     done require.resolve path.join 'client', module_name
