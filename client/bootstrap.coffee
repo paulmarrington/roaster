@@ -16,7 +16,8 @@ window.require = (module_names..., next) ->
     request.send null
     try eval request.responseText catch err
       console.log "require '#{next}'", err.stack
-    return require.cache[next]?.client ? require.cache[next]
+    module = require.cache[next] ? require.cache[url]
+    return module?.client ? module
  # asynchronous require
   modules = {}; loaded = 0
   load = (name) ->

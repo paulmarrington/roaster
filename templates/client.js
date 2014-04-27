@@ -6,5 +6,6 @@
   #{definitions};
   var log = function() {console.log(arguments);};
   #{script};
-  roaster.cache['#{url}'] = roaster.cache['#{key}'] = module.exports;
+  roaster.cache['/#{url}'] = roaster.cache['#{url}'] =
+  roaster.cache['#{key}']  = module.exports;
 })(window)
