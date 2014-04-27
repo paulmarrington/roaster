@@ -1,7 +1,7 @@
 require.json = (url, on_loaded) ->
   @data url, (error, text) ->
-    next(error) if error
-    next null, JSON.parse text
+    return on_loaded(error) if error
+    on_loaded null, JSON.parse text
 
 require.css = (url) ->
   link = document.createElement("link")
@@ -19,6 +19,7 @@ require.data = (url, next) ->
     next(error, contents.join('')) if is_complete
       
 require.stream = (url, headers..., onData) ->
+  url += '.script' if url.indexOf('.') is -1
   request = new XMLHttpRequest()
   previous_length = 0
   request.onreadystatechange = ->
