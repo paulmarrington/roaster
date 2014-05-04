@@ -30,43 +30,40 @@ class Internet extends events.EventEmitter
     @send_request 'HEAD', url
 
   # Post known static data as either a string or url-encoded
-  post: (address, content, @options..., on_connect) ->
+  post: (address, content, @options..., on_complete) ->
     if typeof content isnt 'string'
       content = querystring.stringify content
     @options.headers['Content-Length'] = content.length
     @once 'request', => @request.end content
-    @once 'connect', on_connect
+    @read_response(on_complete)
     @send_request 'POST', address
+    
+  post_json: (address, object, options..., on_complete) ->
+    content = JSON.stringify object
+    @post address, content, options..., on_complete
 
   # put a stream down the http line
   put:  (address, @options..., on_request) ->
     @once 'request', on_request
+    @read_response()
     @send_request 'PUT', address
 
   # helper for http GET - returns request object
   get: (address, @options..., on_connect) ->
     @once 'request', => @request.end()
-    @once 'connect', on_connect
-    @send_request 'GET', address
+    @get_stream address, @options..., on_connect
   # helper for http GET - returns request object
   get_stream: (address, @options..., on_connect) ->
     @once 'connect', on_connect
     @send_request 'GET', address
-  # helper to get content - in-memory so size limited
-  get_response: (address, @options..., next) ->
-    @once 'request', => @request.end()
-    check = (err) => if err then @request?.abort(); next(err)
-    @once 'error', (err) =>
-      if err then @request?.abort(); next(err)
-    @read_response (data) -> next null, data
-    @send_request 'GET', address
-  # helper to get a JSON response - in-memory so size limited
-  get_json: (address, options..., next) ->
-    @get_response address, options..., (err, data) =>
-      return if err
-      return next null, '' if not data?.length
-      try next null, JSON.parse data
-      catch error then @request?.abort(); next(error)
+ # helper to get a JSON response - in-memory so size limited
+  get_json: (address, options..., on_complete) ->
+    @read_response (err, data) =>
+      return on_complete err if err
+      return on_complete null, {} if not data?.length
+      try on_complete null, JSON.parse data
+      catch error then @request?.abort(); on_complete(error)
+    @get address, options..., ->
   # set how many seconds we keep retrying
   retry: (seconds) -> @retry_for = seconds; return @
 
@@ -141,14 +138,18 @@ class Internet extends events.EventEmitter
         error = new Error(
           "#{error?.code} for #{address.href}\n#{options}")
         @emit 'connect', error, @request
+        @emit 'error', error
         @removeAllListeners()
 
   # read response into a string for further processing
-  read_response: (next) ->
+  read_response: (on_complete = ->) ->
     @once 'connect', (error) ->
-      return @emit('error', error) if error
+      if error then @request?.abort(); @emit 'error', error
       response_stream = new ResponseStream()
-      response_stream.on 'finish', (data) -> next(data)
+      @on 'error', on_complete
+      response_stream.on 'finish', (@response_data) =>
+        @emit 'finish', @response_data
+        on_complete null, @response_data
       @response.pipe response_stream
       
   build_url: (url, query) ->
