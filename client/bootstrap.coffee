@@ -25,7 +25,7 @@ window.require = (module_names..., next) ->
       return modules[name] = require.cache[name]
     url = parse_require_name name
     loaded++
-    require.script parse_require_name(name), ->
+    require._script parse_require_name(name), ->
       module = require.cache[name]
       modules[name] = module?.client ? module
       next modules if --loaded is 0 # all loaded
@@ -39,7 +39,7 @@ roaster.cache = require.cache = {}; require.opts ?= {}
 roaster.head = document.getElementsByTagName('head')[0]
 
 # load a script from the server using <script> tag
-require.script = (url, on_loaded = ->) ->
+require._script = (url, on_loaded) ->
   script = document.createElement("script")
   script.type = "text/javascript"
   script.async = "async"
@@ -47,5 +47,9 @@ require.script = (url, on_loaded = ->) ->
   script.ontimeout = on_loaded
   script.src = url
   roaster.head.appendChild(script)
-
+require.script = (url, on_loaded = ->) ->
+  sep = if url.indexOf('?') is -1 then '?' else '&'
+  url += sep+'domain=client,library'
+  require._script url, on_loaded
+  
 require 'bootstrap/init', ->
