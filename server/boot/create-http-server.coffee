@@ -42,13 +42,17 @@ module.exports = (environment) ->
           "window.location.href', 2000)</script>")
         process.exit(0)
     # integrate post data into the query string
-    request.post = (next) ->
+    request.post = (parser, next) ->
+      if not next
+        next = parser
+        parser = querystring.parse
       return false if request.method isnt 'POST'
       body = []
       request.on 'readable', ->
         body.push data while (data = request.read()) isnt null
       request.on 'end', ->
-        next querystring.parse body.join('')
+        try next null, parser body.join('')
+        catch err then next err
       return true
     # an exchange object that is passed to http processors
     exchange = { request, response, environment }
