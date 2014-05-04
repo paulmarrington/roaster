@@ -9,4 +9,4 @@ class PanelStack
     panel.addEventListener '', (event) ->
     return panel
     
-module.exports = PanelStack
+module.exports.client = PanelStack
