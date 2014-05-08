@@ -5,6 +5,7 @@ dirs = require 'dirs'
 class Processes
   constructor: (@program) ->
     @debug_flag = ''
+    @capture_io = true
     @options =
       cwd: process.cwd()
       env: process.env
@@ -97,8 +98,9 @@ class Processes
     if @args.length is 1 and typeof @args[0] is 'string'
       @args = @args[0]?.split ' '
     @proc = action @program, @args, @options
-    @proc.stdout?.pipe process.stdout
-    @proc.stderr?.pipe process.stderr
+    if @capture_io
+      @proc.stdout?.pipe process.stdout
+      @proc.stderr?.pipe process.stderr
     @proc.on 'error', (err) -> @next err
     @proc.on 'exit', (@code, @signal) =>
       if @code
