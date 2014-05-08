@@ -47,8 +47,9 @@ window.roaster =
           roaster.depends lib, 'client,library', load_one
   # Basic dependency loading for scripts
   depends: (url, domain, next) ->
+    key = url.split('.')[0]
     # see if we are loaded and ready to go
-    return next imports if imports = roaster.cache[url]
+    return next imports if imports = roaster.cache[key]
     # see if we are in the process of loading
     if roaster.loading[url]
       return roaster.loading[url].push(next)
@@ -56,7 +57,7 @@ window.roaster =
     roaster.loading[url] = [next]
 
     roaster.script_loader url, domain, ->
-      imports = roaster.cache[url]
+      imports = roaster.cache[key]
       callbacks = roaster.loading[url]
       cb imports while cb = callbacks.pop() when cb
       delete roaster.loading[url]
@@ -132,6 +133,7 @@ window.require = roaster.clients
 client = (path, next) ->
   match = /.*\/([\w\-]+)\.\w*/.exec(path)
   return console.log "No client '#{path}'" if not match
+  console.log path,match[1];
   roaster.depends path, 'client', (module) ->
     roaster.cache[match[1]] = module
     if module.initialise
