@@ -49,9 +49,9 @@ class Internet extends events.EventEmitter
     @send_request 'PUT', address
 
   # helper for http GET - returns request object
-  get: (address, @options..., on_connect) ->
+  get: (address, options..., on_connect) ->
     @once 'request', => @request.end()
-    @get_stream address, @options..., on_connect
+    @get_stream address, options..., on_connect
   # helper for http GET - returns request object
   get_stream: (address, @options..., on_connect) ->
     @once 'connect', on_connect
