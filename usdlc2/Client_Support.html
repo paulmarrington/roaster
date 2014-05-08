@@ -23,13 +23,9 @@ gwt.open_page = (path = 'index.html') -&gt; gwt.preactions.push -&gt;
   @page.once 'open', =&gt; @next()
   @page.once 'error', =&gt; @fail()</textarea></p>
 
-<div class="metadata Ref">Ref: <span class="index"><a href="javascript:usdlc.edit_source({value:'index.html',path:'../roaster/index.html',category:'roaster'})">index.html</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/bootstrap/init.coffee',category:'bootstrap'})">init.coffee</a> </span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a>&nbsp;</span><span class="internet"><a href="javascript:usdlc.edit_source({value:'internet.coffee',path:'../roaster/server/internet.coffee',category:'server'})">internet.coffee</a> </span><span class="timer"><a href="javascript:usdlc.edit_source({value:'timer.coffee',path:'../roaster/common/timer.coffee',category:'common'})">timer.coffee</a> </span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/server/boot/server.coffee',category:'boot'})">server.coffee</a> </span><span class="project-init"><a href="javascript:usdlc.edit_source({value:'project-init.coffee',path:'../roaster/server/boot/project-init.coffee',category:'boot'})">project-init.coffee</a> </span><span class="respond"><a href="javascript:usdlc.edit_source({value:'respond.coffee',path:'../roaster/server/http/respond.coffee',category:'http'})">respond.coffee</a> </span><span class="create-http-server"><a href="javascript:usdlc.edit_source({value:'create-http-server.coffee',path:'../roaster/server/boot/create-http-server.coffee',category:'boot'})">create-http-server.coffee</a> </span><span class="streams"><a href="javascript:usdlc.edit_source({value:'streams.coffee',path:'../roaster/server/streams.coffee',category:'server'})">streams.coffee</a> </span><span class="files"><a href="javascript:usdlc.edit_source({value:'files.coffee',path:'../roaster/server/files.coffee',category:'server'})">files.coffee</a> </span><span class="load"><a href="javascript:usdlc.edit_source({value:'load.js',path:'../roaster/boot/load.js',category:'boot'})">load.js</a> </span><span class="node_library"><a href="javascript:usdlc.edit_source({value:'node_library.coffee',path:'../roaster/server/node_library.coffee',category:'server'})">node_library.coffee</a> </span><span class="packages"><a href="javascript:usdlc.edit_source({value:'packages.coffee',path:'../roaster/server/packages.coffee',category:'server'})">packages.coffee</a> </span></div>
-
 <h2>Initialisation</h2>
 
 <p>Every project starts at <em>/index.html</em>. For a 'standard' roaster based project this is an empty document that loads&nbsp;/client/bootstrap.coffee to start the heavy lifting. This script initialises a requires keyword anc calls another roaster specific script <em>/client/bootstrap/init.coffee</em>. All if this is just preparation. A project specific <em>/client/app.coffee</em>&nbsp;prepares the application and loads the screen.</p>
-
-<div class="metadata Ref">Ref: <span class="app"><a href="javascript:usdlc.edit_source({value:'app.coffee',path:'../roaster/client/app.coffee',category:'client'})">app.coffee</a> </span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/bootstrap/init.coffee',category:'bootstrap'})">init.coffee</a></span><span class="dependency"><a href="javascript:usdlc.edit_source({value:'dependency.coffee',path:'../roaster/server/http/dependency.coffee',category:'http'})">dependency.coffee</a> </span><span class="require"><a href="javascript:usdlc.edit_source({value:'require.coffee',path:'../roaster/drivers/require.coffee',category:'drivers'})">require.coffee</a> </span><span class="concat"><a href="javascript:usdlc.edit_source({value:'concat.coffee',path:'../roaster/drivers/concat.coffee',category:'drivers'})">concat.coffee</a> </span><span class="driver"><a href="javascript:usdlc.edit_source({value:'driver.coffee',path:'../roaster/server/http/driver.coffee',category:'http'})">driver.coffee</a> </span><span class="create-http-server"><a href="javascript:usdlc.edit_source({value:'create-http-server.coffee',path:'../roaster/server/boot/create-http-server.coffee',category:'boot'})">create-http-server.coffee</a> </span><span class="respond"><a href="javascript:usdlc.edit_source({value:'respond.coffee',path:'../roaster/server/http/respond.coffee',category:'http'})">respond.coffee</a> </span><span class="client"><a href="javascript:usdlc.edit_source({value:'client.coffee',path:'../roaster/drivers/client.coffee',category:'drivers'})">client.coffee</a> </span></div>
 
 <h2>Script and CSS Pre-compilation</h2>
 
@@ -41,7 +37,9 @@ gwt.open_page = (path = 'index.html') -&gt; gwt.preactions.push -&gt;
 
 <pre title="html" type="html">
 &lt;!DOCTYPE HTML&gt;
-
+  &lt;script&gt;
+    roaster = {opts: {'test-arg': 23}}
+  &lt;/script&gt;
   &lt;script src='/client/bootstrap.coffee?domain=client,library'&gt;
   &lt;/script&gt;
 &lt;/head&gt;
@@ -54,21 +52,16 @@ gwt.open_page = (path = 'index.html') -&gt; gwt.preactions.push -&gt;
 gwt.open_page "gen/usdlc2/Roaster_Client_Support/"+
               "Support/Page_Arguments.html?test-arg2=45"
   
-gwt.add -&gt;
-  console.log "#2 Embedded Page Arguments"
-  @page.test -&gt;
-    usdlc2.check roaster.page_arg('test-arg'), '23'
-gwt.add -&gt;
-  console.log "#2 Address Page Arguments"
-  @page.test -&gt;
-    usdlc2.check roaster.page_arg('test-arg2'), '45'
-gwt.add -&gt;
-  console.log "#2 Default Page Arguments"
-  @page.test -&gt;
-    usdlc2.check roaster.page_arg('unknown', '12'), '12'
-</pre>
+gwt.add "Embedded Page Arguments", -&gt; @page.test -&gt;
+  usdlc2.check roaster.page_arg('test-arg'), '23'
+  
+gwt.add "Address Page Arguments", -&gt; @page.test -&gt;
+  usdlc2.check roaster.page_arg('test-arg2'), '45'
+  
+gwt.add "Default Page Arguments", -&gt; @page.test -&gt;
+  usdlc2.check roaster.page_arg('unknown', '12'), '12'</pre>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="index"><a href="javascript:usdlc.edit_source({value:'index.html',path:'../roaster/index.html',category:'roaster'})">index.html</a> </span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a> </span><span class="create-http-server"><a href="javascript:usdlc.edit_source({value:'create-http-server.coffee',path:'../roaster/server/boot/create-http-server.coffee',category:'boot'})">create-http-server.coffee</a> </span><span class="less"><a href="javascript:usdlc.edit_source({value:'less.coffee',path:'../roaster/drivers/less.coffee',category:'drivers'})">less.coffee</a> </span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/server/boot/server.coffee',category:'boot'})">server.coffee</a> </span><span class="internet"><a href="javascript:usdlc.edit_source({value:'internet.coffee',path:'../roaster/server/internet.coffee',category:'server'})">internet.coffee</a> </span><span class="system"><a href="javascript:usdlc.edit_source({value:'system.coffee',path:'../roaster/server/system.coffee',category:'server'})">system.coffee</a> </span><span class="processes"><a href="javascript:usdlc.edit_source({value:'processes.coffee',path:'../roaster/server/processes.coffee',category:'server'})">processes.coffee</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/bootstrap/init.coffee',category:'bootstrap'})">init.coffee</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="index"><a href="javascript:usdlc.edit_source({value:'index.html',path:'../roaster/index.html',category:'roaster'})">index.html</a> </span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a> </span><span class="create-http-server"><a href="javascript:usdlc.edit_source({value:'create-http-server.coffee',path:'../roaster/server/boot/create-http-server.coffee',category:'boot'})">create-http-server.coffee</a> </span><span class="less"><a href="javascript:usdlc.edit_source({value:'less.coffee',path:'../roaster/drivers/less.coffee',category:'drivers'})">less.coffee</a> </span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/server/boot/server.coffee',category:'boot'})">server.coffee</a> </span><span class="internet"><a href="javascript:usdlc.edit_source({value:'internet.coffee',path:'../roaster/server/internet.coffee',category:'server'})">internet.coffee</a> </span><span class="system"><a href="javascript:usdlc.edit_source({value:'system.coffee',path:'../roaster/server/system.coffee',category:'server'})">system.coffee</a> </span><span class="processes"><a href="javascript:usdlc.edit_source({value:'processes.coffee',path:'../roaster/server/processes.coffee',category:'server'})">processes.coffee</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/bootstrap/init.coffee',category:'bootstrap'})">init.coffee</a> </span><span class="mvc"><a href="javascript:usdlc.edit_source({value:'mvc.coffee',path:'../roaster/client/bootstrap/mvc.coffee',category:'bootstrap'})">mvc.coffee</a> </span></div>
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
 
@@ -79,10 +72,8 @@ gwt.add -&gt;
 <pre title="coffee" type="coffee">
 gwt.open_page "index.html"
 
-gwt.add -&gt;
-  console.log "#2 Header Element"
-  @page.test -&gt;
-    usdlc2.check roaster.head.nodeName, 'HEAD'</pre>
+gwt.add "Header Element", -&gt; @page.test -&gt;
+  usdlc2.check roaster.head.nodeName, 'HEAD'</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
 
@@ -352,23 +343,22 @@ html, .content {
 <pre title="coffee" type="coffee">
 class Body
   constructor: (@host, @options...) -&gt;
-    @contents = @host.getElementsByClass('content')[0]
+    @contents = @host.
+      getElementsByClassName('content')[0]
     
 module.exports = Body</pre>
 
 <p>Integrants by default live in <em>/client/integrants</em>&nbsp;in the current or roaster project. If the name starts with a / then the path is absolute to the project and is not forced into a specific&nbsp;directory. This is useful here since the files are generated in the <em><strong>usdlc2</strong></em> document. Note that the host can be either a raw DOM element or an instance of an integrant.</p>
 
-<pre title="coffee" type="coffee">
+<pre title="gwt.coffee" type="gwt.coffee">
 gwt.open_page "index.html"
 
-name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "MVC_Separation_of_Concerns"
-
-gwt.add -&gt;
-  console.log "#2 MVC"
-  @page.text -&gt;
-    roaster.mvc name, document.body, (err, body) -&gt;
-      roaster.mvc 'panel_stack', body.contents,
+gwt.add "MVC", -&gt; @page.test -&gt;
+  name = "/gen/usdlc2/Roaster_Client_Support/"+
+         "MVC_-_Separation_of_Concerns"
+  require 'mvc', (a) -&gt;
+    a.mvc name, document.body, (err, body) -&gt;
+      a.mvc 'panel_stack', body.contents,
       (err, main) -&gt;
         main.doc     = main.add style:
           "max-height": "80%", height: "50%"
@@ -376,7 +366,7 @@ gwt.add -&gt;
           "max-height": "80%", height: "50%"
         main.windows = main.add style:
           "max-height": "2em"
-        
+
         setTimeout (-&gt;
           top = main.windows.offsetTop
           usdlc2.test top &gt; 100, "Box is at "+top
@@ -390,6 +380,8 @@ gwt.add -&gt;
 	<li><strong>main.windows</strong>: A tab integrant linking to other windows</li>
 </ul>
 
-<div class="metadata Ref">Ref: <span class="mvc"><a href="javascript:usdlc.edit_source({value:'mvc.coffee',path:'../roaster/client/bootstrap/mvc.coffee',category:'bootstrap'})">mvc.coffee</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/integrants/panel_stack.coffee',category:'integrants'})">panel_stack.coffee</a> </span><span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+<div class="metadata Ref">Ref: <span class="mvc"><a href="javascript:usdlc.edit_source({value:'mvc.coffee',path:'../roaster/client/bootstrap/mvc.coffee',category:'bootstrap'})">mvc.coffee</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/integrants/panel_stack.coffee',category:'integrants'})">panel_stack.coffee</a> </span><span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/bootstrap/init.coffee',category:'bootstrap'})">init.coffee</a> </span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a> </span><span class="require"><a href="javascript:usdlc.edit_source({value:'require.coffee',path:'../roaster/drivers/require.coffee',category:'drivers'})">require.coffee</a> </span><span class="loaders"><a href="javascript:usdlc.edit_source({value:'loaders.coffee',path:'../roaster/client/bootstrap/loaders.coffee',category:'bootstrap'})">loaders.coffee</a> </span><span class="client"><a href="javascript:usdlc.edit_source({value:'client.js',path:'../roaster/templates/client.js',category:'templates'})">client.js</a> </span><span class="driver"><a href="javascript:usdlc.edit_source({value:'driver.coffee',path:'../roaster/server/http/driver.coffee',category:'http'})">driver.coffee</a> </span></div>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
 </body>
 </html>
