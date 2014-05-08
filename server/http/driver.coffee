@@ -82,7 +82,7 @@ module.exports.use_template = (exchange, template, next) ->
         if content
           options =
             script: content
-            url: exchange.request.url.pathname
+            url: exchange.request.url.pathname.split('.')[0]
             key: path.basename(exchange.request.url.pathname).
                  split('.')[0]
             template_name: template
