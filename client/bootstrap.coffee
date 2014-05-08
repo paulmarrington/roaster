@@ -2,6 +2,7 @@
 window.require ?= opts: {}; window.roaster ?= {}
 
 parse_require_name = (name) ->
+  name = '/' + name
   name += ".require" if name.indexOf('.') is -1
   return name
 
@@ -31,8 +32,7 @@ window.require = (module_names..., next) ->
       next modules if --loaded is 0 # all loaded
         
   for names in module_names
-    for name in names.split(',')
-      load(name, modules.length)
+    load(name) for name in names.split(',')
   next modules if loaded is 0 # no server loads
           
 roaster.cache = require.cache = {}; require.opts ?= {}
