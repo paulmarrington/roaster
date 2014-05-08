@@ -28,7 +28,7 @@ var mkdirsSync = function (dir) {
 };
 
 var rmdirs = function(path, next) {
-  error = null;
+  var error = null;
   var callback = function(next) {
     return function() {
       if (arguments[0]) {
