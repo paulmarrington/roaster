@@ -1,6 +1,6 @@
 integrant_cache = {}
 
-roaster.mvc = (name, host, opts..., ready) ->
+module.exports = (name, host, opts..., ready) ->
   host = host.host if host.host # element or integrant works
   activate = ->
     return false if not (module = integrant_cache[name])
@@ -19,15 +19,16 @@ roaster.mvc = (name, host, opts..., ready) ->
     base = "client/integrants/"
     
   module_html = null
-  require.css "#{base}#{name}"
-  require.data "#{base}#{name}.html",
-  (error, html) ->
+  require.css "#{base}#{name}.css"
+  require.data "#{base}#{name}.html", (error, html) ->
     if integrant_cache[name]
       integrant_cache[name].html = html
       activate()
     else
       module_html = html # waiting on script
-  require "#{base}#{name}", (exports) ->
+  module_name = "#{base}#{name}"
+  require module_name, (the) ->
+    exports = the[module_name]
     exports.html = module_html
     integrant_cache[name] = exports
     activate() if module_html
