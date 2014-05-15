@@ -2,7 +2,8 @@
 dependency = require 'dependency'
 
 module.exports = dependency(
-  coffeescript: 'https://raw.github.com/jashkenas/coffee-script/master'+
+  coffeescript: 'https://raw.githubusercontent.com/'+
+  'jashkenas/coffee-script/master'+
   '/extras/coffee-script.js|coffee-script/coffee-script'
   '/ext/coffee-script/coffee-script.js'
   )

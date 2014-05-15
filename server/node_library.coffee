@@ -2,7 +2,8 @@
 fs = require 'fs'; Internet = require('internet')
 dirs = require 'dirs'
 
-joyent = "https://raw.github.com/joyent/node/master/lib"
+joyent = "https://raw.githubusercontent.com/"+
+         "joyent/node/master/lib"
 
 module.exports =
   # load node built-in modules from github

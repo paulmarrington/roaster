@@ -2,6 +2,8 @@
 dependency = require 'dependency'
 
 module.exports = dependency(
-  jsonlint: 'https://raw.github.com/zaach/jsonlint/master/lib/jsonlint.js|codemirror/jsonlint'
+  jsonlint: "https://raw.githubusercontent.com/"+
+            "zaach/jsonlint/master/lib/jsonlint.js"+
+            "|codemirror/jsonlint"
   '/ext/codemirror/jsonlint.js'
   )
