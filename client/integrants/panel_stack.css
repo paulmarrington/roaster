@@ -1,13 +1,10 @@
-.panel_stack {
+table.panel_stack {
   width: 100%;
   height: 100%;
 }
 
-.panel_stack .panel {
-  min-height: 50px;
-  max-height: 90%;
-  overflow:   auto;
-  resize:     vertical;
+table.panel_stack > tbody > tr > td {
+  min-height: 20px;
   border:     1px outset #ddd;
   margin:      1px;
 }
