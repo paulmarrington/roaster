@@ -144,6 +144,7 @@ class Internet extends events.EventEmitter
   # read response into a string for further processing
   read_response: (on_complete = ->) ->
     @once 'connect', (error) ->
+      return on_complete('no response') if not @response
       if error then @request?.abort(); @emit 'error', error
       response_stream = new ResponseStream()
       @on 'error', on_complete
