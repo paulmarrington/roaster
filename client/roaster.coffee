@@ -133,8 +133,7 @@ window.require = roaster.clients
 client = (path, next) ->
   match = /.*\/([\w\-]+)\.\w*/.exec(path)
   return console.log "No client '#{path}'" if not match
-  console.log path,match[1];
-  roaster.depends path, 'client', (module) ->
+  roaster.depends path, 'client', (module =  {}) ->
     roaster.cache[match[1]] = module
     if module.initialise
       module.initialise -> next(module)
