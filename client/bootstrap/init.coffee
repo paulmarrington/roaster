@@ -21,10 +21,11 @@ if host = roaster.page_arg 'usdlc2-instrumentation'
   require.script host+"/support/usdlc2_browser.js"
   
 # so commonJS packages have global and process access
-roaster.process =
+roaster.process = window.process =
     noDeprecation: true
     platform: 'browser'
     env: {}
+    nextTick: (action) -> setTimeout action, 10
 roaster.global = window
 
 # Loading other modules - finishing with
