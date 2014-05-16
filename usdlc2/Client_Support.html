@@ -1,3 +1,4 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
 	<title></title>
@@ -23,7 +24,7 @@ gwt.open_page = (path = 'index.html') -&gt; gwt.preactions.push -&gt;
   @page.once 'open', =&gt; @next()
   @page.once 'error', =&gt; @fail()</textarea></p>
 
-<div class="metadata Ref">Ref: <span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/integrants/panel_stack.coffee',category:'integrants'})">panel_stack.coffee</a> </span></div>
+<div class="metadata Ref">Ref: <span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/integrants/panel_stack.coffee',category:'integrants'})">panel_stack.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/integrants/tab_view.coffee',category:'integrants'})">tab_view.coffee</a> </span><span class="ckeditor"><a href="javascript:usdlc.edit_source({value:'ckeditor.coffee',path:'../roaster/client/packages/ckeditor.coffee',category:'packages'})">ckeditor.coffee</a> </span><span class="codemirror"><a href="javascript:usdlc.edit_source({value:'codemirror.coffee',path:'../roaster/client/packages/codemirror.coffee',category:'packages'})">codemirror.coffee</a> </span></div>
 
 <h2>Initialisation</h2>
 
@@ -417,9 +418,45 @@ gwt.add "Panel Stack", -&gt; @page.test -&gt;
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/integrants/panel_stack.coffee',category:'integrants'})">panel_stack.coffee</a> </span><span class="mvc"><a href="javascript:usdlc.edit_source({value:'mvc.coffee',path:'../roaster/client/mvc.coffee',category:'client'})">mvc.coffee</a> </span><span class="internet"><a href="javascript:usdlc.edit_source({value:'internet.coffee',path:'../roaster/server/internet.coffee',category:'server'})">internet.coffee</a> </span><span class="dirs"><a href="javascript:usdlc.edit_source({value:'dirs.js',path:'../roaster/server/dirs.js',category:'server'})">dirs.js</a> </span><span class="processes"><a href="javascript:usdlc.edit_source({value:'processes.coffee',path:'../roaster/server/processes.coffee',category:'server'})">processes.coffee</a> </span><span class="ckeditor"><a href="javascript:usdlc.edit_source({value:'ckeditor.coffee',path:'../roaster/client/packages/ckeditor.coffee',category:'packages'})">ckeditor.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/integrants/tab_view.coffee',category:'integrants'})">tab_view.coffee</a> </span><span class="roaster"><a href="javascript:usdlc.edit_source({value:'roaster.coffee',path:'../roaster/client/roaster.coffee',category:'client'})">roaster.coffee</a> </span></div>
 
+<h3>Panel Switcher</h3>
+
+<p>Given a host, add a series of panels where only one will be visible at any one time. Call add() and append() for new panels and select() to ;choose which one is displayed.</p>
+
+<pre title="coffee" type="coffee">
+gwt.open_page "index.html"
+
+gwt.add "Panel Switcher", -&gt; @page.test -&gt;
+  require 'mvc', (the) -&gt;
+    host = document.body
+    the.mvc 'panel_switcher', host, (err, panes) -&gt;
+      panes.add
+        one:   style: "background-color": "red"
+        two:   style: "background-color": "green"
+      panes.one.innerHTML = "One"
+      panes.two.innerHTML = "Two"
+      
+      colour = (expected_colour) -&gt;
+        hidden = host.getElementsByClassName('hidden')
+        return false if hidden.length isnt 1
+        bg_colour = hidden[0].style["background-color"]
+        return bg_colour isnt expected_colour
+         
+      panes.select "one"
+      process.nextTick -&gt;
+        return gwt.fail('One') if not colour "red"
+        
+        panes.select "two"
+        process.nextTick -&gt;
+          return gwt.fail('Two') if not colour "green"
+          gwt.pass()</pre>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/server/boot/server.coffee',category:'boot'})">server.coffee</a> </span><span class="panel_switcher"><a href="javascript:usdlc.edit_source({value:'panel_switcher.coffee',path:'../roaster/client/integrants/panel_switcher.coffee',category:'integrants'})">panel_switcher.coffee</a> </span><span class="mvc"><a href="javascript:usdlc.edit_source({value:'mvc.coffee',path:'../roaster/client/mvc.coffee',category:'client'})">mvc.coffee</a> </span></div>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
+
 <h3>Tab View</h3>
 
-<p>The Tabs integrant splits the host into a two element panel stack - one for the tabs and one for the view panels. If a tab has an action property, this will be called if the tab is selected. A panel is associated with the tab that does not have an action. If you want both, set panel: true. You can select a tab programmatically by name.</p>
+<p>Display tabs. When selected, it's action property is called. You can select() a tab programmatically.</p>
 
 <pre title="coffee" type="coffee">
 gwt.open_page "index.html"
@@ -427,19 +464,25 @@ gwt.open_page "index.html"
 gwt.add "Tab View", -&gt; @page.test -&gt;
   require 'mvc', (the) -&gt;
     the.mvc 'tab_view', document.body, (err, tabs) -&gt;
-      count: -&gt;
+      counter = 0
+      act = (tab) -&gt;
+        counter += tab.opts.nn
+      
       tabs.add
-        one: style: content: 'One'
-        two:
-          action: count
-          panel: true
-          style: content: 'Two'
-        three: action: count, style: content: 'Three'
-        four: style: content: 'Four'
+        One: action: act, nn: 1, style: content: 'One'
+        Two: action: act, nn: 2, style: content: 'Two'
+        Three: action: act, nn: 3, style: content: 'Three'
+        Four: action: act, nn: 4, style: content: 'Four'
         
       process.nextTick -&gt;
+        return gwt.fail('One') if counter isnt 1
+        tabs.select 'Two'
+        return gwt.fail('Two') if counter isnt 3
+        tabs.Three.click()
+        return gwt.fail('Three') if counter isnt 6
+        gwt.pass()
 </pre>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="system"><a href="javascript:usdlc.edit_source({value:'system.coffee',path:'../roaster/server/system.coffee',category:'server'})">system.coffee</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="system"><a href="javascript:usdlc.edit_source({value:'system.coffee',path:'../roaster/server/system.coffee',category:'server'})">system.coffee</a> </span><span class="mvc"><a href="javascript:usdlc.edit_source({value:'mvc.coffee',path:'../roaster/client/mvc.coffee',category:'client'})">mvc.coffee</a> </span><span class="panel_switcher"><a href="javascript:usdlc.edit_source({value:'panel_switcher.html',path:'../roaster/client/integrants/panel_switcher.html',category:'integrants'})">panel_switcher.html</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.html',path:'../roaster/client/integrants/panel_stack.html',category:'integrants'})">panel_stack.html</a> </span></div>
 </body>
 </html>

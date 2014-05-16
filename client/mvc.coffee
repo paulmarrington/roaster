@@ -13,7 +13,11 @@ integrant =
     @prepare? panel
     return panel
   add: (items) ->
-    @[name] = @add(opts) for name, opts of items
+    @[name] = @append(opts) for name, opts of items
+  select: (item) ->
+    console.log item+"="+@[item].innerHTML+" from "+@selected?.innerHTML
+    @selection @selected, false if @selected
+    @selection @selected = @[item], true
       
 module.exports = mvc = (name, host, opts, ready) ->
   if not ready and opts instanceof Function
