@@ -101,7 +101,7 @@ class Processes
     if @capture_io
       @proc.stdout?.pipe process.stdout
       @proc.stderr?.pipe process.stderr
-    @proc.on 'error', (err) -> @next err
+    @proc.on 'error', (err) => @next err
     @proc.on 'exit', (@code, @signal) =>
       if @code
         return @next(new Error("return code #{@code}", @args))

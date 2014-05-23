@@ -4,3 +4,4 @@ module.exports = (environment) ->
   environment.cors_whitelist = []
 
   environment.extensions = css:'css', less:'css', scss: 'css', styl: 'css'
+  environment.driver_alternates = css: ['less','stylus']

@@ -15,7 +15,6 @@ integrant =
   add: (items) ->
     @[name] = @append(opts) for name, opts of items
   select: (item) ->
-    console.log item+"="+@[item].innerHTML+" from "+@selected?.innerHTML
     @selection @selected, false if @selected
     @selection @selected = @[item], true
       

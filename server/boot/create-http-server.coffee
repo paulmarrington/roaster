@@ -7,6 +7,7 @@ querystring = require 'querystring'
 
 global.http_processors.push (exchange, next_processor) ->
   files.find exchange.request.url.pathname, (filename) ->
+    exchange.request.url.exists = filename
     filename ?= exchange.request.url.pathname
     try
       exchange.request.filename = filename
