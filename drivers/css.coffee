@@ -15,6 +15,6 @@ module.exports = (exchange, next) ->
     fn = exchange.request.filename.replace /\.css$/, '.'+ext
     files.find fn, (name) ->
       if name
-        exchange.request.filename = fn
+        exchange.request.filename = name
         return require("drivers/#{ext}")(exchange, next)
       find()

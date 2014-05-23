@@ -4,12 +4,15 @@ integrant =
   mvc:   mvc
   style: (element, styles) ->
     element.style[k] = v for k, v of styles
+    element.style.content = "asdfasfdsafd"
+    console.log 3,element.style.content,styles
   append: (opts = {}) ->
     @list ?= []
     @host.appendChild panel = @template.cloneNode(true)
     @list.push panel
     panel.opts = opts
     @style panel, opts.style
+    panel.innerHTML = opts.content if opts.content
     @prepare? panel
     return panel
   add: (items) ->
