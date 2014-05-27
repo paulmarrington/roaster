@@ -144,16 +144,13 @@ class Internet extends events.EventEmitter
   # read response into a string for further processing
   read_response: (on_complete = ->) ->
     @once 'connect', (error) =>
-      console.log 7,@emit "testy", "asdfasfasdfasfas"
       return on_complete('no response') if not @response
       if error then @request?.abort(); @emit 'error', error
       @on 'error', on_complete
       chunks = []
       @response.on 'data', (chunk) -> chunks.push chunk
       @response.on 'end', =>
-        console.log 8,@emit "testy", "asdfasfasdfasfas"
         @response_data = chunks.join('')
-        console.log 1,"finishing emitted next",
         @emit 'finish', @response_data
         on_complete null, @response_data
       
