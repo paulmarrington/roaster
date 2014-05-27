@@ -45,7 +45,7 @@ class Internet extends events.EventEmitter
   # put a stream down the http line
   put:  (address, @options..., on_request) ->
     @once 'request', on_request
-    @read_response()
+    @read_response (err, data) ->
     @send_request 'PUT', address
 
   # helper for http GET - returns request object
@@ -127,7 +127,7 @@ class Internet extends events.EventEmitter
       @request?.abort()
       @request = transport.request options, (@response) =>
         @emit 'connect', null, @request, @response
-        @removeAllListeners()
+        #@removeAllListeners()
       @emit 'request', @request
       @request.on 'error', (error) =>
         if error?.code is 'ECONNREFUSED' and
@@ -143,22 +143,21 @@ class Internet extends events.EventEmitter
 
   # read response into a string for further processing
   read_response: (on_complete = ->) ->
-    @once 'connect', (error) ->
+    @once 'connect', (error) =>
+      console.log 7,@emit "testy", "asdfasfasdfasfas"
       return on_complete('no response') if not @response
       if error then @request?.abort(); @emit 'error', error
-      response_stream = new ResponseStream()
       @on 'error', on_complete
-      response_stream.on 'finish', (@response_data) =>
+      chunks = []
+      @response.on 'data', (chunk) -> chunks.push chunk
+      @response.on 'end', =>
+        console.log 8,@emit "testy", "asdfasfasdfasfas"
+        @response_data = chunks.join('')
+        console.log 1,"finishing emitted next",
         @emit 'finish', @response_data
         on_complete null, @response_data
-      @response.pipe response_stream
       
   build_url: (url, query) ->
     return "#{url}?#{querystring.stringify query}"
-
-class ResponseStream extends require('stream').Writable
-  constructor: -> @chunks = []
-  end: (dat) -> @write(dat); @emit 'finish', @chunks.join('')
-  write: (dat) -> @chunks.push dat; return true
 
 module.exports = Internet
