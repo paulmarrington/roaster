@@ -9,6 +9,6 @@ class TabView
       for other in @list
         other.classList.remove 'tab_view_selected'
       tab.classList.add 'tab_view_selected'
-      tab.opts.action(tab)
+      tab.parent_panel.select(tab)
     
 module.exports.client = TabView

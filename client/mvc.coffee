@@ -4,8 +4,6 @@ integrant =
   mvc:   mvc
   style: (element, styles) ->
     element.style[k] = v for k, v of styles
-    element.style.content = "asdfasfdsafd"
-    console.log 3,element.style.content,styles
   append: (opts = {}) ->
     @list ?= []
     @host.appendChild panel = @template.cloneNode(true)
@@ -13,13 +11,17 @@ integrant =
     panel.opts = opts
     @style panel, opts.style
     panel.innerHTML = opts.content if opts.content
+    panel.parent_panel = @
     @prepare? panel
     return panel
   add: (items) ->
-    @[name] = @append(opts) for name, opts of items
-  select: (item) ->
-    @selection @selected, false if @selected
-    @selection @selected = @[item], true
+    for name, opts of items
+      opts.name ?= name
+      @[name] = tt = @append(opts)
+  select: (tab) ->
+    tab = @[tab] if typeof tab is 'string'
+    tab.opts.action @selected, false if @selected
+    tab.opts.action @selected = tab, true
       
 module.exports = mvc = (name, host, opts, ready) ->
   if not ready and opts instanceof Function
