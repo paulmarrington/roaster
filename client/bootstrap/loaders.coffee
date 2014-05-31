@@ -1,9 +1,37 @@
+require.file_type = (name) ->
+  name.substr((~-name.lastIndexOf(".") >>> 0) + 2)
+
+require.build_url = (url, args) ->
+  sep = if url.indexOf('?') is -1 then '?' else '&'
+  items = ("#{key}=#{value}" for key, value of args)
+  return "#{url}#{sep}#{items.join('&')}"
+
+require.dependency = (packages, libraries..., ready) ->
+  url = require.build_url \
+    '/server/http/dependency.coffee', packages
+  require.json url, -> do load_one = ->
+    return ready() if not libraries.length
+    lib = libraries.shift()
+    switch require.file_type(lib)
+      when 'css'
+        require.css lib; load_one()
+      else
+        require.scipt lib, load_one
+
+require.packages = (packages..., ready) ->
+  do load_one = ->
+    return ready() if not packages.length
+    pkg = "#{pkg_dir}/#{packages.shift()}.coffee"
+    require pkg, (the) -> the.pkg(load_one)
+
 require.json = (url, on_loaded) ->
   @data url, (error, text) ->
     return on_loaded(error) if error
     on_loaded null, JSON.parse text
 
 require.css = (url) ->
+  return if require.cache[url]
+  require.cache[url] = true
   link = document.createElement("link")
   link.type = "text/css"
   link.rel = 'stylesheet'
