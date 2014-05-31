@@ -1,8 +1,18 @@
 class TabView
+  message: (msg) ->
+    if not msg.length
+      return if @messages.innerHTML[0] is '<'
+      message = @default_message
+    @messages.innerHTML = msg
+    
+  error: (msg) -> @message "<b>"+msg+"</b>"
+  
   constructor: (host, mvc) ->
-    @host = host.firstElementChild # div
-    @template = @host.getElementsByClassName('tab_view')[0]
-    @template.parentNode.removeChild @template
+    @default_message = ''
+    @messages = host.getElementsByClassName('messages')[0]
+    @template = host.getElementsByClassName('tab_view')[0]
+    @host = @template.parentNode
+    @host.removeChild @template
     
   prepare: (tab) ->
     tab.onclick = =>

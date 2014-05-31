@@ -1,53 +1,64 @@
 @tabs-height: 12px;
 @tab-height: @tabs-height - 8;
 @tab-border-radius: 3px 3px 0 0;
-.tab-background(@from, @to) {
-  background: @from;
-  background: -moz-linear-gradient(top, @from 0%, @to 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@from), color-stop(100%,@to));
-  background: -webkit-linear-gradient(top, @from 0%, @to 100%);
-  background: -o-linear-gradient(top, @from 0%,@to 100%);
-  background: -ms-linear-gradient(top, @from 0%,@to 100%);
-  background: linear-gradient(@to bottom, @from 0%,@to 100%);
-}
-
 .tab_view_container {
   height: @tabs-height;
   display: inline-block;
   margin: 5px 0 0;
   z-index: 2;
   left: 10px;
-}
+  
+  .tab-background(@from, @to) {
+    background: @from;
+    background: -moz-linear-gradient(top, @from 0%, @to 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@from), color-stop(100%,@to));
+    background: -webkit-linear-gradient(top, @from 0%, @to 100%);
+    background: -o-linear-gradient(top, @from 0%,@to 100%);
+    background: -ms-linear-gradient(top, @from 0%,@to 100%);
+    background: linear-gradient(@to bottom, @from 0%,@to 100%);
+  }
 
-a.tab_view {
-  font-size: @tabs-height;
-  text-decoration: none;
-  height: @tab-height;
-  padding: 4px 8px;
-  margin-right: 3px;
-  display: inline-block;
-  cursor: pointer;
-  line-height: @tab-height;
-  outline: none;
-  color: #595959;
-  border: 1px solid #bfbfbf;
+  a.tab_view {
+    font-size: @tabs-height;
+    text-decoration: none;
+    height: @tab-height;
+    padding: 4px 8px;
+    margin-right: 3px;
+    display: inline-block;
+    cursor: pointer;
+    line-height: @tab-height;
+    outline: none;
+    color: #595959;
+    border: 1px solid #bfbfbf;
 
-  -moz-border-radius: @tab-border-radius;
-  -webkit-border-radius: @tab-border-radius;
-  border-radius: @tab-border-radius;
+    -moz-border-radius: @tab-border-radius;
+    -webkit-border-radius: @tab-border-radius;
+    border-radius: @tab-border-radius;
 
-  .tab-background(#fafafa, #ededed);
-}
-a.tab_view:hover {
-  .tab-background(#ebebeb, #dfdfdf);
-}
-a.tab_view_selected {
-  background: #fff;
-  color: #383838;
-  border-bottom-color: #fff;
-  cursor: default;
-}
-/* A hover state for selected tab. */
-a.tab_view_selected:hover {
-  .tab-background(#ededed, #ffffff)
+    .tab-background(#fafafa, #ededed);
+    
+    &:hover {
+    .tab-background(#ebebeb, #dfdfdf);
+    }
+    &.tab_view_selected {
+      background: #fff;
+      color: #383838;
+      border-bottom-color: #fff;
+      cursor: default;
+      
+      &:hover {
+        .tab-background(#ededed, #ffffff)
+      }
+    }
+  }
+  .messages {
+    top: -2px;
+    position: relative;
+    padding-left: 1em;
+    font-size: 90%;
+    color: #AAA;
+    font-style: italic;
+    b { color: red; }
+    i { color: blue; font-weight: light; }
+  }
 }
