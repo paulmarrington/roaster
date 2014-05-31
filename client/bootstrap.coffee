@@ -48,6 +48,8 @@ require._script = (url, on_loaded) ->
   script.src = url
   roaster.head.appendChild(script)
 require.script = (url, on_loaded = ->) ->
+  return on_loaded() if require.cache[url]
+  require.cache[url] = true
   sep = if url.indexOf('?') is -1 then '?' else '&'
   url += sep+'domain=client,library'
   require._script url, on_loaded
