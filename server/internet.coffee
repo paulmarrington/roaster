@@ -146,10 +146,11 @@ class Internet extends events.EventEmitter
     @once 'connect', (error) =>
       return on_complete('no response') if not @response
       if error then @request?.abort(); @emit 'error', error
-      @on 'error', on_complete
+      @once 'error', on_complete
       chunks = []
-      @response.on 'data', (chunk) -> chunks.push chunk
-      @response.on 'end', =>
+      @response.on 'data', dl = (chunk) -> chunks.push chunk
+      @response.once 'end', =>
+        @response.removeListener 'data', dl
         @response_data = chunks.join('')
         @emit 'finish', @response_data
         on_complete null, @response_data
