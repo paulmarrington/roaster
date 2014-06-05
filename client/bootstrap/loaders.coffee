@@ -16,13 +16,14 @@ require.dependency = (packages, libraries..., ready) ->
       when 'css'
         require.css lib; load_one()
       else
-        require.scipt lib, load_one
+        require.script lib, load_one
 
 require.packages = (packages..., ready) ->
   do load_one = ->
     return ready() if not packages.length
-    pkg = "#{pkg_dir}/#{packages.shift()}.coffee"
-    require pkg, (the) -> the.pkg(load_one)
+    name = packages.shift()
+    pkg = "client/packages/#{name}"
+    require pkg, (the) -> the[pkg](load_one)
 
 require.json = (url, on_loaded) ->
   @data url, (error, text) ->

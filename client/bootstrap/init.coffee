@@ -31,3 +31,5 @@ roaster.global = window
 # Loading other modules - finishing with
 # project specific initialisation in client/app.coffee or js
 require "bootstrap/loaders,app", ->
+  require.on_ready = (action) -> action()
+  action() for action in require.ready
