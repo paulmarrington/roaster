@@ -7,6 +7,6 @@ seed = ->
 module.exports = (request, response) ->
   if not (key = cookies.get request, 'roaster-session')
     key = seed();
-    cookies.set 'roaster-session', key
+    cookies.set response, 'roaster-session', key
     sessions[key] = user: 'guest'
   return sessions[key]
