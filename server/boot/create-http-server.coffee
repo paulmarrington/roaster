@@ -1,9 +1,10 @@
-# Copyright (C) 2013 paul@marrington.net, see GPL for license
+# Copyright (C) 2013-4 paul@marrington.net, see GPL for license
 http = require 'http'; url = require 'url'
 files = require 'files'; driver = require 'http/driver'
 respond = require 'http/respond'
 fs = require 'fs'; util = require 'util'
 querystring = require 'querystring'
+sessions = require './sessions'
 
 global.http_processors.push (exchange, next_processor) ->
   files.find exchange.request.url.pathname, (filename) ->
@@ -55,8 +56,9 @@ module.exports = (environment) ->
         try next null, parser body.join('')
         catch err then next err
       return true
+    session = sessions(request, response)
     # an exchange object that is passed to http processors
-    exchange = { request, response, environment }
+    exchange = { request, response, environment, session }
     exchange.respond = respond(exchange)
     # addresses can start with /!domains/absolute-path
     if request.url.pathname[1] == '!'
