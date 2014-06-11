@@ -1,7 +1,7 @@
 module.exports =
 
-  set: (response, name, value) ->
-    response.setHeader "Set-Cookie", name+'='+value
+  set: (response, cookies) ->
+    response.setHeader "Set-Cookie", k+'='+v for k, v of cookies
 
   get: (request, name) ->
     cookies = request.headers.cookie

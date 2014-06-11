@@ -5,8 +5,8 @@ seed = ->
   (now + Math.floor(Math.random()*1000000000000)).toString(36);
 
 module.exports = (request, response) ->
-  if not (key = cookies.get request, 'roaster-session')
+  if not (key = cookies.get request, 'roaster_session')
     key = seed();
-    cookies.set response, 'roaster-session', key
+    cookies.set response, roaster_session: key
     sessions[key] = user: 'guest'
   return sessions[key]
