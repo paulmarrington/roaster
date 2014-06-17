@@ -119,6 +119,10 @@ class Internet extends events.EventEmitter
       options.rejectUnauthorized = false
       options.agent = new https.Agent(options)
     options.port = address.port
+    if @cookies
+      c = (k+'='+v for k,v of @cookies)
+      c.unshift(@options.headers.Cookie) if @options.headers.Cookie
+      @options.headers.Cookie = c.join(';')
     options[key] = value for key, value of @_options
     @_options = {}
     clock = timer silent:true
@@ -127,7 +131,7 @@ class Internet extends events.EventEmitter
       @request?.abort()
       @request = transport.request options, (@response) =>
         @emit 'connect', null, @request, @response
-        #@removeAllListeners()
+      @request
       @emit 'request', @request
       @request.on 'error', (error) =>
         if error?.code is 'ECONNREFUSED' and
@@ -150,6 +154,11 @@ class Internet extends events.EventEmitter
       chunks = []
       @response.on 'data', dl = (chunk) -> chunks.push chunk
       @response.once 'end', =>
+        if @response.headers["set-cookie"]
+          for cookie in @response.headers["set-cookie"]
+            [k,v] = cookie.split(';')[0].split('=')
+            @cookies ?= {}
+            @cookies[k] = v
         @response.removeListener 'data', dl
         @response_data = chunks.join('')
         @emit 'finish', @response_data
