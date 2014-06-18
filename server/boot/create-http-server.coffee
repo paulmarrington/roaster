@@ -43,6 +43,10 @@ module.exports = (environment) ->
           "<script>setTimeout('window.location.href = "+
           "window.location.href', 2000)</script>")
         process.exit(0)
+    # client wants to know what services are available
+    if request.method is 'OPTIONS'
+      response.setHeader 'Allow', 'GET, PUT'
+      return response.end()
     # integrate post data into the query string
     request.post = (parser, next) ->
       if not next
