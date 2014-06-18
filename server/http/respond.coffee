@@ -15,6 +15,8 @@ class Respond
       exchange.environment.cors_whitelist.join ' ')
     @exchange.response.setHeader(
       'Access-Control-Allow-Headers', 'Content-Type')
+    @exchange.response.setHeader(
+      'Access-Control-Allow-Credentials', 'true')
   # by default send it as static content - browser caches forever
   static_file: (file_path) ->
     @exchange.request.filename = file_path if file_path
