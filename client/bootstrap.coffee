@@ -1,5 +1,5 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
-window.require ?= opts: {}; window.roaster ?= {}
+window.roaster ?= {}
 
 parse_require_name = (name) ->
   name = '/' + name
@@ -34,8 +34,11 @@ window.require = (module_names..., next) ->
   for names in module_names
     load(name) for name in names.split(',')
   next modules if loaded is 0 # no server loads
-          
-roaster.cache = require.cache = {}; require.opts ?= {}
+
+window.require.ready = []
+window.require.on_ready = (action) -> require.ready.push action
+
+roaster.cache = require.cache = {}; require.opts = {}
 roaster.head = document.getElementsByTagName('head')[0]
 
 # load a script from the server using <script> tag

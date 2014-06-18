@@ -1,41 +1,18 @@
 integrant_cache = {}
 
-integrant =
-  mvc:   mvc
-  style: (element, styles) ->
-    element.style[k] = v for k, v of styles
-  append: (opts = {}) ->
-    @list ?= []
-    @host.appendChild panel = @template.cloneNode(true)
-    @list.push panel
-    panel.opts = opts
-    @style panel, opts.style
-    panel.innerHTML = opts.content if opts.content
-    panel.parent_panel = @
-    @prepare? panel
-    return panel
-  add: (items) ->
-    for name, opts of items
-      opts.name ?= name
-      @[name] = tt = @append(opts)
-  select: (tab) ->
-    tab = @[tab] if typeof tab is 'string'
-    tab.opts.action @selected, false if @selected
-    tab.opts.action @selected = tab, true
-      
-module.exports = mvc = (name, host, opts, ready) ->
+module.exports = mvc = (id, name, host, opts, ready) ->
+  host = host.templates[0].host if host.templates?[0]?.host
   if not ready and opts instanceof Function
     ready = opts; opts = {}
-  host = host.host if host.host # element or integrant works
+  opts ?= {}
   activate = ->
     return false if not (module = integrant_cache[name])
     host.innerHTML = module.html
     host.classList.add name
-    instance = new module(host, mvc, opts...)
-    instance.host ?= host; instance.opts ?= opts[0]
-    instance.template ?= instance.host.firstElementChild
-    instance[k] = v for k, v of integrant
-    ready null, instance
+    host.integrant = new module()
+    host.integrant[k] = v for k,v of {id,name,host,mvc,opts}
+    host.integrant.fetch_templates()
+    host.integrant.init (err) -> ready(err, host.integrant)
     return true
   return if activate()
   

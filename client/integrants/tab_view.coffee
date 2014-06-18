@@ -1,4 +1,13 @@
-class TabView
+# Copyright (C) 2014 paul@marrington.net, see /GPL for license
+Integrant = require 'client/Integrant'
+
+class TabView extends Integrant
+  constructor: (@name, host, @mvc, @opts) ->
+    @default_message = ''
+    @messages = host.getElementsByClassName('messages')[0]
+    [@host, @template] = @mvc.template \
+      host.getElementsByClassName('tab_view')[0]
+    
   message: (msg) ->
     if not msg.length
       return if @messages.innerHTML[0] is '<'
@@ -6,19 +15,12 @@ class TabView
     @messages.innerHTML = msg
     
   error: (msg) -> @message "<b>"+msg+"</b>"
-  
-  constructor: (host, mvc) ->
-    @default_message = ''
-    @messages = host.getElementsByClassName('messages')[0]
-    @template = host.getElementsByClassName('tab_view')[0]
-    @host = @template.parentNode
-    @host.removeChild @template
     
   prepare: (tab) ->
     tab.onclick = =>
       for other in @list
         other.classList.remove 'tab_view_selected'
       tab.classList.add 'tab_view_selected'
-      tab.parent_panel.select(tab)
+      tab.integrant.select(tab)
     
 module.exports.client = TabView
