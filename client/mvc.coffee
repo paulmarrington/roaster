@@ -1,6 +1,6 @@
 integrant_cache = {}
 
-module.exports = mvc = (id, name, host, opts, ready) ->
+module.exports = mvc = (picture, host, ready) ->
   host = host.templates[0].host if host.templates?[0]?.host
   if not ready and opts instanceof Function
     ready = opts; opts = {}
