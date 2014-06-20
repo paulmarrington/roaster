@@ -43,10 +43,6 @@ module.exports = (environment) ->
           "<script>setTimeout('window.location.href = "+
           "window.location.href', 2000)</script>")
         process.exit(0)
-    # client wants to know what services are available
-    if request.method is 'OPTIONS'
-      response.setHeader 'Allow', 'GET, PUT'
-      return response.end()
     # integrate post data into the query string
     request.post = (parser, next) ->
       if not next
@@ -64,6 +60,10 @@ module.exports = (environment) ->
     # an exchange object that is passed to http processors
     exchange = { request, response, environment, session }
     exchange.respond = respond(exchange)
+    # client wants to know what services are available
+    if request.method is 'OPTIONS'
+      response.setHeader 'Allow', 'GET, PUT'
+      return response.end()
     # addresses can start with /!domains/absolute-path
     if request.url.pathname[1] == '!'
       slash = request.url.pathname.indexOf('/', 2)
