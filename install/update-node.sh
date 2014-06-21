@@ -21,6 +21,7 @@ case $os in
 	Darwin-i386) fn=node-$nodeVersion-darwin-x86.tar.gz ;;
 	Linux-x86_64) fn=node-$nodeVersion-linux-x64.tar.gz ;;
 	Linux-i386) fn=node-$nodeVersion-linux-x86.tar.gz ;;
+	Linux-i686) fn=node-$nodeVersion-linux-x86.tar.gz ;;
     MINGW32_NT*) fn=node.exe
      ar=node-$nodeVersion-windows-x86.exe
      function unpack() {
