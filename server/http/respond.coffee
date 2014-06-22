@@ -25,11 +25,10 @@ class Respond
     return @
   send_static: (next = ->) ->
     fs.stat name = @exchange.request.filename, (err, stats) =>
+      if stats?.isDirectory() and name.slice(-1) != path.sep
+        name += path.sep
       if path.sep isnt '/'
         name = name.replace new RegExp("\\#{path.sep}","g"), "/"
-      if stats?.isDirectory()
-        name += path.sep if name.slice(-1) != path.sep
-        name += 'index.html'
       # gzip name, (error, zipped-name) =>
       #   @exchange.response.setHeader 'Content-Encoding', 'gzip'
       #   @set_mime_type name
@@ -40,7 +39,7 @@ class Respond
       sender.req.res = @exchange.response # send bug
       sender.pipe(@exchange.response)
       next()
-   # respond to client with code to run in a sandbox
+  # respond to client with code to run in a sandbox
   client: (code) ->
     client = @exchange.request.filename
     return @script(clients[client]) if clients[client]
