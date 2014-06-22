@@ -37,46 +37,44 @@ environment = process.environment =
   pid: process.pid # for kill, etc
 global.http_processors = []
 # allow project to tweak settings before we commit to action
-project_init.pre environment
-args = system.command_line(environment)
+project_init.pre environment, ->
+  args = system.command_line(environment)
+  # load an environment related config file
+  # related file can be anywhere on the node requires paths + /config/
+  config = args.config ? environment.config
+  require("config/#{config}")(environment)
+  # Then over-ride as needed in a local (repo excluded) configuration file
+  try require("local/config")(environment) catch error
+  # lastly over-ride with anything from the command line
+  environment[key] = value for key, value of args
+  # environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
+  # prepare copies for client and display
+  default_environment = []
+  configuration = {}
+  for name, value of environment
+    default_environment.push "#{name}=#{value}" if not (value instanceof Object)
+    configuration[name] = value
+  default_environment.sort()
+  environment.configuration = configuration
 
-# load an environment related config file
-# related file can be anywhere on the node requires paths + /config/
-config = args.config ? environment.config
-require("config/#{config}")(environment)
-# Then over-ride as needed in a local (repo excluded) configuration file
-try require("local/config")(environment) catch error
-# lastly over-ride with anything from the command line
-environment[key] = value for key, value of args
-# environment.debug = process.env.DEBUG_NODE ? (environment.config is 'debug')
-# prepare copies for client and display
-default_environment = []
-configuration = {}
-for name, value of environment
-  default_environment.push "#{name}=#{value}" if not (value instanceof Object)
-  configuration[name] = value
-default_environment.sort()
-environment.configuration = configuration
+  # create a server ready to listen
+  create_http_server = require('boot/create-http-server')
+  create_http_server(environment)
+  # kick-off
+  environment.http_server.listen environment.port
+  # lastly we do more project level initialisation
+  project_init.post environment, ->
+    console.log """
 
-# create a server ready to listen
-create_http_server = require('boot/create-http-server')
-create_http_server(environment)
-# kick-off
-environment.http_server.listen environment.port
-# lastly we do more project level initialisation
-project_init.post environment
+    http://#{require('system').hosts()[0]}:#{environment.port}
 
-console.log """
+    usage: ./go.sh server [name=value]...
+        #{default_environment.join '\n    '}
 
-http://#{require('system').hosts()[0]}:#{environment.port}
+    """
 
-usage: ./go.sh server [name=value]...
-    #{default_environment.join '\n    '}
-
-"""
-
-if npm.outstanding()
-  console.log "Loading dependencies..."
-  npm.on_complete -> console.log "Ready..."
-else
-  console.log "Ready..."
+    if npm.outstanding()
+      console.log "Loading dependencies..."
+      npm.on_complete -> console.log "Ready..."
+    else
+      console.log "Ready..."
