@@ -69,7 +69,8 @@ module.exports = (environment) ->
       slash = request.url.pathname.indexOf('/', 2)
       # query string domain takes precedence over /! source
       if not request.url.query.domain
-        request.url.query.domain = request.url.pathname.slice 2, slash
+        request.url.query.domain =
+          request.url.pathname.slice 2, slash
       request.url.pathname = request.url.pathname.slice slash
     # run through all the http processors until one says 'all done'
     processors = global.http_processors.slice(0) # clone

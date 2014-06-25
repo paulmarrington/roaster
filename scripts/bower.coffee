@@ -3,4 +3,5 @@ npm = require 'npm'
 
 module.exports = (args...) ->
   npm 'bower', (err, bower) ->
-    bower.commands.install()
+    args.unshift 'bower'
+    bower.commands.install.line(args)
