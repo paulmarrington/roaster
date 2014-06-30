@@ -62,7 +62,7 @@ module.exports = (environment) ->
     exchange.respond = respond(exchange)
     # client wants to know what services are available
     if request.method is 'OPTIONS'
-      response.setHeader 'Allow', 'GET, PUT'
+      response.setHeader 'Allow', 'GET,PUT,DELETE,OPTIONS'
       return response.end()
     # addresses can start with /!domains/absolute-path
     if request.url.pathname[1] == '!'
