@@ -50,10 +50,11 @@ class Processes
   # but pipes I/o
   cmd: (@args..., @next) ->
     @program = process.env.SHELL ? process.env.ComSpec
-    is_unix = require('system').expecting 'unix'
-    if @args.length
-      c_switch = if is_unix then '-c' else '/c'
-      @args = [c_switch, @args...]
+    if require('system').expecting 'unix'
+      switches = if @args.length then '-lc' else '-l'
+      @args = [switches, @args...]
+    else if @args.length
+      @args = ['/c', @args...]
     @_exec(child_process.spawn)
     return @
 
