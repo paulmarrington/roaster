@@ -17,6 +17,8 @@ class Respond
       'Access-Control-Allow-Headers', 'Content-Type')
     @exchange.response.setHeader(
       'Access-Control-Allow-Credentials', 'true')
+    @exchange.response.setHeader(
+      'Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS')
   # by default send it as static content - browser caches forever
   static_file: (file_path) ->
     @exchange.request.filename = file_path if file_path
