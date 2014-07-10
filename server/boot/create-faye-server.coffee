@@ -26,7 +26,7 @@ npm = require 'npm'
 # faye.publish '/channel', text: 'Hello'
 
 module.exports = (environment, next) ->
-  npm 'ext/node_modules/faye', (error, faye) ->
+  npm 'faye', (error, faye) ->
     bayeux = new faye.NodeAdapter mount: '/faye', timeout: 45
     bayeux.attach environment.http_server
     environment.faye = faye.local_client = bayeux.getClient()

@@ -32,10 +32,11 @@ check_missing = function(name, error) {
 // Load npm module if new, otherwise behave as require does
 module.exports = function(name, on_loaded) {
     try {
-        on_loaded(null, require(name));
+      mod = "ext/node_modules/"+name
+        on_loaded(null, require(mod));
     } catch(error) {
-        check_missing(name, error);
-        return load(name, on_loaded);
+        check_missing(mod, error);
+        return load(mod, on_loaded);
     }
 };
 

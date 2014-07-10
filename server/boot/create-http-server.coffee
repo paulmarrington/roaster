@@ -62,14 +62,15 @@ module.exports = (environment) ->
     exchange.respond = respond(exchange)
     # client wants to know what services are available
     if request.method is 'OPTIONS'
-      response.setHeader 'Allow', 'GET, PUT'
+      response.setHeader 'Allow', 'GET,PUT,DELETE,OPTIONS'
       return response.end()
     # addresses can start with /!domains/absolute-path
     if request.url.pathname[1] == '!'
       slash = request.url.pathname.indexOf('/', 2)
       # query string domain takes precedence over /! source
       if not request.url.query.domain
-        request.url.query.domain = request.url.pathname.slice 2, slash
+        request.url.query.domain =
+          request.url.pathname.slice 2, slash
       request.url.pathname = request.url.pathname.slice slash
     # run through all the http processors until one says 'all done'
     processors = global.http_processors.slice(0) # clone

@@ -4,19 +4,27 @@ os = require 'os'; dirs = require 'dirs'
 streams = require 'streams'; newer = require 'newer'
 walk = require 'walk'
 
-tmp_dir = os.tmpDir()
+tmp_dir = os.tmpDir(); cache = {}; base_cache = {}
 
 files =
   # returns a file on one path or null if it can't be found
   # next(full_path, base_path, rest)
   find: (name, next) ->
+    return next(cache[name], base_cache[name], name) if cache[name]
     find_one = (bases) ->
       return next() if bases.length is 0
       full_path = path.join (base = bases.shift()), name
+      found = (it) ->
+        next(cache[name] = it, base_cache[name] = base, name)
       return find_one(bases) if full_path is path.sep
-      fs.exists full_path, (exists) ->
-        return next(full_path, base, name) if exists
-        find_one(bases)
+      fs.stat full_path, (err, stat) ->
+        return find_one(bases) if err
+        if not stat.isDirectory()
+          return found(full_path) 
+        fs.readdir full_path, (err, files) ->
+          for file in files when /^index\./.test(file)
+            return found(path.join(full_path, file))
+          find_one(bases)
     find_one dirs.bases.slice(0)
   # Copy one file
   copy: (source, target, next) ->
