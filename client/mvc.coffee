@@ -1,38 +1,46 @@
 integrant_cache = {}
 
 module.exports = mvc = (picture, host, ready) ->
-  host = host.templates[0].host if host.templates?[0]?.host
-  if not ready and opts instanceof Function
-    ready = opts; opts = {}
-  opts ?= {}
+  type = picture.mvc
+  base = if type[0] is '/' then '' else "/client/integrants/"
+
   activate = ->
-    return false if not (module = integrant_cache[name])
+    return false if not (module = integrant_cache[type])
     host.innerHTML = module.html
-    host.classList.add name
-    host.integrant = new module()
-    host.integrant[k] = v for k,v of {id,name,host,mvc,opts}
-    host.integrant.fetch_templates()
-    host.integrant.init (err) -> ready(err, host.integrant)
+    host.classList.add type
+    integrant = host.integrant = new module()
+    host.walk = (path) -> integrant.walk(path)
+    integrant[k] = v for k,v of {type, host, mvc}
+    integrant.fetch_templates()
+    
+    return ready(err, host) if not picture.cargo
+      
+    integrant.children ?= {}
+    names = (name for name of picture.cargo)
+    do next = ->
+      if not names.length
+        return integrant.init (err) -> ready(err, host)
+      data = picture.cargo[item = names.shift()]
+      integrant.append data, (err, child) ->
+        child.parent_integrant = integrant
+        child.select = -> integrant.select(item)
+        child.classList.add item
+        next integrant.children[item] = child
     return true
   return if activate()
-  
-  if name[0] is '/'
-    base = ''
-    name = name[1..-1]
-  else
-    base = "client/integrants/"
     
   module_html = null
-  require.css "#{base}#{name}.css"
-  require.data "#{base}#{name}.html", (error, html) ->
-    if integrant_cache[name]
-      integrant_cache[name].html = html
+  module_name = "#{base}#{type}"
+  require.css "#{module_name}.css"
+  require.data "#{module_name}.html", (error, html) ->
+    if integrant_cache[type]
+      integrant_cache[type].html = html
       activate()
     else
       module_html = html # waiting on script
-  module_name = "#{base}#{name}"
+  module_name = module_name[1..-1]
   require module_name, (the) ->
     exports = the[module_name]
     exports.html = module_html
-    integrant_cache[name] = exports
+    integrant_cache[type] = exports
     activate() if module_html

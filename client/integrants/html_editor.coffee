@@ -2,7 +2,7 @@
 Integrant = require 'client/Integrant'
 
 picture =
-  ed: mvc: "panel_stack", require: 'tabs,toolbar,open', cargo:
+  mvc: "panel_stack", require: 'tabs,toolbar,open', cargo:
     tabs: init: (ready) ->
       ready @tabs.definition
     doc:  init: (ready) ->

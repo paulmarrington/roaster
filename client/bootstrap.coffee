@@ -9,7 +9,7 @@ parse_require_name = (name) ->
 window.require = (module_names..., next) ->
   if module_names.length is 0 # synchronous require
     return require.cache[next] if require.cache[next]
-    # CodeMirror insists of CommonJS with a mixed-up path
+    # CodeMirror insists on CommonJS with a mixed-up path
     return roaster.cache[next] = {} if next[0] is '.'
     url = parse_require_name next
     request = new XMLHttpRequest()

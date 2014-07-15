@@ -2,9 +2,6 @@
 Integrant = require 'client/Integrant'
 
 class PanelSwitcher extends Integrant
-  constructor: (@name, host, @mvc, @opts) ->
-    [@host,@template] = @mvc.template host, 'panel_switcher'
-  
   selection: (item, state) ->
     if state is item.classList.contains('hidden')
       item.classList.toggle('hidden')
