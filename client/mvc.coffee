@@ -1,4 +1,4 @@
-integrant_cache = {}
+integrant_cache = {}; sequential = require 'Sequential'
 
 module.exports = mvc = (picture, host, ready) ->
   type = picture.mvc
@@ -10,37 +10,35 @@ module.exports = mvc = (picture, host, ready) ->
     host.classList.add type
     integrant = host.integrant = new module()
     host.walk = (path) -> integrant.walk(path)
-    integrant[k] = v for k,v of {type, host, mvc}
+    integrant[k] = v for k,v of {type, host, mvc, base}
     integrant.fetch_templates()
-    
-    return ready(err, host) if not picture.cargo
-      
-    integrant.children ?= {}
-    names = (name for name of picture.cargo)
-    do next = ->
-      if not names.length
-        return integrant.init (err) -> ready(err, host)
-      data = picture.cargo[item = names.shift()]
-      integrant.append data, (err, child) ->
-        child.parent_integrant = integrant
-        child.select = -> integrant.select(item)
-        child.classList.add item
-        next integrant.children[item] = child
+
+    process_contents = =>
+      done = -> ready(null, host)
+      sequential.object picture, done, (key, next) =>
+        action = integrant[key]
+        return next() if not action or key in ["mvc"]
+        action.call(integrant, picture[key], next)
+        next() if action.length < 2 # sync
+    integrant.init(process_contents)
+    process_contents() if not integrant.init.length # sync
+
     return true
   return if activate()
     
   module_html = null
-  module_name = "#{base}#{type}"
-  require.css "#{module_name}.css"
-  require.data "#{module_name}.html", (error, html) ->
+  base = "#{base}#{type}"
+  require.css "#{base}.css"
+  require.data "#{base}.html", (error, html) ->
     if integrant_cache[type]
       integrant_cache[type].html = html
       activate()
     else
       module_html = html # waiting on script
-  module_name = module_name[1..-1]
-  require module_name, (the) ->
-    exports = the[module_name]
+  base = base[1..-1]
+  require base, (the) =>
+    exports = the[base]
+    return ready(Error("MVC '#{base}' failed")) if not exports
     exports.html = module_html
     integrant_cache[type] = exports
     activate() if module_html
