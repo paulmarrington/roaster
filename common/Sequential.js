@@ -19,4 +19,17 @@ Sequential.prototype.next = function() {
   one.action.call(this, next);
 };
 
+Sequential.list = function(list, end, action) {
+  if (!action) action = end;
+  next = function() {
+    if (!list.length) return end(); // return null for end
+    action(list.shift(), next);
+    if (action.length == 1) next() // synchronous
+  };
+  next();
+}
+Sequential.object = function(object, end, action) {
+  Sequential.list(Object.keys(object), end, action)
+}
+
 module.exports = Sequential;

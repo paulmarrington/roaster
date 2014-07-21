@@ -24,7 +24,6 @@ window.require = (module_names..., next) ->
   load = (name) ->
     if require.cache[name]
       return modules[name] = require.cache[name]
-    url = parse_require_name name
     loaded++
     require._script parse_require_name(name), ->
       module = require.cache[name]
