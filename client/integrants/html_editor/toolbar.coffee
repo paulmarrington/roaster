@@ -1,24 +1,24 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
 class Toolbar
-  init: (@integrant, ready) -> ready()
-  connect: (ready) ->
+  init: (@host, done) ->
     buttons = {'Unprocessed':[]}
     for group, name of @layout
       for button in name
         button = button[1..-1] if button[0] is '!'
         buttons[button] = group: group
-    tbx = @integrant.host.getElementsByClassName('cke_toolbox')[0]
-    elements = (b for b in tbx.getElementsByClassName('cke_button')).
-    concat(c for c in tbx.getElementsByClassName('cke_combo_button'))
+    tbx = @host.getElementsByClassName('cke_toolbox')[0]
+    elements = (b for b in \
+      tbx.getElementsByClassName('cke_button')).concat( \
+      c for c in tbx.getElementsByClassName('cke_combo_button'))
     for element in elements
       name = element.title
       name = 'Unprocessed' if not buttons[name]
       buttons[name].element = element
     if buttons['Unprocessed'].length
-      console.log "Unknown CKEditor buttons:", buttons['Unprocessed']
-    sep   = tbx.getElementsByClassName('cke_toolbar_separator')[0]
-    grp   = tbx.getElementsByClassName('cke_toolbar')[0]
-    cnt   = grp.getElementsByClassName('cke_toolgroup')[0]
+      console.log "Unknown buttons:",buttons['Unprocessed']
+    sep = tbx.getElementsByClassName('cke_toolbar_separator')[0]
+    grp = tbx.getElementsByClassName('cke_toolbar')[0]
+    cnt = grp.getElementsByClassName('cke_toolgroup')[0]
     cnt.innerHTML = tbx.innerHTML = ''; container = tab = null
     new_container = true
     
@@ -51,12 +51,12 @@ class Toolbar
           else
             add_container()
             add_button name, container
-    ready()
+    done()
     
   show: (name) ->
-    for tb in @integrant.host.getElementsByClassName('tab_buttons')
+    for tb in @host.getElementsByClassName('tab_buttons')
       tb.style.display = 'none'
-    tb = @integrant.host.getElementsByClassName("#{name}_buttons")
+    tb = @host.getElementsByClassName("#{name}_buttons")
     tb[0].style.display = null
     
   groups: "Font,Paragraph,Insert,Form,View".split(',')

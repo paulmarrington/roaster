@@ -2,11 +2,9 @@
 Integrant = require 'client/Integrant'
 
 class TabView extends Integrant
-  constructor: (@name, host, @mvc, @opts) ->
+  init: ->
     @default_message = ''
-    @messages = host.getElementsByClassName('messages')[0]
-    [@host, @template] = @mvc.template \
-      host.getElementsByClassName('tab_view')[0]
+    @messages = @host.getElementsByClassName('messages')[0]
     
   message: (msg) ->
     if not msg.length

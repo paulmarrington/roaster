@@ -9,10 +9,10 @@ default_options =
   extraPlugins: 'tableresize,placeholder,widget,lineutils,find'
 
 class Open  
-  init: (@integrant, ready) -> ready()
-  editor: (container, opts..., ready) ->
+  init: (@host) ->
+  editor: (container, picture, ready) ->
     options = {}; opts.unshift default_options
-    options[k] ?= v for k,v of opt for opt in opts
+    options[k] ?= v for k,v of picture
     ckeditor = CKEDITOR.replace container, options
     ckeditor.on 'instanceReady', ready
 

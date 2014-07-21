@@ -3,19 +3,17 @@ Integrant = require 'client/Integrant'
 
 picture =
   mvc: "panel_stack", require: 'tabs,toolbar,open', cargo:
-    tabs: init: (ready) ->
-      ready @tabs.definition
-    doc:  init: (ready) ->
-      require.packages 'ckeditor4', =>
-        @open.editor body.doc.firstChild, @opts, (cke) =>
-          @ckeditor = cke
-          @tabs.connect => @toolbar.connect =>
+    tabs: -> @tabs.picture
+    doc:
+      style: height: '100%'
+      init:  (panel, picture, done) ->
+        require.packages 'ckeditor4', =>
+          @open.editor panel, picture, (cke) =>
+            @ckeditor = cke
             body.tabs.inner.select 'Font'
-            ready style: height: '100%'
+            done()
 
 class HtmlEditorView extends Integrant
-  constructor: (@name, @host, @mvc, @opts) ->
-  init: (ready) ->
-      @mvc picture, @host, (err, body) =>
+  init: (done) -> @append picture, done 
    
 module.exports = HtmlEditorView

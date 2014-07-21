@@ -3,17 +3,12 @@ action = (tab, select) ->
   return unless select
   tab.click()
 
-class Tabs  
-  init: (@integrant, ready) -> ready()
-  
-  connect: (ready) -> ready()
-  
-  definition:
-    integrant: 'tab_view'
-    host_class: 'td'
-    action: action
-    named_content: true
-    add:
+class Tabs
+  init: (@host) ->
+    
+  picture:
+    mvc: 'tab_view'
+    cargo:
       Font:      {}
       Paragraph: {}
       Insert:    {}
