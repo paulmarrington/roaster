@@ -130,6 +130,12 @@ class Internet extends events.EventEmitter
     do requesting = =>
       @request?.abort()
       @request = transport.request options, (@response) =>
+        if (@response.statusCode % 100) is 3
+          if not (to = @response.headers["location"])
+            return @request.emit new Error "Bad redirect"
+          to = url.resolve address.href, to
+          console.log to
+          return @send_request method, to
         @emit 'connect', null, @request, @response
       @request
       @emit 'request', @request
