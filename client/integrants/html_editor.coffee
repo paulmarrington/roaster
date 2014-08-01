@@ -1,19 +1,22 @@
-# Copyright (C) 2014 paul@marrington.net, see /GPL for license
-Integrant = require 'client/Integrant'
+# Copyright (C) 2014 paul@marrington.net, see /GPL license
+Integrant = require 'Integrant'
 
+mods = 'open,tabs,toolbar'
 picture =
-  mvc: "panel_stack", require: 'tabs,toolbar,open', cargo:
-    tabs: -> @tabs.picture
+  html_editor: mvc: "panel_stack", require: mods, cargo:
+    tabs:
+      mvc: 'tab_view'
+      cargo:
+        Font:      selected: true
+        Paragraph: {}
+        Insert:    {}
+        Form:      {}
+        View:      {}
     doc:
       style: height: '100%'
-      init:  (panel, picture, done) ->
-        require.packages 'ckeditor4', =>
-          @open.editor panel, picture, (cke) =>
-            @ckeditor = cke
-            body.tabs.inner.select 'Font'
-            done()
+      init: (pic, panel, next) -> @open.editor(panel, next)
 
 class HtmlEditorView extends Integrant
-  init: (done) -> @append picture, done 
+  init: (done) -> @cargo picture, done 
    
 module.exports = HtmlEditorView

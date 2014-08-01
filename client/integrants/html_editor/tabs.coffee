@@ -1,18 +1,11 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
-action = (tab, select) ->
-  return unless select
-  tab.click()
 
 class Tabs
   init: (@host) ->
-    
-  picture:
-    mvc: 'tab_view'
-    cargo:
-      Font:      {}
-      Paragraph: {}
-      Insert:    {}
-      Form:      {}
-      View:      {}
+    tabs = @host.walk('tabs').picture.cargo
+    toolbar = @host.integrant.toolbar
+    for name, data of tabs
+      do (name, data) => data.select = => toolbar.show(name)
+  
 
 module.exports = Tabs

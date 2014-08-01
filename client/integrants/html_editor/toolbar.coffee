@@ -1,12 +1,16 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
 class Toolbar
-  init: (@host, done) ->
+  init: (@host) ->
+    
+  prepare: ->
+    he = @host.walk('html_editor/..')
+    @ckelement = he.ckeditor.container.$
     buttons = {'Unprocessed':[]}
     for group, name of @layout
       for button in name
         button = button[1..-1] if button[0] is '!'
         buttons[button] = group: group
-    tbx = @host.getElementsByClassName('cke_toolbox')[0]
+    tbx = @ckelement.getElementsByClassName('cke_toolbox')[0]
     elements = (b for b in \
       tbx.getElementsByClassName('cke_button')).concat( \
       c for c in tbx.getElementsByClassName('cke_combo_button'))
@@ -51,12 +55,11 @@ class Toolbar
           else
             add_container()
             add_button name, container
-    done()
     
   show: (name) ->
-    for tb in @host.getElementsByClassName('tab_buttons')
+    for tb in @ckelement.getElementsByClassName('tab_buttons')
       tb.style.display = 'none'
-    tb = @host.getElementsByClassName("#{name}_buttons")
+    tb = @ckelement.getElementsByClassName("#{name}_buttons")
     tb[0].style.display = null
     
   groups: "Font,Paragraph,Insert,Form,View".split(',')
