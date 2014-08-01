@@ -1,4 +1,4 @@
-# Copyright (C) 2014 paul@marrington.net, see /GPL for license
+# Copyright (C) 2014 paul@marrington.net, see /GPL license
 Internet = require 'internet'; path = require 'path'
 dirs = require 'dirs'; fs = require 'fs'
 files = require 'files'; npm = require 'npm'
@@ -8,8 +8,8 @@ files = require 'files'; npm = require 'npm'
 #   rename - file in archive if there is only one
 module.exports = (packages, next) ->
   results = {}
-
   count = 0; loaded = false
+  
   packager = (key, url) ->
     [url, to, rename] = url.split '|'; to ?= key
     count++
@@ -18,7 +18,7 @@ module.exports = (packages, next) ->
       results[key] = file
       next(results) if loaded and not --count
 
-    file = path.basename url
+    file = path.basename(url).replace(/[\?\=\/]+/, '_')
     file = "#{key}.#{file}" if file.indexOf(key) is -1
     file = dirs.base 'ext', file
     downloader = new Internet().download
@@ -37,7 +37,7 @@ module.exports = (packages, next) ->
               if error
                 console.log "Error in package for ", base
                 return processed()
-              files = files.filter (file) -> file[0] isnt '.'
+              files = files.filter (fn) -> fn[0] isnt '.'
               return processed() if files.length isnt 1
               fs.rename path.join(base, files[0]),
                 path.join(base, rename), -> processed(base)
@@ -47,7 +47,7 @@ module.exports = (packages, next) ->
           dirs.mkdirs path.dirname(name_to_use), ->
             files.copy file, name_to_use, (error) ->
               if error
-                console.log "Error in copy package for ", file
+                console.log "Error package copy for ", file
                 return processed()
               return processed(name_to_use) if not rename
               rename = rename.split('=')
