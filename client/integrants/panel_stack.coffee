@@ -1,5 +1,5 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
-Integrant = require 'client/Integrant'
+Integrant = require 'Integrant'
 
 class PanelStack extends Integrant
     

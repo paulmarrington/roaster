@@ -13,15 +13,22 @@ module.exports = mvc = (picture, host, ready) ->
     integrant[k] = v for k,v of {type, host, mvc, base}
     integrant.fetch_templates()
 
-    process_contents = =>
-      done = -> ready(null, host)
+    process_contents = (done) =>
       sequential.object picture, done, (key, next) =>
         action = integrant[key]
         return next() if not action or key in ["mvc"]
         action.call(integrant, picture[key], next)
         next() if action.length < 2 # sync
-    integrant.init(process_contents)
-    process_contents() if not integrant.init.length # sync
+    
+    process_initialisers = (done) =>
+      sequential.actions integrant.initialisers, done
+      
+    integrant_init = (done) =>
+      integrant.init(done)
+      done() if not integrant.init.length # sync
+
+    process_contents -> integrant_init ->
+      process_initialisers -> ready(null, host)
 
     return true
   return if activate()
@@ -36,7 +43,7 @@ module.exports = mvc = (picture, host, ready) ->
     else
       module_html = html # waiting on script
   base = base[1..-1]
-  require base, (the) =>
+  require 'Integrant', base, (the) =>
     exports = the[base]
     return ready(Error("MVC '#{base}' failed")) if not exports
     exports.html = module_html

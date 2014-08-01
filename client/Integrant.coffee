@@ -3,9 +3,12 @@ events = require 'events'; sequential = require 'Sequential'
 
 class Integrant extends events.EventEmitter
   init: ->
+    
+  initialisers: []
   
   fetch_templates: () ->
     list = @host.getElementsByClassName('template')
+    list = [@host.firstChild ? @host] if not list.length
     @templates = []
     for template in list
       @templates.push template
@@ -14,59 +17,32 @@ class Integrant extends events.EventEmitter
       template.hostess = template.parentNode
       template.parentNode.removeChild template
     
-  require: (sets, ready) ->
+  require: (names, ready) ->
     base = @host.parent_integrant?.base ? @base
-    names = sets.split(',')
+    names = names.split(',')
     
-    load = (done) =>
-      sequential.list names, ready, (name, next) =>
-        require url = "#{base}/#{name}", (imports) =>
-          next @[name] = new (imports[url])()
-              
-    initialise = (done) =>
-      sequential.list names, ready, (name, next) =>
-        if init = @[name].init
-          init(@host, next)
-          next() if init.length < 2 # sync
-            
-    load -> initialise -> ready()
+    @initialisers.push (done) =>
+      sequential.list names, done, (name, next) =>
+        return next() if not init = @[name].init
+        init.call(@[name], @host, next)
+        next() if init.length < 2 # sync
+    
+    sequential.list names.slice(0), ready, (name, next) =>
+      require url = "#{base}/#{name}", (imports) =>
+        next @[name] = new (imports[url])()
           
   style: (element, styles) ->
     element.style[k] = v for k, v of styles
       
-  append: (picture, done) ->
-    @list ?= []
-    template = @templates[picture.template ? 0]
-    template.hostess.appendChild panel = template.cloneNode(true)
-    @list.push panel
-    panel.picture = picture
-    @style panel, picture.style
-    panel.innerHTML = picture.content if picture.content
-    panel.integrant = @
-    @prepare? panel
-    if picture.mvc
-      if picture.host_class
-        host = panel.getElementsByClassName(
-          picture.host_class)[0]
-      else
-        host = panel.firstChild ? panel
-      host.parent_integrant = @
-      @mvc picture, host, done
-    else
-      panel.parent_integrant = @
-      on_processed = -> done(null, panel)
-      sequential.object picture, on_processed, (key, next) =>
-        action = @["cargo_#{key}"] or @[key]
-        return next() if not action
-        action.call(@, panel, picture, next)
-        next() if action.length < 2 # sync
-      
   select: (item) ->
     item = @children[item] if typeof item is 'string'
-    @selection @selected, false if @selected
-    item.picture.action?.call @, @selected, false if @selected
+    if @selected
+      @selection(@selected, false) 
+      item.picture.action?.call(@, @selected, false)
+      item.picture.deselect?.call(@, @selected)
     @selection @selected = item, true
-    item.picture.action?.call @, item, true
+    item.picture.action?.call(@, item, true)
+    item.picture.select?.call(@, item)
     
   selection: (item, state) ->
     
@@ -74,26 +50,58 @@ class Integrant extends events.EventEmitter
     path = path.split('/')
     here = @host
     if not path[0].length
-      here = here.parent_integrant while here.parent_integrant
+      while here.parent_integrant
+        here = here.parent_integrant.host
       path.shift()
     for point in path
       if point is '..'
-        here = here.parent_integrant
-      else
+        here = here.parent_integrant?.host
+      else if point.length and point isnt '.'
+        while not here.integrant.children[point]
+          here = here.parent_integrant?.host # walk up
+          return null if not here
         here = here.integrant.children[point]
     return here
   
-  cargo: (cargo, done) ->
-    @children ?= {}
-    sequential.object cargo, done, (name, next) =>
-      data = cargo[name]
-      data = data.call(@) if typeof data is 'function'
-      @append data, (err, child) =>
-        child.select = => @select(name)
-        child.walk = (path) => @walk(path)
-        child.classList.add name
-        next @children[name] = child
-        
-  cargo_init: (panel, picture, done) -> picture.init(panel, done)
+  cargo: (cargo, processed) ->
+    @children ?= {}; @list ?= []
     
+    process = (done) =>
+      sequential.object cargo, done, (name, next_pic) =>
+        picture = cargo[name]
+        picture.name ?= name
+        template = @templates[picture.template ? 0]
+        panel = template.cloneNode(true)
+        template.hostess.appendChild panel
+        panel.picture = picture
+        @style panel, picture.style
+        if picture.content
+          panel.innerHTML = picture.content
+        panel.integrant = @
+        @prepare? panel
+        host = (panel.getElementsByClassName(
+          picture.host_class ? 'target')[0]) ?
+          panel.firstChild ? panel
+        host.parent_integrant = panel.parent_integrant = @
+        panel.select = => @select(panel)
+        panel.walk = (path) => @walk(path)
+        @list.push panel
+        panel.classList.add name
+        @children[name] = panel
+        
+        return @mvc(picture, panel, next_pic) if picture.mvc
+
+        sequential.object picture, next_pic, (key, next) =>
+          action = @["cargo_#{key}"] or @[key]
+          return next() if typeof action isnt 'function'
+          action.call(@, picture, panel, next)
+          next() if action.length < 3 # sync
+          
+    return process(processed) if processed
+    @initialisers.push process
+    
+  cargo_init: (picture, panel, next) ->
+    picture.init.call @, picture, panel, next
+  cargo_cargo: -> # is processed by mvc: cargo entry
+
 module.exports = Integrant
