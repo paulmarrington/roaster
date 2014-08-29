@@ -1,5 +1,5 @@
 # Copyright (C) 2013-4 paul@marrington.net, see /GPL for license
-version = "4.3.2"
+version = "4.4.3"
 pkg = "full"
 base = "http://download.cksource.com/CKEditor/"+
   "CKEditor/CKEditor "
@@ -18,6 +18,18 @@ pkgs =
     "lineutils_#{version}.zip|#{plugin_dir}"
   find: "#{ckurl}/find/releases/"+
     "find_#{version}.zip|#{plugin_dir}"
+  code_tag: "#{ckurl}/codetag/releases/codetag_0.1_0.zip"+
+    "|#{plugin_dir}"
+  google_web_fonts: "#{ckurl}/ckeditor-gwf-plugin/releases/"+
+    "ckeditor-gwf-plugin_0.1.1.zip|#{plugin_dir}/"+
+    "ckeditor-gwf-plugin"
+  leaflet_maps: "#{ckurl}/leaflet/releases/leaflet_1.2.1.zip"+
+    "|#{plugin_dir}"
+  div: "#{ckurl}/div/releases/div_#{version}.zip|#{plugin_dir}"
+  page_break: "#{ckurl}/pagebreak/releases/"+
+    "pagebreak_#{version}.zip|#{plugin_dir}"
+  code_snippet: "#{ckurl}/codesnippet/releases/"+
+    "codesnippet_#{version}.zip|#{plugin_dir}"
 
 module.exports = (loaded) ->
   require.dependency pkgs, '/ext/ckeditor/ckeditor.js', loaded

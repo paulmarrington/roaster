@@ -3,14 +3,14 @@ Integrant = require 'Integrant'
 
 class TabView extends Integrant
   init: ->
-    @default_message = ''
+    @default_message = '&nbsp;'
     @messages = @host.getElementsByClassName('messages')[0]
     
-  message: (msg) -> @initialisers.push =>
+  message: (msg) ->
     if not msg.length
-      return if @messages.innerHTML[0] is '<'
-      message = @default_message
-    @messages.innerHTML = msg
+      return if @messages?.innerHTML[0] is '<'
+      msg = @default_message
+    @messages?.innerHTML = msg
     
   error: (msg) -> @message "<b>"+msg+"</b>"
   

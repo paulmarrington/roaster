@@ -19,15 +19,16 @@ class Integrant extends events.EventEmitter
     
   require: (names, ready) ->
     base = @host.parent_integrant?.base ? @base
+    base = base[0..-2] if base[-1..-1] is '/'
     names = names.split(',')
     
-    @initialisers.push (done) =>
-      sequential.list names, done, (name, next) =>
+    for name in names then do (name) =>
+      @initialisers.push (next) =>
         return next() if not init = @[name].init
         init.call(@[name], @host, next)
         next() if init.length < 2 # sync
     
-    sequential.list names.slice(0), ready, (name, next) =>
+    sequential.list names, ready, (name, next) =>
       require url = "#{base}/#{name}", (imports) =>
         next @[name] = new (imports[url])()
           
@@ -49,7 +50,7 @@ class Integrant extends events.EventEmitter
   walk: (path) ->
     path = path.split('/')
     here = @host
-    if not path[0].length
+    if not path[0].length # /path
       while here.parent_integrant
         here = here.parent_integrant.host
       path.shift()
@@ -57,10 +58,16 @@ class Integrant extends events.EventEmitter
       if point is '..'
         here = here.parent_integrant?.host
       else if point.length and point isnt '.'
-        while not here.integrant.children[point]
-          here = here.parent_integrant?.host # walk up
-          return null if not here
-        here = here.integrant.children[point]
+        find = (from) =>
+          return from if from.picture.name is point
+          there = from.integrant.children[point]
+          return there if there
+          for name, there of from.integrant.children
+            return there if there = find(there)
+          return null
+        while not (there = find(here))
+          return null unless (here = here.parent_integrant?.host)
+        here = there
     return here
   
   cargo: (cargo, processed) ->

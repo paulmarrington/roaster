@@ -3,7 +3,7 @@ url = require 'url'; path = require 'path'; os = require 'os'
 http = require 'http'; https = require 'https'
 fs = require 'fs'; querystring = require 'querystring'
 url = require 'url'; timer = require 'common/timer'
-_ = require 'underscore'; dirs = require 'dirs'
+clone = require 'clone'; dirs = require 'dirs'
 events = require 'events'; streams = require 'streams'
 files = require 'files'
 
@@ -98,8 +98,9 @@ class Internet extends events.EventEmitter
       address = "#{@base}/#{address}" if @base?.length
     address = url.parse address, true, true
     # restore the query string - and add any from @options
-    query = querystring.stringify _.extend {},
-      address.query, @_options.query
+    query = querystring.stringify clone.shallow \
+              address.query, @_options.query
+    console.log "query", query, # 5/08/2014 DELETE ME
     address.path =
       if query.length then "#{address.pathname}?#{query}"
       else address.pathname
@@ -129,15 +130,16 @@ class Internet extends events.EventEmitter
     @request = null
     do requesting = =>
       @request?.abort()
+      console.log "path", options.path # 5/08/2014 DELETE ME
       @request = transport.request options, (@response) =>
-        if (@response.statusCode % 100) is 3
+        status = @response.statusCode
+        console.log "status", status # 5/08/2014 DELETE ME
+        if status >= 300 and status < 400
           if not (to = @response.headers["location"])
             return @request.emit new Error "Bad redirect"
           to = url.resolve address.href, to
-          console.log to
           return @send_request method, to
         @emit 'connect', null, @request, @response
-      @request
       @emit 'request', @request
       @request.on 'error', (error) =>
         if error?.code is 'ECONNREFUSED' and

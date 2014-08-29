@@ -1,3 +1,5 @@
+# Copyright (C) 2014 paul@marrington.net, see /GPL license
+
 require.file_type = (name) ->
   name.substr((~-name.lastIndexOf(".") >>> 0) + 2)
 

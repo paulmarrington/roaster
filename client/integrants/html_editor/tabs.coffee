@@ -2,10 +2,9 @@
 
 class Tabs
   init: (@host) ->
-    tabs = @host.walk('tabs').picture.cargo
+    tab_list = @host.walk('tabs').picture.cargo
     toolbar = @host.integrant.toolbar
-    for name, data of tabs
+    for name, data of tab_list
       do (name, data) => data.select = => toolbar.show(name)
-  
-
+    
 module.exports = Tabs

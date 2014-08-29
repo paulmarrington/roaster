@@ -29,7 +29,10 @@ roaster.process = window.process =
 roaster.global = window
 
 # Loading other modules - finishing with
-# project specific initialisation in client/app.coffee or js
-require "bootstrap/loaders,common/Sequential,app", (imports) ->
+# project specific initialisation in load=xxx.coffee or js
+libs = ["bootstrap/loaders","common/Sequential"]
+loads = roaster.page_arg('load', '').split(',')
+loads = [] if loads.length is 1 and loads[0] is ''
+require libs..., loads..., (imports) ->
   require.on_ready = (action) -> action()
   action() for action in require.ready

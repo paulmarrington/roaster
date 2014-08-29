@@ -1,10 +1,8 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
 class Toolbar
   init: (@host) ->
-    
-  prepare: ->
-    he = @host.walk('html_editor/..')
-    @ckelement = he.ckeditor.container.$
+  prepare: (cke) ->
+    @ckelement = cke.container.$
     buttons = {'Unprocessed':[]}
     for group, name of @layout
       for button in name
@@ -55,7 +53,6 @@ class Toolbar
           else
             add_container()
             add_button name, container
-    
   show: (name) ->
     for tb in @ckelement.getElementsByClassName('tab_buttons')
       tb.style.display = 'none'
@@ -67,8 +64,10 @@ class Toolbar
   layout:
     'Font':
       ['Bold','Italic','Underline','Strike Through','Subscript',
-       'Superscript','|','Remove Format', 'Text Color',
-       'Background Color','!Font Name','!Font Size']
+       'Superscript','Wrap code','|','Remove Format',
+       'Text Color',
+       'Background Color','!Font Name','!Font Size'
+       ]
     'Paragraph':
       ['!Formatting Styles','!Paragraph Format',
        'Insert/Remove Numbered List','Insert/Remove Bulleted List',
@@ -81,10 +80,11 @@ class Toolbar
       ['Select All','|','Cut','Copy','Paste','|',
        'Paste as plain text', 'Paste from Word','--',
        'Undo','Redo','--','Link','Unlink', 'Anchor','--',
-       'Templates','|','Table','|','Placeholder',
-       'Image','Flash','Insert Horizontal Line','Smiley',
-       'Insert Special Character','Insert Page Break for Printing',
-       '|','IFrame']
+       'Templates','|','CreateDiv','Table','Leaflet Map','|',
+        'Insert code snippet','Placeholder',
+       'Image','Flash','Page Break','Insert Horizontal Line',
+        'Smiley','Insert Special Character',
+        'Insert Page Break for Printing','|','IFrame']
     'Form':
       ['Form','--','Checkbox','Radio Button','|','Text Field',
        'Textarea','Selection Field','|','Button','Image Button',
@@ -95,5 +95,4 @@ class Toolbar
       'Source','|','Show Blocks','--','About CKEditor']
     'Unused':
       ['Save','New Page']
-  
 module.exports = Toolbar

@@ -11,20 +11,25 @@ default_options =
   browserContextMenuOnCtrl: true
   scayt_autoStartup: false
   removeButtons: ''
-  extraPlugins: 'tableresize,placeholder,widget,lineutils,find'
+  extraPlugins: 'tableresize,placeholder,widget,lineutils,find,'+
+    'codeTag,ckeditor-gwf-plugin,leaflet,div,pagebreak,'+
+    'codesnippet'
 
 class Open  
   editor: (@host, ready) -> requires (imports) =>
+    CKEDITOR.config.font_names += ';GoogleWebFonts'
     he = @host.walk('html_editor/..')
     opts = [he.integrant.options]
     options = {}; opts.unshift default_options
     options[k] ?= v for k,v of o for o in opts
     he.ckeditor = @cke = CKEDITOR.replace @host, options
     @cke.on 'instanceReady', =>
-      @host.integrant.toolbar.prepare()
+      @host.integrant.toolbar.prepare(@cke)
+      @host.integrant.file.prepare(@cke)
       @adjust_height()
       imports.dom.resize_event => @adjust_height()
       @host.walk('tabs/Font').select()
+      @cke.focus()
       ready()
   adjust_height: ->
     @cke.container.hide()

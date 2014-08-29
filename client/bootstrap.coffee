@@ -1,5 +1,9 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
-window.roaster ?= {}
+window.roaster ?=
+  message: (msg...) -> console?.log(msg.join('\n'))
+  error:   (msg...) -> roaster.message 'Error: ', msg...
+  head:    document.getElementsByTagName('head')[0]
+  opts:    {}
 
 parse_require_name = (name) ->
   name = '/' + name
@@ -27,7 +31,8 @@ window.require = (module_names..., next) ->
     loaded++
     require._script parse_require_name(name), ->
       module = require.cache[name]
-      modules[name] = module?.client ? module
+      modules[name] = module = module?.client ? module
+      modules[name.split('/').pop()] ?= module
       next modules if --loaded is 0 # all loaded
         
   for names in module_names
@@ -37,8 +42,8 @@ window.require = (module_names..., next) ->
 window.require.ready = []
 window.require.on_ready = (action) -> require.ready.push action
 
-roaster.cache = require.cache = {}; require.opts = {}
-roaster.head = document.getElementsByTagName('head')[0]
+roaster.cache = require.cache = roaster: roaster
+require.opts = roaster.opts
 
 # load a script from the server using <script> tag
 require._script = (url, on_loaded) ->

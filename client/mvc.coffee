@@ -10,6 +10,7 @@ module.exports = mvc = (picture, host, ready) ->
     host.classList.add type
     integrant = host.integrant = new module()
     host.walk = (path) -> integrant.walk(path)
+    host.picture = picture
     integrant[k] = v for k,v of {type, host, mvc, base}
     integrant.fetch_templates()
 
