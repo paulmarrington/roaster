@@ -3,6 +3,7 @@ requires = (ready) ->
   require.packages 'ckeditor4', => require 'dom', ready
   
 default_options =
+  height: "auto"
   fullPage: false
   autoGrow_onStartup: true
   resize_enabled: false
@@ -22,20 +23,20 @@ class Open
     opts = [he.integrant.options]
     options = {}; opts.unshift default_options
     options[k] ?= v for k,v of o for o in opts
-    he.ckeditor = @cke = CKEDITOR.replace @host, options
+    @cke = CKEDITOR.replace @host.container, options
+    he.ckeditor = @cke
     @cke.on 'instanceReady', =>
       @host.integrant.toolbar.prepare(@cke)
       @host.integrant.file.prepare(@cke)
-      @adjust_height()
-      imports.dom.resize_event => @adjust_height()
+      do adjust_height = =>
+        @cke.container.hide()
+        process.nextTick =>
+          height = @host.clientHeight
+          @cke.container.show()
+          @cke.resize '100%', height
+        imports.dom.resize_event adjust_height
       @host.walk('tabs/Font').select()
       @cke.focus()
       ready()
-  adjust_height: ->
-    @cke.container.hide()
-    process.nextTick =>
-      height = @host.parentNode.clientHeight - 16
-      @cke.container.show()
-      @cke.resize '100%', height
 
 module.exports = Open
