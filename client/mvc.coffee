@@ -1,12 +1,12 @@
 integrant_cache = {}; sequential = require 'Sequential'
 
 module.exports = mvc = (picture, host, ready) ->
-  type = picture.mvc
+  type = picture.mvc; host.container ?= host
   base = if type[0] is '/' then '' else "/client/integrants/"
 
   activate = ->
     return false if not (module = integrant_cache[type])
-    host.innerHTML = module.html
+    host.container.innerHTML = module.html
     host.classList.add type
     integrant = host.integrant = new module()
     host.walk = (path) -> integrant.walk(path)

@@ -90,6 +90,7 @@ class Integrant extends events.EventEmitter
           picture.host_class ? 'target')[0]) ?
           panel.firstChild ? panel
         host.parent_integrant = panel.parent_integrant = @
+        panel.container = host
         panel.select = => @select(panel)
         panel.walk = (path) => @walk(path)
         @list.push panel
