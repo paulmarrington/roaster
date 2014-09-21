@@ -30,9 +30,11 @@ roaster.global = window
 
 # Loading other modules - finishing with
 # project specific initialisation in load=xxx.coffee or js
-libs = ["bootstrap/loaders","common/Sequential"]
-loads = roaster.page_arg('load', '').split(',')
-loads = [] if loads.length is 1 and loads[0] is ''
-require libs..., loads..., (imports) ->
+requirements = ["bootstrap/loaders,common/Sequential"]
+scripts = document.getElementsByTagName('script')
+script = scripts[scripts.length - 2] # bootstrap, not init
+requirements.push loads if loads = script.getAttribute('load')
+require requirements..., (imports) ->
+  require.css '/client/bootstrap/style.less'
   require.on_ready = (action) -> action()
   action() for action in require.ready
