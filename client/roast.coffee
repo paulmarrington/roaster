@@ -61,4 +61,4 @@ require.script = (url, on_loaded = ->) ->
   url += sep+'domain=client,library'
   require._script url, on_loaded
   
-require 'bootstrap/init', ->
+require 'roast/init', ->
