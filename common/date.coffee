@@ -1,42 +1,44 @@
 # Copyright (C) 2013 paul@marrington.net, see /GPL for license
 
 Date::format = (fmt = 'YYMMDD-HHmmSSsss') ->
-  text = []
-  fmt = fmt[0..]  # clone
+  text = []; zone = ''; index = 0
   # so we can create one or 2 digits on demand
   double = (num) ->
-    if fmt[1] is c
+    if fmt[index] is c
       num = "0#{num}" if num < 10
-      fmt = fmt[1..]
+      index++
     text.push "#{num}"
+    
+  get = (field) => (@['get'+zone+field])()
 
-  while fmt.length
-    switch c = fmt[0]
+  while index < fmt.length
+    switch c = fmt[index++]
+      when 'U' then zone = 'UTC'
       when 'Y'
-        if fmt[0..3] is 'YYYY'
-          text.push "#{@getFullYear()}"
-          fmt = fmt[3..]
-        else if fmt[0..1] is 'YY'
-          text.push "#{@getFullYear() % 100}"
-          fmt = fmt[1..]
+        year = get('FullYear')
+        if fmt[index..index+3] is 'YYYY'
+          text.push "#{year}"
+          index += 3
+        else if fmt[index] is 'Y'
+          text.push "#{year % 100}"
+          index++
         else
-          text.push "#{@getFullYear() % 10}#{c}"
-      when 'M' then double @getMonth() + 1
-      when 'D' then double @getDate()
-      when 'H' then double @getHours()
-      when 'm' then double @getMinutes()
-      when 'S' then double @getSeconds()
+          text.push "#{year % 10}#{c}"
+      when 'M' then double get('Month') + 1
+      when 'D' then double get('Date')
+      when 'H' then double get('Hours')
+      when 'm' then double get('Minutes')
+      when 'S' then double get('Seconds')
       when 's'
-        num = @getMilliseconds()
-        if fmt[1] is c
+        num = get('Milliseconds')
+        if fmt[index] is c
           num = "0#{num}" if num < 100
-          fmt = fmt[1..]
-        if fmt[1] is c
+          index++
+        if fmt[index] is c
           num = "0#{num}" if num < 10
-          fmt = fmt[1..]
+          index++
         text.push "#{num}"
       else
         text.push c
-    fmt = fmt[1..]
   # combine result
   return text.join ''

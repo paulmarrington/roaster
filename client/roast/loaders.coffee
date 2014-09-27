@@ -1,3 +1,6 @@
+# Copyright (C) 2014 paul@marrington.net, see /GPL license
+sequential = require 'Sequential'
+
 require.file_type = (name) ->
   name.substr((~-name.lastIndexOf(".") >>> 0) + 2)
 
@@ -5,6 +8,10 @@ require.build_url = (url, args) ->
   sep = if url.indexOf('?') is -1 then '?' else '&'
   items = ("#{key}=#{value}" for key, value of args)
   return "#{url}#{sep}#{items.join('&')}"
+
+require.scripts = (urls..., on_loaded) ->
+  sequential.list urls, on_loaded, (url, next) ->
+    require.script url, next
 
 require.dependency = (packages, libraries..., ready) ->
   url = require.build_url \
@@ -30,14 +37,16 @@ require.json = (url, on_loaded) ->
     return on_loaded(error) if error
     on_loaded null, JSON.parse text
 
-require.css = (url) ->
-  return if require.cache[url]
-  require.cache[url] = true
-  link = document.createElement("link")
-  link.type = "text/css"
-  link.rel = 'stylesheet'
-  link.href = url
-  document.getElementsByTagName("head")[0].appendChild(link)
+require.css = (urls...) ->
+  for url in urls
+    return if require.cache[url]
+    require.cache[url] = true
+    link = document.createElement("link")
+    link.type = "text/css"
+    link.rel = 'stylesheet'
+    link.href = url
+    head = document.getElementsByTagName("head")[0]
+    head.appendChild(link)
   
 require.data = (url, next) ->
   contents = []

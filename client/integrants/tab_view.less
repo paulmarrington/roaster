@@ -1,10 +1,16 @@
 @tabs-height: 12px;
 @tab-height: @tabs-height - 8;
 @tab-border-radius: 3px 3px 0 0;
+.tab_view {
+  border: none;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
 .tab_view_container {
   height: @tabs-height;
   display: inline-block;
-  margin: 5px 0 0;
+  margin: 0 0 0 0;
   z-index: 2;
   left: 10px;
   
@@ -30,6 +36,7 @@
     outline: none;
     color: #595959;
     border: 1px solid #bfbfbf;
+    border-bottom: 3px solid #eee;
 
     -moz-border-radius: @tab-border-radius;
     -webkit-border-radius: @tab-border-radius;

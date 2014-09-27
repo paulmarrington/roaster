@@ -34,10 +34,8 @@ class Respond
       # gzip name, (error, zipped-name) =>
       #   @exchange.response.setHeader 'Content-Encoding', 'gzip'
       #   @set_mime_type name
-      sender = send(@exchange.request, name)
-      sender.isMalicious = -> return false
-      sender.maxage(@exchange.environment.
-                    maximum_browser_cache_age)
+      sender = send @exchange.request, path.resolve(name), maxAge:
+        @exchange.environment.maximum_browser_cache_age
       sender.req.res = @exchange.response # send bug
       sender.pipe(@exchange.response)
       next()

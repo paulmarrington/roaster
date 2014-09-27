@@ -29,7 +29,13 @@ roaster.process = window.process =
 roaster.global = window
 
 # Loading other modules - finishing with
-# project specific initialisation in client/app.coffee or js
-require "bootstrap/loaders,app", ->
+# project specific initialisation in load=xxx.coffee or js
+requirements = ["roast/loaders,common/Sequential"]
+scripts = document.getElementsByTagName('script')
+script = scripts[scripts.length - 2] # roast, not init
+loads = script.getAttribute('load')
+requirements.push loads if loads
+require requirements..., (imports) ->
+  require.css '/client/roast/style.less'
   require.on_ready = (action) -> action()
   action() for action in require.ready

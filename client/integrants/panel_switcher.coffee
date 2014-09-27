@@ -1,8 +1,7 @@
-class PanelSwitcher
-  constructor: (@host) ->
-    @template = @host.firstElementChild
-    @host.removeChild @template
-  
+# Copyright (C) 2014 paul@marrington.net, see /GPL for license
+Integrant = require 'Integrant'
+
+class PanelSwitcher extends Integrant
   selection: (item, state) ->
     if state is item.classList.contains('hidden')
       item.classList.toggle('hidden')

@@ -1,5 +1,9 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
-window.require ?= opts: {}; window.roaster ?= {}
+window.roaster ?=
+  message: (msg...) -> console?.log(msg.join('\n'))
+  error:   (msg...) -> roaster.message 'Error: ', msg...
+  head:    document.getElementsByTagName('head')[0]
+  opts:    {}
 
 parse_require_name = (name) ->
   name = '/' + name
@@ -9,7 +13,7 @@ parse_require_name = (name) ->
 window.require = (module_names..., next) ->
   if module_names.length is 0 # synchronous require
     return require.cache[next] if require.cache[next]
-    # CodeMirror insists of CommonJS with a mixed-up path
+    # CodeMirror insists on CommonJS with a mixed-up path
     return roaster.cache[next] = {} if next[0] is '.'
     url = parse_require_name next
     request = new XMLHttpRequest()
@@ -24,19 +28,22 @@ window.require = (module_names..., next) ->
   load = (name) ->
     if require.cache[name]
       return modules[name] = require.cache[name]
-    url = parse_require_name name
     loaded++
     require._script parse_require_name(name), ->
       module = require.cache[name]
-      modules[name] = module?.client ? module
+      modules[name] = module = module?.client ? module
+      modules[name.split('/').pop()] ?= module
       next modules if --loaded is 0 # all loaded
         
   for names in module_names
     load(name) for name in names.split(',')
   next modules if loaded is 0 # no server loads
-          
-roaster.cache = require.cache = {}; require.opts ?= {}
-roaster.head = document.getElementsByTagName('head')[0]
+
+window.require.ready = []
+window.require.on_ready = (action) -> require.ready.push action
+
+roaster.cache = require.cache = roaster: roaster
+require.opts = roaster.opts
 
 # load a script from the server using <script> tag
 require._script = (url, on_loaded) ->
@@ -54,4 +61,4 @@ require.script = (url, on_loaded = ->) ->
   url += sep+'domain=client,library'
   require._script url, on_loaded
   
-require 'bootstrap/init', ->
+require 'roast/init', ->

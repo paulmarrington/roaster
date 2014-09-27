@@ -1,7 +1,6 @@
-class PanelStack
-  constructor: (host) ->
-    @host = host.firstElementChild.firstElementChild # tbody
-    @template = @host.firstElementChild # tr
-    @host.removeChild @template
+# Copyright (C) 2014 paul@marrington.net, see /GPL for license
+Integrant = require 'Integrant'
+
+class PanelStack extends Integrant
     
 module.exports.client = PanelStack
