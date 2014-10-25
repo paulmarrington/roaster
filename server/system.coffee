@@ -35,6 +35,7 @@ os.hosts = ->
   for dev,cons of os.networkInterfaces() then for host in cons
     if not host.internal and host.family is 'IPv4'
       hosts.push host.address
+  hosts = ['127.0.0.1'] if not hosts.length
   return hosts
 
 module.exports = os

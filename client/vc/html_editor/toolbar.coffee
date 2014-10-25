@@ -1,6 +1,5 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
 class Toolbar
-  init: (@host) ->
   prepare: (cke) ->
     @ckelement = cke.container.$
     buttons = {'Unprocessed':[]}

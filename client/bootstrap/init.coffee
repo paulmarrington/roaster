@@ -21,24 +21,12 @@ if host = roaster.page_arg 'usdlc2-instrumentation'
   require.script host+"/support/usdlc2_browser.js"
   
 # so commonJS packages have global and process access
-roaster.process = window.process =
+roaster.process =
     noDeprecation: true
     platform: 'browser'
     env: {}
-    nextTick: (action) -> setTimeout action, 0
 roaster.global = window
 
 # Loading other modules - finishing with
-# project specific initialisation in load=xxx.coffee or js
-modules = ["roast/loaders,common/Sequential"]
-project_init = (next) ->
-  loads = []
-  for script in document.getElementsByTagName('script')
-    load = script.getAttribute('load')
-    loads.push load if load
-   if loads.length then require(loads..., next) else next()
-    
-require modules..., -> project_init ->
-  require.css '/client/roast/style.less'
-  require.on_ready = (action) -> action()
-  action() for action in require.ready
+# project specific initialisation in client/app.coffee or js
+require "bootstrap/loaders,app", ->

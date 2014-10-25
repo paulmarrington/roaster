@@ -7,7 +7,7 @@
   margin: 0;
   padding: 0;
 }
-.tab_view_container {
+.tab_view {
   height: @tabs-height;
   display: inline-block;
   margin: 0 0 0 0;
@@ -24,7 +24,7 @@
     background: linear-gradient(@to bottom, @from 0%,@to 100%);
   }
 
-  a.tab_view {
+  a {
     font-size: @tabs-height;
     text-decoration: none;
     height: @tab-height;
@@ -47,7 +47,7 @@
     &:hover {
     .tab-background(#ebebeb, #dfdfdf);
     }
-    &.tab_view_selected {
+    &.active {
       background: #fff;
       color: #383838;
       border-bottom-color: #fff;

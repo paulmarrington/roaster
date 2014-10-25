@@ -17,25 +17,25 @@ default_options =
     'codesnippet'
 
 class Open  
-  editor: (@host, ready) -> requires (imports) =>
+  editor: (@container, ready) -> requires (imports) =>
     CKEDITOR.config.font_names += ';GoogleWebFonts'
-    he = @host.walk('html_editor/..')
-    opts = [he.integrant.options]
+    opts = [@vc.options]
     options = {}; opts.unshift default_options
     options[k] ?= v for k,v of o for o in opts
-    @cke = CKEDITOR.replace @host.container, options
-    he.ckeditor = @cke
+    @cke = CKEDITOR.replace @container, options
+    @vc.ed = @cke
     @cke.on 'instanceReady', =>
-      @host.integrant.toolbar.prepare(@cke)
-      @host.integrant.file.prepare(@cke)
+      @vc.toolbar.prepare(@cke)
+      @vc.file.prepare(@cke)
+      @vc.tabs.prepare()
       do adjust_height = =>
         @cke.container.hide()
         process.nextTick =>
-          height = @host.clientHeight
+          height = @container.parentNode.clientHeight
           @cke.container.show()
           @cke.resize '100%', height
         imports.dom.resize_event adjust_height
-      @host.walk('tabs/Font').select()
+      @vc.select('tabs/Font')
       @cke.focus()
       ready()
 
