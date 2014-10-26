@@ -14,11 +14,20 @@ module.exports = (host, opt_list..., ready) ->
     # vc loaded - activate it
     vc = host.vc = new Integrant()
     if not host.childElementCount
-      host.innerHTML = vc.templates.$content
+      host.innerHTML = vc.html
     host.classList.add type
     vc.opts = opts
     vc[k] = v for k,v of {type, host, base}
           
+    list = host.getElementsByClassName('template')
+    vc.templates = []
+    while list.length
+      vc.templates.push template = list[0]
+      name = template.getAttribute('name')
+      vc.templates[name] = template if name
+      template.hostess = template.parentNode
+      template.parentNode.removeChild template
+        
     process_contents = (done) ->
       inner = (it for it in host.getElementsByClassName('vc'))
       do process = =>
@@ -48,27 +57,18 @@ module.exports = (host, opt_list..., ready) ->
   return if activate()
 
   # come here if vc not loaded from server
-  templates = null
+  contents = null
   base = "#{base}#{type}"
   require.css "#{base}.css"
   require.data "#{base}.html", (error, html) ->
-    (div = document.createElement("div")).innerHTML = html
-    list = div.getElementsByClassName('template')
-    templates = []
-    while list.length
-      templates.push template = list[0]
-      name = template.getAttribute('name')
-      templates[name] = template if name
-      template.hostess = template.parentNode
-      template.parentNode.removeChild template
-    templates.$content = div.innerHTML
+    contents = html
     if vc_cache[type]
-      vc_cache[type]::templates = templates
+      vc_cache[type]::html = html
       activate()
   base = base[1..-1]
   require 'vc/Integrant', base, (the) =>
     exports = the[base]
     if not exports
       return ready(Error("VC '#{base}' failed"))
-    (vc_cache[type] = exports)::templates = templates
-    activate() if templates
+    (vc_cache[type] = exports)::html = contents
+    activate() if contents

@@ -1,5 +1,5 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
-Integrant = require 'Integrant'
+Integrant = require 'vc/Integrant'
 
 class PanelStack extends Integrant
     

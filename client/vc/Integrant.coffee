@@ -49,8 +49,8 @@ class Integrant extends events.EventEmitter
       vc.emit 'selected', vc.selected = item
     
   # walk a class path and return a list that matches leaf
-  list: (path) ->
-    path = path.split('/'); here = @host
+  list: (path, here = @host) ->
+    path = path.split('/')
     # start with /path - go to most parent vc
     if not path[0].length # /path
       there = here
@@ -78,7 +78,7 @@ class Integrant extends events.EventEmitter
     # copy from dom to array
     return (e for e in here.getElementsByClassName(leaf))
   # walk to a single known leaf given path of classes
-  walk: (path) -> return @list(path)?[0]
+  walk: (path, here) -> return @list(path, here)?[0]
   # more restrictive - find immediate child with class
   child: (cls) ->
     child = @host.firstElementChild
@@ -99,15 +99,17 @@ class Integrant extends events.EventEmitter
       @select el if @get_vc_for(el) is @
         
   # add a new child element from template
-  add: (name, attributes) ->
+  add: (name, attributes, ready) ->
     template = @templates[attributes.template ? 0]
     child = template.cloneNode true
     child.setAttribute(k, v) for k, v of attributes
     template.hostess.appendChild child
     @prepare child
+    ready ?= ->
     if attributes.vc
       vc_builder child, attributes, ready
     else ready()
-    return child
+    child.classList.add name
+    return @[name] = @walk('container', child) ? child
     
 module.exports = Integrant

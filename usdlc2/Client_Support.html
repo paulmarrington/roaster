@@ -493,41 +493,41 @@ gwt.open_page &quot;test/index.html&quot;
 
 gwt.add &quot;Panel Switcher&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    require &#39;vc&#39;, (a) -&gt;
-      # Outer VC - using the html and css from above
-      a.vc document.body, vc: &#39;panel_stack&#39;, (err, stack) -&gt;
-        # let&#39;s add the same three panels
-        doc = stack.add &#39;doc&#39;,
-          style: &#39;height:50%; background-color: red;&#39;
-        doc.innerHTML = &#39;Document&#39;
-        
-        code = stack.add &#39;code&#39;,
-          style: &#39;height:50%; background-color: green;&#39;
-        code.innerHTML = &#39;Code&#39;
-        
-        windows = stack.add &#39;windows&#39;,
-          style: &#39;height:50%; background-color: blue;&#39;
-        # and change the tests to match the new structure
-        code.innerHTML = &#39;Window Tabs&#39;
-        
-        colour = (expected_colour) -&gt;
-          selected = stack.selected.style[&#39;background-color&#39;]
-          return selected is expected_colour
+    vc = require &#39;vc&#39;
+    # Outer VC - using the html and css from above
+    vc document.body, vc: &#39;panel_stack&#39;, (err, stack) -&gt;
+      # let&#39;s add the same three panels
+      doc = stack.add &#39;doc&#39;,
+        style: &#39;height:50%; background-color: red;&#39;
+      doc.innerHTML = &#39;Document&#39;
 
-        return gwt.fail(&#39;Name&#39;) if doc isnt stack.doc
-        
-        stack.select(&quot;one&quot;)
+      code = stack.add &#39;code&#39;,
+        style: &#39;height:50%; background-color: green;&#39;
+      code.innerHTML = &#39;Code&#39;
+
+      windows = stack.add &#39;windows&#39;,
+        style: &#39;height:50%; background-color: blue;&#39;
+      # and change the tests to match the new structure
+      windows.innerHTML = &#39;Window Tabs&#39;
+
+      colour = (expected_colour) -&gt;
+        selected = stack.selected.style[&#39;background-color&#39;]
+        return selected is expected_colour
+
+      return gwt.fail(&#39;Name&#39;) if doc isnt stack.doc
+
+      stack.select(&quot;doc&quot;)
+      process.nextTick -&gt;
+        return gwt.fail(&#39;doc&#39;) if not colour &quot;red&quot;
+
+        stack.select(&quot;code&quot;)
         process.nextTick -&gt;
-          return gwt.fail(&#39;One&#39;) if not colour &quot;red&quot;
-
-          stack.select(&quot;two&quot;)
-          process.nextTick -&gt;
-            return gwt.fail(&#39;Two&#39;) if not colour &quot;green&quot;
-            gwt.pass()        
+          return gwt.fail(&#39;code&#39;) if not colour &quot;green&quot;
+          gwt.pass()        
   setTimeout go, 4000
 </pre>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="html_editor"><a href="javascript:usdlc.edit_source({value:'html_editor.coffee',path:'../roaster/client/vc/html_editor.coffee',category:'vc'})">html_editor.coffee</a> </span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/html_editor/open.coffee',category:'html_editor'})">open.coffee</a> </span><span class="require"><a href="javascript:usdlc.edit_source({value:'require.coffee',path:'../roaster/drivers/require.coffee',category:'drivers'})">require.coffee</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/vc/panel_stack.coffee',category:'vc'})">panel_stack.coffee</a> </span></div>
 
 <h4>Integrant Support</h4>
 
