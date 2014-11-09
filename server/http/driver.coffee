@@ -66,7 +66,9 @@ module.exports = (exchange) ->
   do run_driver = ->
     if not drivers.length
       return exchange.template -> exchange.reply ->
-    drivers.shift()(run_driver)
+    drivers.shift() (err) ->
+      return run_driver() if not err
+      throw err
 
 module.exports.use_template = (exchange, template, next) ->
   exchange.template = (next_template) ->

@@ -7,7 +7,7 @@ module.exports = (source, css_created) ->
     return css_created(error) if error
     morph source, '.css', (err, name, content, writer) ->
       return css_created(null, name) if not content
-      new less.Parser(
+      try new less.Parser(
         # Specify search paths for @import directives
         paths: [path.dirname source, dirs.base()]
         relativeUrls: true
@@ -17,3 +17,5 @@ module.exports = (source, css_created) ->
         return css_created(error) if error
         writer null, tree.toCSS compress: false
         css_created null, name
+      catch err
+        css_created err

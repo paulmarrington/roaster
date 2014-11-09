@@ -24,10 +24,12 @@ function (source, reader, target_ext, builder) {
       }
       dirs.mkdirsSync(path.dirname(target));
       builder(null, target, code, function(error, built) {
-        if (error)// || !built.trim())
+        if (error) {
+          console.log(error,'for',source)
           fs.unlinkSync(target);
-        else
+        } else {
           fs.writeFileSync(target, built, 'utf8');
+        }
       });
   } else {
     builder(null, target);
