@@ -12,11 +12,14 @@ module.exports = (host, opt_list..., ready) ->
   activate = ->
     return false if not (Integrant = vc_cache[type])
     # vc loaded - activate it
-    vc = host.vc = new Integrant()
-    if not host.childElementCount
+    vc = new Integrant()
+    if vc.shared_host and host.vc?.type is vc.type
+      host = host.appendChild document.createElement 'DIV'
+    if not (using_html_view = host.childElementCount > 0)
       host.innerHTML = vc.html
-    host.classList.add type
-    vc.opts = opts
+    else
+      host.classList.add type
+    host.vc = vc; vc.opts = opts
     vc[k] = v for k,v of {type, host, base}
           
     list = host.getElementsByClassName('template')
@@ -27,6 +30,12 @@ module.exports = (host, opt_list..., ready) ->
       vc.templates[name] = template if name
       template.hostess = template.parentNode
       template.parentNode.removeChild template
+    # add templates from loaded html file
+    if using_html_view
+      for name,template of vc.named_templates
+        if not vc.templates[name]
+          vc.templates[name] = template.cloneNode(true)
+          vc.templates[name].hostess = vc.host
         
     process_contents = (done) ->
       inner = (it for it in host.getElementsByClassName('vc'))
@@ -54,21 +63,19 @@ module.exports = (host, opt_list..., ready) ->
       ready(null, vc)
 
     return true
+  
   return if activate()
-
   # come here if vc not loaded from server
-  contents = null
   base = "#{base}#{type}"
   require.css "#{base}.css"
-  require.data "#{base}.html", (error, html) ->
-    contents = html
-    if vc_cache[type]
-      vc_cache[type]::html = html
-      activate()
-  base = base[1..-1]
-  require 'vc/Integrant', base, (the) =>
-    exports = the[base]
-    if not exports
-      return ready(Error("VC '#{base}' failed"))
-    (vc_cache[type] = exports)::html = contents
-    activate() if contents
+  vc_cache[type] = require base[1..-1]
+  require.static "#{base}.html", (error, html) ->
+    (div = document.createElement("div")).innerHTML = html
+    list = div.getElementsByClassName('template')
+    vc_cache[type]::named_templates = {}
+    for tpl in list when name = tpl.getAttribute('name')
+      vc_cache[type]::named_templates[name] = tpl
+    
+    vc_cache[type]::html = html
+    vc_cache[type]::type = type
+    activate()

@@ -4,7 +4,7 @@ Integrant = require 'vc/Integrant'
 class PanelSwitcher extends Integrant
   init: ->
     @container = @child('container')
-    if not @container
+    if not @container and not @child('panel_switcher')
       @container = @templates.container.cloneNode true
       @host.appendChild @container
       while @host.children.length > 1

@@ -1,14 +1,16 @@
+/* Copyright (C) 2014 paul@marrington.net, see /GPL license */
+
 @tabs-height: 12px;
 @tab-height: @tabs-height - 8;
 @tab-border-radius: 3px 3px 0 0;
+
 .tab_view {
   border: none;
   min-height: 0;
   margin: 0;
   padding: 0;
-}
-.tab_view {
-  height: @tabs-height;
+
+  //height: @tabs-height;
   display: inline-block;
   margin: 0 0 0 0;
   z-index: 2;
@@ -28,7 +30,7 @@
     font-size: @tabs-height;
     text-decoration: none;
     height: @tab-height;
-    padding: 4px 8px;
+    padding: 6px 8px 4px 8px;
     margin-right: 3px;
     display: inline-block;
     cursor: pointer;
@@ -58,7 +60,7 @@
       }
     }
   }
-  .messages {
+  & > .messages {
     top: -2px;
     position: relative;
     padding-left: 1em;

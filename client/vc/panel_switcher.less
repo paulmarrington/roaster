@@ -1,0 +1,15 @@
+// Copyright (C) 2014 paul@marrington.net, see /GPL license
+@import "../common";
+
+.panel_switcher > .container, .panel_switcher.container {
+  #fill > .container;
+  
+  & > .vc {
+    display: none;
+    #fill > .body;
+  }
+  
+  & > .vc.active {
+    display: initial;
+  }
+}

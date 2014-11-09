@@ -1,0 +1,21 @@
+/* Copyright (C) 2014 paul@marrington.net, see /GPL license */
+
+.rotate(@deg: 90deg, @origin: bottom left) {
+  -ms-transform: rotate(@deg);
+  -webkit-transform: rotate(@deg);
+  transform: rotate(@deg);
+  transform-origin: @origin;
+}
+
+#fill {
+  .container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+  .body {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+  }
+}
