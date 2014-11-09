@@ -2,9 +2,8 @@
 
 url = "http://dhtmlx.com/x/download/regular/download.php?"+
       "pack=dhtmlxScheduler.zip"
-module.exports = (loaded) -> require.dependency(
+require.dependency(
   dhtmlxScheduler: "#{url}|dhtmlxScheduler"
   "/ext/dhtmlxScheduler/codebase/dhtmlxscheduler.js"
   "/ext/dhtmlxScheduler/codebase/dhtmlxscheduler.css"
-  loaded
 )

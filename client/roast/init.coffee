@@ -30,15 +30,12 @@ roaster.global = window
 
 # Loading other modules - finishing with
 # project specific initialisation in load=xxx.coffee or js
-modules = ["roast/loaders,common/Sequential"]
-project_init = (next) ->
-  loads = []
-  for script in document.getElementsByTagName('script')
-    load = script.getAttribute('load')
-    loads.push load if load
-   if loads.length then require(loads..., next) else next()
-    
-require modules..., -> project_init ->
-  require.css '/client/roast/style.less'
-  require.on_ready = (action) -> action()
-  action() for action in require.ready
+require "roast/loaders"
+loads = []
+for script in document.getElementsByTagName('script')
+  load = script.getAttribute('load')
+  loads.push load if load
+require(loads...) if loads.length
+require.css '/client/roast/style.less'
+require.on_ready = (action) -> action()
+action() for action in require.ready

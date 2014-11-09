@@ -1,7 +1,6 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
-requires = (ready) ->
-  require.packages 'ckeditor4', => require 'dom', ready
-  
+dom = require 'dom'
+
 default_options =
   height: "auto"
   fullPage: false
@@ -16,27 +15,30 @@ default_options =
     'codeTag,ckeditor-gwf-plugin,leaflet,div,pagebreak,'+
     'codesnippet'
 
-class Open  
-  editor: (@container, ready) -> requires (imports) =>
-    CKEDITOR.config.font_names += ';GoogleWebFonts'
-    opts = [@vc.options]
-    options = {}; opts.unshift default_options
-    options[k] ?= v for k,v of o for o in opts
-    @cke = CKEDITOR.replace @container, options
-    @vc.ed = @cke
-    @cke.on 'instanceReady', =>
-      @vc.toolbar.prepare(@cke)
-      @vc.file.prepare(@cke)
-      @vc.tabs.prepare()
-      do adjust_height = =>
-        @cke.container.hide()
-        process.nextTick =>
-          height = @container.parentNode.clientHeight
-          @cke.container.show()
-          @cke.resize '100%', height
-        imports.dom.resize_event adjust_height
-      @vc.select('tabs/Font')
-      @cke.focus()
-      ready()
+class Open
+  editor: (@container, ready) ->
+    require.packages 'ckeditor4', =>  
+      CKEDITOR.config.font_names += ';GoogleWebFonts'
+      opts = [@vc.options]
+      options = {}; opts.unshift default_options
+      options[k] ?= v for k,v of o for o in opts
+      @cke = CKEDITOR.replace @container, options
+      @vc.ed = @cke
+      @cke.on 'instanceReady', =>
+        @vc.toolbar.prepare(@cke)
+        @vc.file.prepare(@cke)
+        @vc.tabs.prepare()
+        do adjust_height = =>
+          @cke.container.hide()
+          process.nextTick =>
+            height = @container.parentNode.clientHeight
+            @cke.container.show()
+            @cke.resize '100%', height
+          dom.resize_event adjust_height
+        @vc.select('tabs/Font')
+        @cke.focus()
+        @vc.emit "html_editor_ready", @vc.ed
+        @vc.tabs.view.reset_selection()
+        ready()
 
 module.exports = Open

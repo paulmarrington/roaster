@@ -9,10 +9,6 @@ require.build_url = (url, args) ->
   items = ("#{key}=#{value}" for key, value of args)
   return "#{url}#{sep}#{items.join('&')}"
 
-require.scripts = (urls..., on_loaded) ->
-  sequential.list urls, on_loaded, (url, next) ->
-    require.script url, next
-
 require.dependency = (packages, libraries..., ready) ->
   url = require.build_url \
     '/server/http/dependency.coffee', packages
@@ -29,8 +25,7 @@ require.packages = (packages..., ready) ->
   do load_one = ->
     return ready() if not packages.length
     name = packages.shift()
-    pkg = "client/packages/#{name}"
-    require pkg, (the) -> the[pkg](load_one)
+    require("client/packages/#{name}") load_one
 
 require.json = (url, on_loaded) ->
   @data url, (error, text) ->
@@ -47,11 +42,12 @@ require.css = (urls...) ->
     link.href = url
     head = document.getElementsByTagName("head")[0]
     head.appendChild(link)
+    
+require.static = (url, next) -> require.data url, next, {}
   
-require.data = (url, next) ->
+require.data = (url, next, headers = pragma: "no-cache") ->
   contents = []
-  @stream url, pragma: "no-cache",
-  (error, text, is_complete) ->
+  @stream url, headers, (error, text, is_complete) ->
     contents.push text
     contents = [] if error
     next(error, contents.join('')) if is_complete

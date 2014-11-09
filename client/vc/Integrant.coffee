@@ -5,6 +5,7 @@ vc_builder = require 'vc'
 class Integrant extends events.EventEmitter
   constructor: ->
     @initialisers = []
+    @shared_host = false
     
   get_vc_for: (el) -> # find the vc owning this element
     if typeof el is 'string'
@@ -18,26 +19,13 @@ class Integrant extends events.EventEmitter
   init: ->
   prepare: (item) ->
     
-  require: (names, ready) ->
+  require: (names) ->
     base = @base
     base = base[0..-2] if base[-1..-1] is '/'
-    names = names.split(',')
+    for name in names.split(',')
+      @[name] = new (require("#{base}/#{name}"))()
+      @[name].vc = @
     
-    requires = (done) =>
-      sequential.list names.slice(0), done, (name, next) =>
-        require url = "#{base}/#{name}", (imports) =>
-          next @[name] = new (imports[url])()
-        
-    inits = (done) => do next = =>
-      return done() if not names.length
-      rq = @[names.shift()]
-      rq.vc = @
-      return next() if not init = rq.init
-      init.call(rq, next)
-      next() if init.length < 2 # sync
-    
-    requires -> inits -> ready()
-          
   style: (element, styles) ->
     element.style[k] = v for k, v of styles
       
@@ -47,6 +35,7 @@ class Integrant extends events.EventEmitter
     if vc.selected isnt item
       vc.emit 'deselected', vc.selected if vc.selected
       vc.emit 'selected', vc.selected = item
+    return item
     
   # walk a class path and return a list that matches leaf
   list: (path, here = @host) ->
@@ -59,6 +48,14 @@ class Integrant extends events.EventEmitter
       path.shift()
     # now walk the path (... copies path)
     leaf = path.pop()
+    # special case if the starting point matches the leaf
+    if not path.length
+      is_me = true
+      for cls in leaf.split ' '
+        is_me = is_me and here.classList.contains cls
+        break if not is_me
+      return [here] if is_me
+      
     do lister = (path) ->
       return true if not path.length
       if (point = path.shift()) is '..'
@@ -78,7 +75,7 @@ class Integrant extends events.EventEmitter
     # copy from dom to array
     return (e for e in here.getElementsByClassName(leaf))
   # walk to a single known leaf given path of classes
-  walk: (path, here) -> return @list(path, here)?[0]
+  walk: (path, here) -> return @list(path, here)?[0] ? null
   # more restrictive - find immediate child with class
   child: (cls) ->
     child = @host.firstElementChild
@@ -100,7 +97,10 @@ class Integrant extends events.EventEmitter
         
   # add a new child element from template
   add: (name, attributes, ready) ->
+    attributes ?= {}
     template = @templates[attributes.template ? 0]
+    if template.classList.contains(@type)
+      template = template.firstChild
     child = template.cloneNode true
     child.setAttribute(k, v) for k, v of attributes
     template.hostess.appendChild child
@@ -109,7 +109,9 @@ class Integrant extends events.EventEmitter
     if attributes.vc
       vc_builder child, attributes, ready
     else ready()
-    child.classList.add name
-    return @[name] = @walk('container', child) ? child
+    key = name.replace /\s+/g, '_'
+    child.classList.add key
+    @[name] = @walk('container', child) ? child
+    return @[key] = @[name]
     
 module.exports = Integrant

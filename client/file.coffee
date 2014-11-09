@@ -9,29 +9,28 @@ module.exports = file =
       read err, contents # pronounce as 'red'
 
   write: (file_name, content, written) ->
-    require 'common/patch.coffee', (imports) ->
-      patch = imports.patch
-      do file.save = (file_name, content, written) ->
-        if not file_name or processing[file_name]
-          return written()
-        id = file_name.replace /[\.\/]/g, '_'
-        processing[file_name] = true
-        roaster.message ''
-        original = originals[id] ? ''
-        return written() if content is original
-        saved = -> processing[file_name] = false; written(0, 1)
-        save_url = "/server/http/save.coffee?name=#{file_name}"
-        patch.create file_name, original, content, (changes) ->
-          file.post save_url, changes, (err, data) ->
-            if err
-              roaster.message "<b>Save failed</b>"
-              if confirm('Save failed\n'+
-              'Do you want to merge the changes?')
-                file.merge file_name, id, content, written
-              return saved()
-            usdlc.originals[original_id] = content
-            roaster.message 'Saved'
-            saved()
+    patch = require 'common/patch.coffee'
+    do file.save = (file_name, content, written) ->
+      if not file_name or processing[file_name]
+        return written()
+      id = file_name.replace /[\.\/]/g, '_'
+      processing[file_name] = true
+      roaster.message ''
+      original = originals[id] ? ''
+      return written() if content is original
+      saved = -> processing[file_name] = false; written(0, 1)
+      save_url = "/server/http/save.coffee?name=#{file_name}"
+      patch.create file_name, original, content, (changes) ->
+        file.post save_url, changes, (err, data) ->
+          if err
+            roaster.message "<b>Save failed</b>"
+            if confirm('Save failed\n'+
+            'Do you want to merge the changes?')
+              file.merge file_name, id, content, written
+            return saved()
+          usdlc.originals[original_id] = content
+          roaster.message 'Saved'
+          saved()
         
   on_change: (id, save) ->
     clearTimeout(timer)

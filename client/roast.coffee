@@ -6,38 +6,24 @@ window.roaster ?=
   opts:    {}
 
 parse_require_name = (name) ->
-  name = '/' + name
+  name = '/' + name if name[0] isnt '/'
   name += ".require" if name.indexOf('.') is -1
   return name
 
-window.require = (module_names..., next) ->
-  if module_names.length is 0 # synchronous require
-    return require.cache[next] if require.cache[next]
-    # CodeMirror insists on CommonJS with a mixed-up path
-    return roaster.cache[next] = {} if next[0] is '.'
-    url = parse_require_name next
-    request = new XMLHttpRequest()
-    request.open 'GET', url, false
-    request.send null
-    try eval request.responseText catch err
-      console.log "require '#{next}'", err.stack
-    module = require.cache[next] ? require.cache[url]
-    return module?.client ? module
- # asynchronous require
-  modules = {}; loaded = 0
-  load = (name) ->
-    if require.cache[name]
-      return modules[name] = require.cache[name]
-    loaded++
-    require._script parse_require_name(name), ->
-      module = require.cache[name]
-      modules[name] = module = module?.client ? module
-      modules[name.split('/').pop()] ?= module
-      next modules if --loaded is 0 # all loaded
-        
-  for names in module_names
-    load(name) for name in names.split(',')
-  next modules if loaded is 0 # no server loads
+window.require = (name) ->
+  return require.cache[name] if require.cache[name]
+  # CodeMirror insists on CommonJS with a mixed-up path
+  return roaster.cache[next] = {} if name[0] is '.'
+  url = parse_require_name name
+  request = new XMLHttpRequest()
+  request.open 'GET', url, false
+  request.send null
+  code = request.responseText + "\n//# sourceURL=" + name
+  try eval code catch err
+    console.log "require '#{next}'", err.stack
+  module = require.cache[name] ? require.cache[url]
+  module ?= require.cache[name.split('/')[-1..-1]]
+  return module?.client ? module
 
 window.require.ready = []
 window.require.on_ready = (action) -> require.ready.push action
@@ -46,7 +32,11 @@ roaster.cache = require.cache = roaster: roaster
 require.opts = roaster.opts
 
 # load a script from the server using <script> tag
-require._script = (url, on_loaded) ->
+require.script = (url, on_loaded = ->) ->
+  return on_loaded() if require.cache[url]
+  require.cache[url] = true
+  sep = if url.indexOf('?') is -1 then '?' else '&'
+  url += sep+'domain=client,library'
   script = document.createElement("script")
   script.type = "text/javascript"
   script.async = "async"
@@ -54,11 +44,5 @@ require._script = (url, on_loaded) ->
   script.ontimeout = on_loaded
   script.src = url
   roaster.head.appendChild(script)
-require.script = (url, on_loaded = ->) ->
-  return on_loaded() if require.cache[url]
-  require.cache[url] = true
-  sep = if url.indexOf('?') is -1 then '?' else '&'
-  url += sep+'domain=client,library'
-  require._script url, on_loaded
   
 require 'roast/init', ->
