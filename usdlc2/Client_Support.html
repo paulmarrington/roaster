@@ -758,35 +758,120 @@ gwt.add &quot;Panel Switcher&quot;, -&gt; @page.test -&gt;
 <p>Messages consist of a title, a body and a priority. They are displayed by title and sorted by priority and time. &nbsp;They close when they are clicked, overflow their container or their age exceeds a defined point. Hovering shows their age and the longer text in the body.&nbsp;Priority defines colour and aging rules. The default is as follows:</p>
 
 <ol>
-	<li>Red. Aged: never. Don&#39;t close on overflow</li>
-	<li>Dark red. Aged: never</li>
-	<li>Orange. Aged: 48 hours</li>
-	<li>Green. Aged: 1 hour</li>
-	<li>Grey. Aged: 5 minutes</li>
+	<li>Fatal: Red. Aged: never. Don&#39;t close on overflow</li>
+	<li>Error: Dark red. Aged: never</li>
+	<li>Alert: Orange. Aged: 48 hours</li>
+	<li>Pass: Green. Aged: 1 hour</li>
+	<li>Message: Grey. Aged: 5 minutes</li>
 </ol>
+
+<p>The <em>add</em> method takes a single string in the following format:</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><tt>type: title - body</tt></div>
+
+<p>where</p>
+
+<ul>
+	<li><strong>type</strong> is the error type from above (or more added). Case insensitive.</li>
+	<li><strong>title</strong> is displayed in the message space.</li>
+	<li><strong>body</strong> and age are displayed when a message is hovered over.</li>
+</ul>
+
+<div class="metadata Ref">Ref: <span class="tabbed_panels"><a href="javascript:usdlc.edit_source({value:'tabbed_panels.html',path:'../roaster/client/vc/tabbed_panels.html',category:'vc'})">tabbed_panels.html</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.html',path:'../roaster/client/vc/messages.html',category:'vc'})">messages.html</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.less',path:'../roaster/client/vc/tab_view.less',category:'vc'})">tab_view.less</a> </span><span class="panel_switcher"><a href="javascript:usdlc.edit_source({value:'panel_switcher.html',path:'../roaster/client/vc/panel_switcher.html',category:'vc'})">panel_switcher.html</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.html',path:'../roaster/client/vc/panel_stack.html',category:'vc'})">panel_stack.html</a> </span><span class="html_editor"><a href="javascript:usdlc.edit_source({value:'html_editor.less',path:'../roaster/client/vc/html_editor.less',category:'vc'})">html_editor.less</a> </span></div>
 
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+gwt.add &quot;Messages&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;messages&#39;, (err, messages) -&gt;
+      adder = (elapse, message) -&gt;
+        setTimeout (-&gt; messages.add message), adder
+        
+      adder 11, &quot;Message: Test 1 - The first test&quot;
+      adder 22, &quot;Error: Error - Error message&quot;
+      adder 33, &quot;Message: Test 2 - One more message&quot;
+      adder 44, &quot;Fatal: Fatality&quot;
+      adder 55, &quot;Test 3 - checking sorting&quot;
+      adder 66, &quot;Test 1&quot;
+    
+      #### Everything below is verification
+      
+      check = (against) -&gt;
+        text = messages.host.innerHTML.replace /&lt;.*?&gt;+/g, &#39; &#39;
+        text = text.replace(/\s+/g, &#39; &#39;).trim()
+        return true if text is against
+        gwt.fail &quot;Expecting &#39;#{against}&#39;, found &#39;#{text}&#39;&quot;
+        return false
+        
+      process.nextTick -&gt;
+        if check &quot;Test 1 Test 3 Fatality Test 2 Error&quot;
+          gwt.pass()
+
+  setTimeout go, 4#000 </pre>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.less',path:'../roaster/client/vc/messages.less',category:'vc'})">messages.less</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.less',path:'../roaster/client/vc/tab_view.less',category:'vc'})">tab_view.less</a> </span></div>
 
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-
-&nbsp;</pre>
+&lt;div class=&quot;vc tabs&quot; vc=&quot;tab_view&quot;
+  &gt;&lt;span class=&quot;vc&quot; vc=&quot;messages&quot;&gt;&lt;/span
+  &gt;&lt;a class=&quot;vc&quot;&gt;One&lt;/a
+  &gt;&lt;a class=&quot;vc&quot;&gt;Two&lt;/a
+  &gt;&lt;a class=&quot;vc&quot;&gt;Three&lt;/a
+  &gt;&lt;a class=&quot;vc active&quot;&gt;Four&lt;/a
+&gt;&lt;/div&gt; </pre>
 
 <pre title="coffee" type="coffee">
- &nbsp;</pre>
+try
+  Integrant = require &#39;vc/Integrant&#39;
+
+  class Body extends Integrant
+    init: (ready) -&gt;
+      @tabs = @get_vc_for &#39;tabs&#39;
+      @messages = @get_vc_for &#39;messages&#39;
+      # do further initialisation requiring async access
+
+      ready(err = null)
+      
+    message: (text) -&gt; @messages.add text
+
+  module.exports = Body
+catch  </pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
+
+gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Messages/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
+    vc document.body, vc: name, (err, body) -&gt;
+      body.message &quot;Hello world&quot;
+      body.message &quot;Alert: Read Me - False alarm&quot;
+
+      check = (against) -&gt;
+        text = body.messages.host.innerHTML.replace /&lt;.*?&gt;+/g, &#39; &#39;
+        text = text.replace(/\s+/g, &#39; &#39;).trim()
+        return true if text is against
+        gwt.fail &quot;Expecting &#39;#{against}&#39;, found &#39;#{text}&#39;&quot;
+        return false
+        
+      process.nextTick -&gt;
+        if check &quot;Read Me Hello world&quot;
+          gwt.pass()
+          
+  setTimeout go, 4000 </pre>
 
 <p>&nbsp;</p>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.less',path:'../roaster/client/vc/messages.less',category:'vc'})">messages.less</a> </span></div>
 
 <h3>Tab View</h3>
 
@@ -1175,7 +1260,6 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
@@ -1183,14 +1267,12 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-
 &nbsp;</pre>
 
 <pre title="coffee" type="coffee">
 module.exports =</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <p>&nbsp;</p>
@@ -1202,7 +1284,6 @@ module.exports =</pre>
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
@@ -1210,14 +1291,12 @@ module.exports =</pre>
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-
 &nbsp;</pre>
 
 <pre title="coffee" type="coffee">
 module.exports =</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <p>&nbsp;</p>
@@ -1229,7 +1308,6 @@ module.exports =</pre>
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
@@ -1237,14 +1315,12 @@ module.exports =</pre>
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-
 &nbsp;</pre>
 
 <pre title="coffee" type="coffee">
 module.exports =</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <p>&nbsp;</p>
@@ -1258,7 +1334,6 @@ module.exports =</pre>
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
@@ -1266,14 +1341,12 @@ module.exports =</pre>
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-
 &nbsp;</pre>
 
 <pre title="coffee" type="coffee">
 module.exports =</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <p>&nbsp;</p>
@@ -1353,7 +1426,6 @@ gwt.add &quot;HTML Editor View&quot;, -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
@@ -1361,14 +1433,12 @@ gwt.add &quot;HTML Editor View&quot;, -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-
 &nbsp;</pre>
 
 <pre title="coffee" type="coffee">
 module.exports =</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <p>&nbsp;</p>
@@ -1382,7 +1452,6 @@ module.exports =</pre>
 <h5>Code View</h5>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-
 &nbsp;</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>

@@ -1,0 +1,28 @@
+// Copyright (C) 2014 paul@marrington.net, see /GPL license
+.vc.messages {
+  float: right;
+  border-left: 1px solid #DDD;
+  margin-left: 22px;
+  display: inline;
+  & > span {
+    padding: 1px 5px 1px 5px;
+    border-right: 1px solid #DDD;
+    cursor: pointer;
+    
+    &.fatal {
+      color: red;
+    }
+    &.error {
+      color: #BB0000;
+    }
+    &.alert {
+      color: #FFA500;
+    }
+    &.pass {
+      color: green;
+    }
+    &.message {
+      color: #D3D3D3;
+    }
+  }
+}
