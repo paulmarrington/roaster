@@ -1255,29 +1255,98 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="drawers"><a href="javascript:usdlc.edit_source({value:'drawers.coffee',path:'../roaster/client/vc/drawers.coffee',category:'vc'})">drawers.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="tabbed_panels"><a href="javascript:usdlc.edit_source({value:'tabbed_panels.coffee',path:'../roaster/client/vc/tabbed_panels.coffee',category:'vc'})">tabbed_panels.coffee</a> </span><span class="dialog"><a href="javascript:usdlc.edit_source({value:'dialog.coffee',path:'../roaster/client/dialog.coffee',category:'client'})">dialog.coffee</a> </span></div>
 
-<h3>Modal Panels</h3>
+<h3>Modal Panel</h3>
 
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+gwt.add &quot;Modal Panels&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    bg = (&quot;123456789&quot; for i in [1..500]).join(&#39; &#39;)
+    document.body.innerHTML = bg
+    
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;modal_panel&#39;, (err, modal) -&gt;
+      panel = modal.container
+      panel.innerHTML = &quot;&lt;&lt;&lt;&lt;&lt; PANEL CONTENTS &gt;&gt;&gt;&gt;&gt;&lt;br&gt;&quot;
+      panel.innerHTML += panel.innerHTML for i in [1..2]
+      modal.show()
+    
+      #### Everything below is verification
+
+      process.nextTick -&gt;
+        bg = document.elementFromPoint 0, 0
+        if not bg.classList.contains &#39;background&#39;
+          return gwt.fail &quot;modal not showing&quot;
+        
+        modal.hide()
+        process.nextTick -&gt;
+          bg = document.elementFromPoint 0, 0
+          if bg.classList.contains &#39;background&#39;
+            return gwt.fail &quot;modal not hidden&quot;
+
+          modal.show()
+          gwt.pass()
+        
+  setTimeout go, 4000
+ </pre>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="drawers"><a href="javascript:usdlc.edit_source({value:'drawers.coffee',path:'../roaster/client/vc/drawers.coffee',category:'vc'})">drawers.coffee</a> </span><span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.less',path:'../roaster/client/vc/modal_panel.less',category:'vc'})">modal_panel.less</a> </span></div>
 
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&nbsp;</pre>
+&lt;div class=&quot;vc&quot; vc=&quot;modal_panel&quot;&gt;
+  The rain in spain falls mainly on the plain.&lt;br&gt;
+  Now is the time for all good men to come to the
+  aid of the party.
+&lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
-module.exports =</pre>
+try
+  Integrant = require &#39;vc/Integrant&#39;
+
+  class Body extends Integrant
+    init: (ready) -&gt;
+      @panel = @get_vc_for &#39;modal_panel&#39;
+      # do further initialisation requiring async access
+      ready(err = null)
+
+  module.exports = Body
+catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
+
+gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Modal_Panel/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
+    vc document.body, vc: name, (err, modal) -&gt;
+      modal.panel.show()
+      process.nextTick -&gt;
+        bg = document.elementFromPoint 0, 0
+        if not bg.classList.contains &#39;background&#39;
+          return gwt.fail &quot;modal not showing&quot;
+        
+        modal.panel.hide()
+        process.nextTick -&gt;
+          bg = document.elementFromPoint 0, 0
+          if bg.classList.contains &#39;background&#39;
+            return gwt.fail &quot;modal not hidden&quot;
+
+          modal.panel.show()
+          gwt.pass()
+  setTimeout go, 4000
+  </pre>
 
 <p>&nbsp;</p>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span></div>
 
 <h3>Window Manager</h3>
 

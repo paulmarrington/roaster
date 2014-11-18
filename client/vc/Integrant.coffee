@@ -3,9 +3,10 @@ events = require 'events'; sequential = require 'Sequential'
 vc_builder = require 'vc'
 
 class Integrant extends events.EventEmitter
-  constructor: ->
+  constructor: (@host) ->
     @initialisers = []
     @shared_host = false
+    @container_html = ""
     
   get_vc_for: (el) -> # find the vc owning this element
     if typeof el is 'string'
@@ -76,6 +77,11 @@ class Integrant extends events.EventEmitter
     return (e for e in here.getElementsByClassName(leaf))
   # walk to a single known leaf given path of classes
   walk: (path, here) -> return @list(path, here)?[0] ? null
+  # only returns item if it is owned by the same integrant
+  owned: (path, here) ->
+    for el in @list(path, here)
+      return el if @get_vc_for(el) is @
+    return null
   # more restrictive - find immediate child with class
   child: (cls) ->
     child = @host.firstElementChild

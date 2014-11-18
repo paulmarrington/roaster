@@ -1,3 +1,4 @@
+# Copyright (C) 2014 paul@marrington.net, see /GPL license
 TabbedPanels = require 'vc/tabbed_panels'
 
 class Drawers extends TabbedPanels

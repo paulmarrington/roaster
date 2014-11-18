@@ -2,6 +2,7 @@
 vc_cache = {}; sequential = require 'Sequential'
 
 module.exports = (host, opt_list..., ready) ->
+  container_html = host.innerHTML
   opts = {}  # flatten opts and add DOM attributes to opts
   opts[k] = v for k, v of opt for opt in opt_list
   opts[attr.name] = attr.value for attr in host.attributes
@@ -12,13 +13,15 @@ module.exports = (host, opt_list..., ready) ->
   activate = ->
     return false if not (Integrant = vc_cache[type])
     # vc loaded - activate it
-    vc = new Integrant()
-    if vc.shared_host and host.vc?.type is vc.type
+    vc = new Integrant(host)
+    if vc.shared_host and host.getAttribute("vc") isnt vc.type
       host = host.appendChild document.createElement 'DIV'
-    if not (using_html_view = host.childElementCount > 0)
-      host.innerHTML = vc.html
-    else
+    if vc.using_html_view
+      vc.container_html = ""
       host.classList.add type
+    else
+      vc.container_html = container_html
+      host.innerHTML = vc.view_html
     host.vc = vc; vc.opts = opts
     vc[k] = v for k,v of {type, host, base}
           
@@ -31,7 +34,7 @@ module.exports = (host, opt_list..., ready) ->
       template.hostess = template.parentNode
       template.parentNode.removeChild template
     # add templates from loaded html file
-    if using_html_view
+    if vc.using_html_view
       for name,template of vc.named_templates
         if not vc.templates[name]
           vc.templates[name] = template.cloneNode(true)
@@ -50,9 +53,12 @@ module.exports = (host, opt_list..., ready) ->
         
         vc_type = el.getAttribute('vc')
         return process() if not vc_type
-        module.exports el, opts[vc_type] ? {}, process
+        module.exports el, opts[vc_type] ? {},
+          using_html_view: true, process
     
     vc_init = (done) ->
+      if vc.container = vc.owned("container")
+        vc.container.innerHTML = vc.container_html
       vc.init(done)
       done() if not vc.init.length # sync
         
@@ -76,6 +82,6 @@ module.exports = (host, opt_list..., ready) ->
     for tpl in list when name = tpl.getAttribute('name')
       vc_cache[type]::named_templates[name] = tpl
     
-    vc_cache[type]::html = html
+    vc_cache[type]::view_html = html
     vc_cache[type]::type = type
     activate()
