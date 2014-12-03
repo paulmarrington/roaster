@@ -1031,12 +1031,12 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
 <pre title="html" type="html">
 &lt;div class=&quot;vc main&quot; vc=&quot;tabbed_panels&quot;&gt;
   &lt;table class=&quot;vc container&quot; vc=&quot;panel_stack&quot;&gt;
-    &lt;tr&gt;&lt;td class=&quot;vc tabs&quot; vc=&quot;tab_view&quot;
+    &lt;td class=&quot;vc tabs&quot; vc=&quot;tab_view&quot;
       &gt;&lt;a class=&quot;vc&quot; panel=&quot;One&quot;&gt;One&lt;/a
       &gt;&lt;a class=&quot;vc&quot; panel=&quot;Two&quot;&gt;Two&lt;/a
       &gt;&lt;a class=&quot;vc&quot; panel=&quot;Three&quot;&gt;Three&lt;/a
       &gt;&lt;a class=&quot;vc active&quot; panel=&quot;Four&quot;&gt;Four&lt;/a
-    &gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;
+    &gt;&lt;/td&gt;&lt;/tr&gt;
     &lt;td class=&quot;vc panels&quot; vc=&quot;panel_switcher&quot;
             style=&quot;height:100%&quot;
       &gt;&lt;div class=&quot;vc active One&quot;
@@ -1353,24 +1353,107 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+gwt.add &quot;Window Manager&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;window_manager&#39;, (err, wm) -&gt;
+      one   = wm.add &#39;One&#39;,
+        panel: style: &#39;background-color: red;&#39;
+      one.innerHTML = 1
+      four  = wm.add &#39;Four&#39;,
+        panel: style: &#39;background-color: yellow;&#39;
+      four.innerHTML = 4
+
+      wm.select &quot;Four&quot;
+      
+      #### Everything below is verification
+
+      check = (tab, colour) -&gt;
+        st = wm.selected.tab.innerHTML
+        sc = wm.selected.style[&quot;background-color&quot;]
+        return true if st is tab and sc is colour
+        gwt.fail &quot;Expected #{tab}/#{colour}&quot; +
+                 &quot;, found #{st}/#{sc}&quot;
+        return false
+
+      process.nextTick -&gt;
+        return if not check(&#39;Four&#39;, &#39;yellow&#39;)
+        wm.tabs.walk(&#39;One&#39;).click()
+        return if not check(&#39;One&#39;, &#39;red&#39;)
+        gwt.pass()
+  setTimeout go, 4#000
+ </pre>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="tabbed_panels">&nbsp;</span><span class="window_manager"><a href="javascript:usdlc.edit_source({value:'window_manager.coffee',path:'../roaster/client/vc/window_manager.coffee',category:'vc'})">window_manager.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/vc/tab_view.coffee',category:'vc'})">tab_view.coffee</a> </span><span class="panel_switcher"><a href="javascript:usdlc.edit_source({value:'panel_switcher.coffee',path:'../roaster/client/vc/panel_switcher.coffee',category:'vc'})">panel_switcher.coffee</a> </span></div>
 
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&nbsp;</pre>
+&lt;div class=&quot;vc main&quot; vc=&quot;window_manager&quot;
+  &gt;&lt;div name=&quot;One&quot;
+       style=&quot;background-color:red&quot;&gt;1&lt;/div
+  &gt;&lt;div name=&quot;Two&quot;
+       style=&quot;background-color:green&quot;&gt;2&lt;/div
+  &gt;&lt;div name=&quot;Three&quot;
+       style=&quot;background-color:blue&quot;&gt;3&lt;/div
+  &gt;&lt;div class=&#39;active&#39; name=&quot;Four&quot;
+       style=&quot;background-color:yellow&quot;&gt;4&lt;/div
+&gt;&lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
-module.exports =</pre>
+try
+  Integrant = require &#39;vc/Integrant&#39;
+
+  class Body extends Integrant
+    init: (ready) -&gt;
+      @main = @get_vc_for &#39;main&#39;
+      
+      do set_selected = =&gt;
+        @selected =
+          tab:   @main.tabs.selected.innerHTML
+          panel: @main.tabs.selected.panel.style[&quot;background-color&quot;]
+      @main.on &#39;selected&#39;, set_selected
+
+      # do further initialisation requiring async access
+      ready(err = null)
+
+  module.exports = Body
+catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
+
+gwt.add &quot;Window Manager&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Window_Manager/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
+    vc document.body, vc: name, (err, body) -&gt;
+      main = body.main
+
+      check = (tab, colour) -&gt;
+        sel = body.selected
+        if sel.tab is tab and sel.panel is colour
+          return true
+        gwt.fail &quot;Expected #{tab}/#{colour}&quot; +
+                 &quot;, found #{sel.tab}/#{sel.panel}&quot;
+        return false
+
+      process.nextTick -&gt;
+        return if not check(&#39;Four&#39;, &#39;yellow&#39;)
+        main.select(&#39;Two&#39;)
+        return if not check(&#39;Two&#39;, &#39;green&#39;)
+        main.tabs.walk(&#39;Three&#39;).click()
+        return if not check(&#39;Three&#39;, &#39;blue&#39;)
+        gwt.pass()
+  setTimeout go, 4000 </pre>
 
 <p>&nbsp;</p>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/vc/tab_view.coffee',category:'vc'})">tab_view.coffee</a> </span></div>
 
 <h3>Pop-up Menu View</h3>
 

@@ -8,6 +8,10 @@ class TabView extends Integrant
     tab = super name, attributes, ready
     tab.innerHTML = name
     return tab
+  
+  close: (name) ->
+    tab = @walk(name)
+    tab.parentNode.removeChild(tab)
     
   prepare: (tab) ->
     if tab.innerHTML.length

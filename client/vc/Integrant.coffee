@@ -89,6 +89,11 @@ class Integrant extends events.EventEmitter
       child = child.nextElementSibling
     return child
   
+  initial_contents: ->
+    div = document.createElement('div')
+    div.innerHTML = @container_html
+    return div.childNodes
+  
   initialisers_for_select: ->
     @on 'selected', (panel) ->
       panel.classList.add 'active'
@@ -101,14 +106,17 @@ class Integrant extends events.EventEmitter
     for el in @list('vc active')
       @select el if @get_vc_for(el) is @
         
+  setAttributes: (node, attributes) ->
+    node.setAttribute(k, v) for k, v of attributes
+        
   # add a new child element from template
   add: (name, attributes, ready) ->
     attributes ?= {}
     template = @templates[attributes.template ? 0]
     if template.classList.contains(@type)
       template = template.firstChild
-    child = template.cloneNode true
-    child.setAttribute(k, v) for k, v of attributes
+    child = template.cloneNode(true)
+    @setAttributes child, attributes
     template.hostess.appendChild child
     @prepare child
     ready ?= ->
