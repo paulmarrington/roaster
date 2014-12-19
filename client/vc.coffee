@@ -16,7 +16,7 @@ module.exports = (host, opt_list..., ready) ->
     vc = new Integrant(host)
     if vc.shared_host and host.getAttribute("vc") isnt vc.type
       host = host.appendChild document.createElement 'DIV'
-    if vc.using_html_view
+    if opts.using_html_view
       vc.container_html = ""
       host.classList.add type
     else
@@ -34,7 +34,7 @@ module.exports = (host, opt_list..., ready) ->
       template.hostess = template.parentNode
       template.parentNode.removeChild template
     # add templates from loaded html file
-    if vc.using_html_view
+    if opts.using_html_view
       for name,template of vc.named_templates
         if not vc.templates[name]
           vc.templates[name] = template.cloneNode(true)

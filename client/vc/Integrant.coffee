@@ -107,7 +107,8 @@ class Integrant extends events.EventEmitter
       @select el if @get_vc_for(el) is @
         
   setAttributes: (node, attributes) ->
-    node.setAttribute(k, v) for k, v of attributes
+    for k, v of attributes
+      node.setAttribute(k, v) if typeof v isnt 'object'
         
   # add a new child element from template
   add: (name, attributes, ready) ->
@@ -117,7 +118,8 @@ class Integrant extends events.EventEmitter
       template = template.firstChild
     child = template.cloneNode(true)
     @setAttributes child, attributes
-    template.hostess.appendChild child
+    host = attributes.host ? template.hostess
+    host.appendChild child
     @prepare child
     ready ?= ->
     if attributes.vc
@@ -127,5 +129,13 @@ class Integrant extends events.EventEmitter
     child.classList.add key
     @[name] = @walk('container', child) ? child
     return @[key] = @[name]
-    
+  
+  # @wrap(n, t) means n(b) becomes n(t(b))
+  wrap: (node, template) ->
+    wrapper = @templates[template].cloneNode(true)
+    while node.childNodes.length
+      wrapper.appendChild node.firstChild
+    node.appendChild wrapper
+    return node
+
 module.exports = Integrant

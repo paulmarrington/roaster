@@ -8,7 +8,10 @@ class ModalPanel extends Integrant
     
   init: ->
     super()
-    @background = @walk 'background'
+    if not (@background = @walk 'background')
+      @background = @templates.background.cloneNode(true)
+      mp = @walk('modal_panel')
+      @wrap(mp, 'contents').appendChild @background
     @background.addEventListener 'click', => @hide()
     
   show: ->@background.parentNode.style.display = 'initial'

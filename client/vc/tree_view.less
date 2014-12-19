@@ -1,0 +1,44 @@
+.tree_view {
+  @icons: "/client/icons";
+  @indent: 0 ;
+  
+  @icon-width: 14px;
+  @icon-height: 14px;
+  @icon-size: @icon-width @icon-height;
+  
+  .icon-image(@name) {
+    background-image:    url("@{icons}/@{name}.svg");
+    padding-left: @icon-width + 3;
+  }
+  
+  .icon-bg(@name) {
+    .icon-image(@name);
+    background-size:     @icon-size;
+    background-repeat:   no-repeat;
+    background-position: 0 0;
+    text-decoration: none;
+    display: block;
+  }
+  
+  &, & ol {
+    padding-left: @indent;
+  }
+  li {
+    list-style: none;
+    
+	&.file {
+      a { .icon-bg("file"); }
+    }
+    
+	label {
+      .icon-bg("folder-closed");
+      cursor: pointer;
+      display: block;
+      input {
+        display: none;
+        & + ol > li { display: none; }
+        &:checked + ol > li { display: block; }
+      }
+    }
+  }
+}
