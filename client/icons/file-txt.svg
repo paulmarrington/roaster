@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <g>
+  <title>Layer 1</title>
+  <g id="icomoon-ignore"/>
+  <line id="svg_5" y2="12.375" x2="20.125" y1="12.375" x1="6.375" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="2" stroke="#000000" fill="none"/>
+  <line stroke="#000000" id="svg_6" y2="21.375" x2="17" y1="21.375" x1="6.75" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="2" fill="none"/>
+  <path id="svg_1" fill="#000000" d="m28.232,6.232l-4.465,-4.464c-0.972,-0.972 -2.893,-1.768 -4.268,-1.768l-15,0c-1.375,0 -2.5,1.125 -2.5,2.5l0,27c0,1.375 1.125,2.5 2.5,2.5l23,0c1.375,0 2.5,-1.125 2.5,-2.5l0,-19c0,-1.375 -0.796001,-3.296 -1.768,-4.268l0.000999,0zm-1.414,1.414c0.098,0.098 0.195,0.218 0.289999,0.354l-5.108,0l0,-5.108c0.136,0.095 0.256001,0.192 0.354,0.29l4.465,4.464l-0.000999,0zm1.181999,21.854c0,0.271 -0.229,0.5 -0.5,0.5l-23,0c-0.271,0 -0.5,-0.229 -0.5,-0.5l0,-27c0,-0.271 0.229,-0.5 0.5,-0.5l15,0c0.151001,0 0.32,0.019 0.5,0.053l0,7.947l7.947001,0c0.034,0.18 0.052999,0.349 0.052999,0.5l0,19z"/>
+  <line stroke="#000000" id="svg_7" y2="16.625" x2="23.5" y1="16.625" x1="6.5" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="2" fill="none"/>
+  <line id="svg_9" y2="25.875" x2="20.5" y1="25.875" x1="6.75" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="2" stroke="#000000" fill="none"/>
+ </g>
+</svg>

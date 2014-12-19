@@ -500,7 +500,7 @@ gwt.add &quot;Panel Switcher&quot;, -&gt; @page.test -&gt;
         process.nextTick -&gt;
           return gwt.fail(&#39;code&#39;) if not colour &quot;green&quot;
           gwt.pass()        
-  setTimeout go, 4000
+  setTimeout go, 4#000
 </pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="html_editor"><a href="javascript:usdlc.edit_source({value:'html_editor.coffee',path:'../roaster/client/vc/html_editor.coffee',category:'vc'})">html_editor.coffee</a> </span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/html_editor/open.coffee',category:'html_editor'})">open.coffee</a> </span><span class="require"><a href="javascript:usdlc.edit_source({value:'require.coffee',path:'../roaster/drivers/require.coffee',category:'drivers'})">require.coffee</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/vc/panel_stack.coffee',category:'vc'})">panel_stack.coffee</a> </span></div>
@@ -1346,7 +1346,7 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
 
 <p>&nbsp;</p>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.html',path:'../roaster/client/vc/modal_panel.html',category:'vc'})">modal_panel.html</a> </span><span class="tree_view"><a href="javascript:usdlc.edit_source({value:'tree_view.coffee',path:'../roaster/client/vc/tree_view.coffee',category:'vc'})">tree_view.coffee</a> </span></div>
 
 <h3>Window Manager</h3>
 
@@ -1460,9 +1460,29 @@ gwt.add &quot;Window Manager&quot;, -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+gwt.add &quot;Pop-up Menu&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;popup_menu&#39;, (err, pm) -&gt;
+      one   = pm.branch &#39;One&#39;
+      leaf  = pm.leaf &#39;One a&#39;, &#39;javascript: alert(&quot;One a&quot;)&#39;
+      pm.up()
+      pm.leaf &#39;Two&#39;, &#39;javascript: alert(&quot;Two&quot;)&#39;
+      
+      #### Everything below is verification
+
+      process.nextTick -&gt;
+        height = one.clientHeight
+        one.click()
+        process.nextTick -&gt;
+          if height &gt;= one.clientHeight
+            return gwt.fail(&#39;open&#39;)
+          gwt.pass()
+  setTimeout go, 4000 </pre>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="popup_menu"><a href="javascript:usdlc.edit_source({value:'popup_menu.coffee',path:'../roaster/client/vc/popup_menu.coffee',category:'vc'})">popup_menu.coffee</a> </span><span class="html_editor"><a href="javascript:usdlc.edit_source({value:'html_editor.html',path:'../roaster/client/vc/html_editor.html',category:'vc'})">html_editor.html</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.html',path:'../roaster/client/vc/panel_stack.html',category:'vc'})">panel_stack.html</a> </span><span class="tree_view"><a href="javascript:usdlc.edit_source({value:'tree_view.html',path:'../roaster/client/vc/tree_view.html',category:'vc'})">tree_view.html</a> </span><span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.html',path:'../roaster/client/vc/modal_panel.html',category:'vc'})">modal_panel.html</a> </span></div>
 
 <h4>HTML View</h4>
 
@@ -1483,27 +1503,88 @@ module.exports =</pre>
 
 <p>The tree view displays structured data as a tree where branches can be open and closed and leaves selected.</p>
 
+<div class="metadata Ref">Ref: <span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a>&nbsp;</span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span></div>
+
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+gwt.add &quot;Tree View&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;tree_view&#39;, (err, tv) -&gt;
+      one   = tv.branch &#39;One&#39;
+      leaf  = tv.leaf &#39;One a&#39;, &#39;javascript: alert(&quot;One a&quot;)&#39;
+      tv.up()
+      tv.leaf &#39;Two&#39;, &#39;javascript: alert(&quot;Two&quot;)&#39;
+      
+      #### Everything below is verification
+
+      process.nextTick -&gt;
+        height = one.clientHeight
+        one.click()
+        process.nextTick -&gt;
+          if height &gt;= one.clientHeight
+            return gwt.fail(&#39;open&#39;)
+          gwt.pass()
+  setTimeout go, 4000 </pre>
+
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span></div>
 
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&nbsp;</pre>
+&lt;div class=&quot;vc main&quot; vc=&quot;tree_view&quot;&gt;
+  &lt;ol&gt;
+    &lt;li class=&quot;one&quot;&gt;One
+      &lt;ol&gt;
+        &lt;li&gt;&lt;a href=&#39;&#39;&gt;One a&lt;/a&gt;&lt;/li&gt;
+      &lt;/ol&gt;
+    &lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#39;&#39;&gt;Two&lt;/a&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
-module.exports =</pre>
+try
+  Integrant = require &#39;vc/Integrant&#39;
+
+  class Body extends Integrant
+    init: (ready) -&gt;
+      @main = @get_vc_for &#39;main&#39;
+      # do further initialisation requiring async access
+      ready(err = null)
+
+  module.exports = Body
+catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
+
+gwt.add &quot;Tree View&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Tree_View/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
+    vc document.body, vc: name, (err, body) -&gt;
+      main = body.main
+
+      process.nextTick -&gt;
+        one = main.walk(&#39;one&#39;)
+        chk = one.getElementsByTagName(&#39;input&#39;)[0]
+        height = one.clientHeight
+        chk.click()
+        process.nextTick -&gt;
+          if height &gt;= one.clientHeight
+            return gwt.fail(&#39;open&#39;)
+          gwt.pass()
+  setTimeout go, 4000</pre>
 
 <p>&nbsp;</p>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.coffee',path:'../roaster/client/vc/messages.coffee',category:'vc'})">messages.coffee</a> </span><span class="window_manager"><a href="javascript:usdlc.edit_source({value:'window_manager.coffee',path:'../roaster/client/vc/window_manager.coffee',category:'vc'})">window_manager.coffee</a> </span></div>
 
 <h3>HTML Editor View</h3>
 
