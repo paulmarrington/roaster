@@ -8,13 +8,38 @@ class ModalPanel extends Integrant
     
   init: ->
     super()
+    @panel = @walk('modal_panel')
+    @panel.classList.add @opts.type ?= 'centre'
+    
     if not (@background = @walk 'background')
       @background = @templates.background.cloneNode(true)
-      mp = @walk('modal_panel')
-      @wrap(mp, 'contents').appendChild @background
+      @wrap(@panel, 'contents').appendChild @background
     @background.addEventListener 'click', => @hide()
+    @container = @walk('container')
     
-  show: ->@background.parentNode.style.display = 'initial'
-  hide: -> @background.parentNode.style.display = 'none'
+  show: ->
+    @panel.style.display = 'initial'
+    clearInterval @interval
+    return @
+  
+  # panel.show().at(screenX: 100, screenY: 250)
+  at: (ev) ->
+    x = ev.clientX; y = ev.clientY
+    do move_to = =>
+      if (x + @container.offsetWidth) < window.innerWidth
+        @container.style.left = x
+        @container.style.right = null
+      else
+        @container.style.left = null
+        @container.style.right = 8
+      if (y + @container.offsetHeight) < window.innerHeight
+        @container.style.top = y
+      else
+        @container.style.top = 8
+    @interval = setInterval move_to, 250
+  
+  hide: ->
+    @panel.style.display = 'none'
+    clearInterval @interval
 
 module.exports = ModalPanel

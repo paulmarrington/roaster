@@ -8,32 +8,54 @@
   
   .icon-image(@name) {
     background-image:    url("@{icons}/@{name}.svg");
-    padding-left: @icon-width + 3;
+    padding-left: @icon-width + 5;
   }
   
   .icon-bg(@name) {
     .icon-image(@name);
     background-size:     @icon-size;
     background-repeat:   no-repeat;
-    background-position: 0 0;
-    text-decoration: none;
+    background-position: 2 3;
     display: block;
   }
   
   &, & ol {
     padding-left: @indent;
+    margin: 0 0 0 0;
   }
   li {
     list-style: none;
+    
+    &.leaf {
+      a {
+        text-decoration: none;
+        color: inherit;
+        padding-top: 1px;
+        margin-top: 1px;
+        margin-bottom: 1px;
+        padding-right: 2px;
+        &:hover {
+          background-color: #99CCFF;
+          color: white;
+        }
+      }
+    }
     
 	&.file {
       a { .icon-bg("file"); }
     }
     
 	label {
-      .icon-bg("folder-closed");
       cursor: pointer;
       display: block;
+      & > ol { padding-left: @icon-width + 5; }
+      .title {
+        .icon-bg("folder-closed");
+        &:hover {
+          background-color: #66CCFF;
+          color: white;
+        }
+      }
       input {
         display: none;
         & + ol > li { display: none; }
