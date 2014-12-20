@@ -20,10 +20,10 @@ class ModalPanel extends Integrant
   show: ->
     @panel.style.display = 'initial'
     clearInterval @interval
-    return @
   
   # panel.show().at(screenX: 100, screenY: 250)
   at: (ev) ->
+    @show()
     x = ev.clientX; y = ev.clientY
     do move_to = =>
       if (x + @container.offsetWidth) < window.innerWidth

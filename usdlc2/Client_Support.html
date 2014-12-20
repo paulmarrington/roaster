@@ -1465,18 +1465,16 @@ gwt.open_page &quot;test/index.html&quot;
 gwt.add &quot;Pop-up Menu&quot;, -&gt; @page.test -&gt;
   go = -&gt;
     vc = require &#39;vc&#39;
-    vc document.body, vc: &#39;popup_menu&#39;, (err, pm) -&gt;
+    vc document.body, vc: &#39;popup_menu&#39;, context_menu: true,
+    (err, pm) -&gt;
       one   = pm.branch &#39;One&#39;
       leaf  = pm.leaf &#39;One a&#39;, &#39;javascript: alert(&quot;One a&quot;)&#39;
       pm.up()
       for i in [2..100]
         pm.leaf &#39;Leaf &#39;+i, &#39;javascript: alert(&quot;Click&quot;)&#39;
         
-      ev = clientX: 200, clientY: 100
-      do disp = (ev) -&gt;
-        ev.preventDefault?()
-        pm.show().at(ev)
-      document.addEventListener(&quot;contextmenu&quot;, disp, true)
+      pm.context_menu() # redundant: for example only
+      pm.at clientX: 200, clientY: 100
       
       #### Everything below is verification
 
