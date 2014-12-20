@@ -11,8 +11,22 @@
     padding-left: @icon-width + 5;
   }
   
-  .icon-bg(@name) {
-    .icon-image(@name);
+  &.file {
+    li.leaf { .icon-image("file"); }
+    label .title {
+      .icon-image("folder-closed");
+      &.open { .icon-image("folder-open"); }
+    }
+  }
+  &.menu {
+    li.leaf { .icon-image(""); }
+    label .title {
+      .icon-image("triangle-right");
+      &.open { .icon-image("triangle-down"); }
+    }
+  }
+  
+  .icon-bg() {
     background-size:     @icon-size;
     background-repeat:   no-repeat;
     background-position: 2 3;
@@ -27,6 +41,7 @@
     list-style: none;
     
     &.leaf {
+      .icon-bg();
       a {
         text-decoration: none;
         color: inherit;
@@ -41,16 +56,12 @@
       }
     }
     
-	&.file {
-      a { .icon-bg("file"); }
-    }
-    
 	label {
       cursor: pointer;
       display: block;
       & > ol { padding-left: @icon-width + 5; }
       .title {
-        .icon-bg("folder-closed");
+        .icon-bg();
         &:hover {
           background-color: #66CCFF;
           color: white;
@@ -58,8 +69,8 @@
       }
       input {
         display: none;
-        & + ol > li { display: none; }
-        &:checked + ol > li { display: block; }
+        & + ol { display: none; }
+        &:checked + ol { display: block; }
       }
     }
   }

@@ -1466,7 +1466,7 @@ gwt.add &quot;Pop-up Menu&quot;, -&gt; @page.test -&gt;
   go = -&gt;
     vc = require &#39;vc&#39;
     vc document.body, vc: &#39;popup_menu&#39;, context_menu: true,
-    (err, pm) -&gt;
+    type: &quot;menu&quot;, (err, pm) -&gt;
       one   = pm.branch &#39;One&#39;
       leaf  = pm.leaf &#39;One a&#39;, &#39;javascript: alert(&quot;One a&quot;)&#39;
       pm.up()
