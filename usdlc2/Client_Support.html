@@ -1455,7 +1455,7 @@ gwt.add &quot;Window Manager&quot;, -&gt; @page.test -&gt;
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/vc/tab_view.coffee',category:'vc'})">tab_view.coffee</a> </span></div>
 
-<h3>Pop-up Menu View</h3>
+<h3>Popup Menu View</h3>
 
 <h4>Code View</h4>
 
@@ -1492,17 +1492,60 @@ gwt.add &quot;Pop-up Menu&quot;, -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&nbsp;</pre>
+&lt;div class=&quot;vc main&quot; vc=&quot;popup_menu&quot;&gt;
+  &lt;ol&gt;
+    &lt;li class=&quot;one&quot;&gt;One
+      &lt;ol&gt; 
+        &lt;li&gt;
+          &lt;a href=&#39;javascript:alert(&quot;1a&quot;)&#39;&gt;One a&lt;/a&gt;
+          &lt;a href=&#39;javascript:alert(&quot;1b&quot;)&#39;&gt;One b&lt;/a&gt;
+        &lt;/li&gt;
+      &lt;/ol&gt;
+    &lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#39;javascript:alert(&quot;2&quot;)&#39;&gt;Two&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#39;javascript:alert(&quot;3&quot;)&#39;&gt;Three&lt;/a&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
-module.exports =</pre>
+try
+  Integrant = require &#39;vc/Integrant&#39;
+
+  class Body extends Integrant
+    init: (ready) -&gt;
+      @main = @get_vc_for &#39;main&#39;
+      # do further initialisation requiring async access
+      ready(err = null)
+
+  module.exports = Body
+catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
+
+gwt.add &quot;Pop-up Menu&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Popup_Menu_View/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
+    vc document.body, vc: name, (err, body) -&gt;
+      main = body.main
+
+      process.nextTick -&gt;
+        one = main.walk(&#39;one&#39;)
+        chk = one.getElementsByTagName(&#39;input&#39;)[0]
+        height = one.clientHeight
+        chk.click()
+        process.nextTick -&gt;
+          if height &gt;= one.clientHeight
+            return gwt.fail(&#39;open&#39;)
+          gwt.pass()
+  setTimeout go, 4000 </pre>
 
 <p>&nbsp;</p>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="popup_menu"><a href="javascript:usdlc.edit_source({value:'popup_menu.html',path:'../roaster/client/vc/popup_menu.html',category:'vc'})">popup_menu.html</a> </span><span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.coffee',path:'../roaster/client/vc/modal_panel.coffee',category:'vc'})">modal_panel.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/vc/tab_view.coffee',category:'vc'})">tab_view.coffee</a> </span><span class="tree_view"><a href="javascript:usdlc.edit_source({value:'tree_view.coffee',path:'../roaster/client/vc/tree_view.coffee',category:'vc'})">tree_view.coffee</a> </span></div>
 
 <h3>Tree View</h3>
 
@@ -1543,7 +1586,7 @@ gwt.add &quot;Tree View&quot;, -&gt; @page.test -&gt;
 &lt;div class=&quot;vc main&quot; vc=&quot;tree_view&quot;&gt;
   &lt;ol&gt;
     &lt;li class=&quot;one&quot;&gt;One
-      &lt;ol&gt;
+      &lt;ol&gt; 
         &lt;li&gt;&lt;a href=&#39;&#39;&gt;One a&lt;/a&gt;&lt;/li&gt;
       &lt;/ol&gt;
     &lt;/li&gt;

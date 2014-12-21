@@ -8,6 +8,8 @@ class Integrant extends events.EventEmitter
     @shared_host = false
     @container_html = ""
     
+  parse_host: -> # parse host contents before processing
+    
   get_vc_for: (el) -> # find the vc owning this element
     if typeof el is 'string'
       return null if not (el = @walk(el))
@@ -130,12 +132,12 @@ class Integrant extends events.EventEmitter
     @[name] = @walk('container', child) ? child
     return @[key] = @[name]
   
-  # @wrap(n, t) means n(b) becomes n(t(b))
+  # @wrap(n, t) means n(b) becomes n(t(b)) - returns t
   wrap: (node, template) ->
     wrapper = @templates[template].cloneNode(true)
     while node.childNodes.length
       wrapper.appendChild node.firstChild
     node.appendChild wrapper
-    return node
+    return wrapper
 
 module.exports = Integrant

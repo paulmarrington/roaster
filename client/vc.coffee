@@ -39,6 +39,8 @@ module.exports = (host, opt_list..., ready) ->
         if not vc.templates[name]
           vc.templates[name] = template.cloneNode(true)
           vc.templates[name].hostess = vc.host
+          
+    vc.parse_host()
         
     process_contents = (done) ->
       inner = (it for it in host.getElementsByClassName('vc'))

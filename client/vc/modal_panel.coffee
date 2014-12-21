@@ -13,7 +13,8 @@ class ModalPanel extends Integrant
     
     if not (@background = @walk 'background')
       @background = @templates.background.cloneNode(true)
-      @wrap(@panel, 'contents').appendChild @background
+      @wrap(@panel, 'contents')
+      @panel.appendChild @background
     @background.addEventListener 'click', => @hide()
     @container = @walk('container')
     
