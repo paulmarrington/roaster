@@ -6,49 +6,50 @@
   position: fixed;
   height: 100%;
   
-  & > tbody > tr {
-    & > td {
-      vertical-align: top;
-      & > .tabs {
-        overflow: visible;
-        white-space: nowrap;
-        max-width: 0px;
-        &.left  {
-          .rotate(90deg, bottom left);
-          .tab_view {
-            margin-bottom: -4px;
-          }
-          &.tab_view {
-            margin-left: -4px;
-          }
-        }
-        &.right {
-          .rotate(90deg, initial);
-          &.tab_view, .tab_view {
-            margin-bottom: -8px;
-            & > a.vc {
-              .rotate(180deg, initial);
+  & > table {
+    height: 100%;
+    & > tbody > tr {
+      & > td {
+        vertical-align: top;
+        & > .tabs {
+          overflow: visible;
+          white-space: nowrap;
+          max-width: 0px;
+          &.left  {
+            .rotate(90deg, bottom left);
+            .tab_view {
+              margin-bottom: -4px;
+            }
+            &.tab_view {
+              margin-left: 4px;
             }
           }
-          &.tab_view {
-            margin-left: 8px;
+          &.right {
+            .rotate(90deg, initial);
+            &.tab_view, .tab_view {
+              margin-bottom: -8px;
+              & > a {
+                .rotate(180deg, initial);
+              }
+            }
+            &.tab_view {
+              margin-left: 8px;
+            }
           }
         }
+
+      & > .panels {
+        border: 1px solid #777;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        padding: 0;
+        width:    initial;
+
+        & > div {
+          overflow: scroll;
+          position: initial;
+        }
       }
-    }
-    
-    & > .vc.panels {
-      border: 1px solid #777;
-      width: 0px;
-      overflow-x: hidden;
-      overflow-y: scroll;
-      padding: 0;
-      
-      & > .container {
-        overflow: scroll;
-      }
-      & > .container > .vc {
-        position: initial;
       }
     }
   }
