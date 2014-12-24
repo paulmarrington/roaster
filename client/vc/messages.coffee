@@ -17,7 +17,6 @@ class Messages extends Integrant
       type.priority = idx++
       type.age *= 60000
       type.name = name
-    @container = @templates[0].hostess
     
   add: (contents) ->
     now = (new Date).getTime()
@@ -30,14 +29,14 @@ class Messages extends Integrant
     type = @types[type.toLowerCase()] ? @types.message
     
     idx = 0
-    while idx < @container.children.length
-      child = @container.children[idx]
+    while idx < @host.children.length
+      child = @host.children[idx]
       if child.innerHTML is title
-        @container.removeChild child
+        @host.removeChild child
       else
         idx++
         
-    nn = @templates[0].cloneNode(true)
+    nn = @template()
     nn.timestamp = now; nn.body = body
     nn.type = type; nn.innerHTML = title
     nn.classList.add type.name
@@ -48,15 +47,15 @@ class Messages extends Integrant
       title = "#{nn.body} (#{title})" if nn.body
       nn.setAttribute 'title', title
     if type.age then nn.timer =
-      setTimeout (=> @container.removeChild nn), type.age
+      setTimeout (=> @host.removeChild nn), type.age
     nn.addEventListener 'click', =>
       clearTimeout nn.timer
-      @container.removeChild nn
+      @host.removeChild nn
     
-    if @container.children.length
-      @container.insertBefore nn, @container.firstChild
+    if @host.children.length
+      @host.insertBefore nn, @host.firstChild
     else
-      @container.appendChild nn
+      @host.appendChild nn
     return nn
   
 module.exports = Messages

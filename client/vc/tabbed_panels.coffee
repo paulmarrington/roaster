@@ -2,6 +2,21 @@
 Integrant = require 'vc/Integrant'
 
 class TabbedPanels extends Integrant
+  parse_host: ->
+    panel_initialisers = (child for child in @host.children)
+    @host.innerHTML = ""
+    for child in @view_node.children
+      @host.appendChild child.cloneNode(true)
+    
+    for panel in panel_initialisers
+      do (panel) => @initialisers.push =>
+        attr = panel: {}, tab: {}
+        for attribute in panel.attributes
+          attr.panel[attribute.name] = attribute.value
+        added = @add panel.getAttribute('panel'), attr, ->
+        added.appendChild panel.firstChild while panel.firstChild
+        @select added.tab if panel.classList.contains('active')
+    
   init: ->
     @tabs = @get_vc_for 'tabs'
     @panels = @get_vc_for 'panels'
@@ -16,7 +31,7 @@ class TabbedPanels extends Integrant
   tab_panel: (tab) ->
     tab.panel ?= tab.getAttribute("panel")
     if typeof tab.panel is 'string'
-      tab.panel = @walk("panels/#{tab.panel}")
+      tab.panel = @child(tab.panel, @panels)
     return tab.panel
     
   add: (name, attributes, ready) ->
