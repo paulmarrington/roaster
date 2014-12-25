@@ -18,7 +18,7 @@ class TabView extends Integrant
     tab.onclick = => @select(tab)
   
   close: (name) ->
-    tab = @walk(name)
+    tab = @child(name)
     tab.parentNode.removeChild(tab)
     
 module.exports.client = TabView

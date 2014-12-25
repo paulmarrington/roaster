@@ -1311,7 +1311,7 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
 
 <p>&nbsp;</p>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.html',path:'../roaster/client/vc/modal_panel.html',category:'vc'})">modal_panel.html</a> </span><span class="tree_view"><a href="javascript:usdlc.edit_source({value:'tree_view.coffee',path:'../roaster/client/vc/tree_view.coffee',category:'vc'})">tree_view.coffee</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.html',path:'../roaster/client/vc/panel_stack.html',category:'vc'})">panel_stack.html</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.html',path:'../roaster/client/vc/modal_panel.html',category:'vc'})">modal_panel.html</a> </span><span class="tree_view"><a href="javascript:usdlc.edit_source({value:'tree_view.coffee',path:'../roaster/client/vc/tree_view.coffee',category:'vc'})">tree_view.coffee</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.html',path:'../roaster/client/vc/panel_stack.html',category:'vc'})">panel_stack.html</a> </span><span class="window_manager"><a href="javascript:usdlc.edit_source({value:'window_manager.coffee',path:'../roaster/client/vc/window_manager.coffee',category:'vc'})">window_manager.coffee</a> </span></div>
 
 <h3>Window Manager</h3>
 
@@ -1345,10 +1345,10 @@ gwt.add &quot;Window Manager&quot;, -&gt; @page.test -&gt;
 
       process.nextTick -&gt;
         return if not check(&#39;Four&#39;, &#39;yellow&#39;)
-        wm.tabs.walk(&#39;One&#39;).click()
+        wm.tabs.child(&#39;One&#39;).click()
         return if not check(&#39;One&#39;, &#39;red&#39;)
         gwt.pass()
-  setTimeout go, 4#000
+  setTimeout go, 4000
  </pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="tabbed_panels">&nbsp;</span><span class="window_manager"><a href="javascript:usdlc.edit_source({value:'window_manager.coffee',path:'../roaster/client/vc/window_manager.coffee',category:'vc'})">window_manager.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/vc/tab_view.coffee',category:'vc'})">tab_view.coffee</a> </span><span class="panel_switcher"><a href="javascript:usdlc.edit_source({value:'panel_switcher.coffee',path:'../roaster/client/vc/panel_switcher.coffee',category:'vc'})">panel_switcher.coffee</a> </span></div>
@@ -1356,16 +1356,16 @@ gwt.add &quot;Window Manager&quot;, -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class=&quot;vc main&quot; vc=&quot;window_manager&quot;
-  &gt;&lt;div name=&quot;One&quot;
-       style=&quot;background-color:red&quot;&gt;1&lt;/div
-  &gt;&lt;div name=&quot;Two&quot;
-       style=&quot;background-color:green&quot;&gt;2&lt;/div
-  &gt;&lt;div name=&quot;Three&quot;
-       style=&quot;background-color:blue&quot;&gt;3&lt;/div
-  &gt;&lt;div class=&#39;active&#39; name=&quot;Four&quot;
-       style=&quot;background-color:yellow&quot;&gt;4&lt;/div
-&gt;&lt;/div&gt;</pre>
+&lt;div class=&quot;vc main&quot; vc=&quot;window_manager&quot;&gt;
+  &lt;div name=&quot;One&quot;
+       style=&quot;background-color:red&quot;&gt;1&lt;/div&gt;
+  &lt;div name=&quot;Two&quot;
+       style=&quot;background-color:green&quot;&gt;2&lt;/div&gt;
+  &lt;div name=&quot;Three&quot;
+       style=&quot;background-color:blue&quot;&gt;3&lt;/div&gt;
+  &lt;div class=&#39;active&#39; name=&quot;Four&quot;
+       style=&quot;background-color:yellow&quot;&gt;4&lt;/div&gt;
+&lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
@@ -1411,7 +1411,7 @@ gwt.add &quot;Window Manager&quot;, -&gt; @page.test -&gt;
         return if not check(&#39;Four&#39;, &#39;yellow&#39;)
         main.select(&#39;Two&#39;)
         return if not check(&#39;Two&#39;, &#39;green&#39;)
-        main.tabs.walk(&#39;Three&#39;).click()
+        main.tabs.child(&#39;Three&#39;).click()
         return if not check(&#39;Three&#39;, &#39;blue&#39;)
         gwt.pass()
   setTimeout go, 4000 </pre>

@@ -1,4 +1,4 @@
-# Copyright (C) 2014 paul@marrington.net, see /GPL for license
+# Copyright (C) 2014/15 paul@marrington.net, see /GPL for license
 Integrant = require 'vc/Integrant'
 
 default_specs =
@@ -48,18 +48,10 @@ store_specs = (name, win) ->
   "width=#{win.outerWidth},height=#{win.innerHeight}"
       
 class WindowManager extends Integrant
+  parse_host: -> @html_initialisers()
+  
   init: ->
     @tabs = @get_vc_for 'tabs'
-
-    for node in @initial_contents()
-      attributes = {}
-      for attr in node.attributes
-        attributes[attr.name] = attr.value
-      panel = @add attributes.name, panel: attributes, =>
-      if node.classList.contains('active')
-        sel = attributes.name
-    @tabs.select sel if sel
-      
     @tabs.on 'selected', (tab) =>
       tab.window.focus()
       @emit 'selected', @selected = tab.panel
@@ -82,7 +74,7 @@ class WindowManager extends Integrant
     tab.panel.tab = tab
     return panel
   
-  close: (name) -> @tabs.walk(name).window.close()
+  close: (name) -> @tabs.child(name).window.close()
       
   select: (tab) -> @tabs.select tab
       
