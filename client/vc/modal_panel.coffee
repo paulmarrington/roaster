@@ -2,24 +2,19 @@
 Integrant = require 'vc/Integrant'
 
 class ModalPanel extends Integrant
-  constructor: ->
-    super()
-    @shared_host = true
-    
   init: ->
     super()
-    @panel = @walk('modal_panel')
-    @panel.classList.add @opts.type ?= 'centre'
+    @host.classList.add @opts.type ?= 'centre'
     
-    if not (@background = @walk 'background')
-      @background = @templates.background.cloneNode(true)
-      @wrap(@panel, 'contents')
-      @panel.appendChild @background
+    if not (@background = @child 'background')
+      @wrap_inner(@host, 'container')
+      @background = @template('background')
+      @host.appendChild @background
     @background.addEventListener 'click', => @hide()
-    @container = @walk('container')
+    @container = @child('container')
     
   show: ->
-    @panel.style.display = 'initial'
+    @host.style.display = 'initial'
     clearInterval @interval
   
   # panel.show().at(screenX: 100, screenY: 250)
@@ -40,7 +35,7 @@ class ModalPanel extends Integrant
     @interval = setInterval move_to, 250
   
   hide: ->
-    @panel.style.display = 'none'
+    @host.style.display = 'none'
     clearInterval @interval
 
 module.exports = ModalPanel
