@@ -77,7 +77,7 @@ class Integrant extends events.EventEmitter
         
   add: (classes, attributes, ready = ->) ->
     attributes ?= {}
-    child = @attach_template(attributes.template)
+    child = @attach_template(attributes.template, attributes.host)
     child.classList.add classes.split(' ')...
     @setAttributes child, attributes
     child.contents = @child('container', child) ? child
@@ -96,10 +96,10 @@ class Integrant extends events.EventEmitter
         template = @templates
     return template.cloneNode(true)
   
-  attach_template: (name) ->
+  attach_template: (name, parent) ->
     child = @template(name)
     template = child.getAttribute('template')
-    parent = if template is @type then @host else
+    parent ?= if template is @type then @host else
       if (parent = @child(template)) then parent else @host
     parent.appendChild(child)
     return child

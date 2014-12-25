@@ -3,10 +3,10 @@ Integrant = require 'vc/Integrant'
 
 class PopupMenu extends Integrant
   parse_host: -> # parse host contents before processing
-    if not (modal_panel = @walk("modal_panel"))
-      modal_panel = @wrap(@host, 'modal_panel')
-    if not @walk("tree_view")
-      @wrap(modal_panel, 'tree_view')
+    if not (modal_panel = @child("modal_panel"))
+      modal_panel = @wrap_inner(@host, 'modal_panel')
+    if not @child("tree_view")
+      @wrap_inner(modal_panel, 'tree_view')
 
   init: ->
     @modal_panel = @get_vc_for "modal_panel"

@@ -5,9 +5,9 @@ icon_path = "/client/icons"
 
 class TreeView extends Integrant
   init: ->
-    @current = @root = @walk("tree_view")
+    @current = @host
     if not @using_html_view
-      for li in @root.getElementsByTagName('li')
+      for li in @host.getElementsByTagName('li')
         if li.getElementsByTagName('ol').length
           @wrap li, 'label'
         else
@@ -16,14 +16,14 @@ class TreeView extends Integrant
     
   branch: (name) ->
     child = @add name, template: 'branch', host: @current, ->
-    (title = @walk('title', child)).innerHTML = name
-    checkbox = @walk('checkbox', child)
+    (title = @child('title', child)).innerHTML = name
+    checkbox = @child('checkbox', child)
     checkbox.addEventListener "change", (ev) ->
       if checkbox.checked
         title.classList.add 'open'
       else
         title.classList.remove 'open'
-    return @current = @walk('branch', child)
+    return @current = @child('children', child)
     
   leaf: (name, href) ->
     leaf = @add name, template: 'leaf', host: @current, ->
@@ -32,14 +32,14 @@ class TreeView extends Integrant
     return leaf
       
   up: ->
-    return false if @current is @root
+    return false if @current is @host
     while @current = @current.parentNode
       return true if @current.nodeName.toLowerCase() is 'ol'
     return false
   
   # file, menu
   icon_set: (name) ->
-    @root.classList.remove @last_icon_set
-    @root.classList.add @last_icon_set = name
+    @host.classList.remove @last_icon_set
+    @host.classList.add @last_icon_set = name
    
 module.exports = TreeView
