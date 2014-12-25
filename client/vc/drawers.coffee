@@ -6,6 +6,8 @@ class Drawers extends TabbedPanels
     super()
     @shared_host = true
     
+  parse_host: -> @html_initialisers()
+  
   init: ->
     super()
     

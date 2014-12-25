@@ -1020,13 +1020,13 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
 
 <pre title="html" type="html">
 &lt;div class=&quot;vc main&quot; vc=&quot;tabbed_panels&quot;&gt;
-  &lt;div panel=&quot;One&quot;
+  &lt;div name=&quot;One&quot;
        style=&quot;background-color:red&quot;&gt;1&lt;/div&gt;
-  &lt;div panel=&quot;Two&quot;
+  &lt;div name=&quot;Two&quot;
        style=&quot;background-color:green&quot;&gt;2&lt;/div&gt;
-  &lt;div panel=&quot;Three&quot;
+  &lt;div name=&quot;Three&quot;
        style=&quot;background-color:blue&quot;&gt;3&lt;/div&gt;
-  &lt;div panel=&quot;Four&quot; class=&quot;active&quot;
+  &lt;div name=&quot;Four&quot; class=&quot;active&quot;
        style=&quot;background-color:yellow&quot;&gt;4&lt;/div&gt;
 &lt;/div&gt;</pre>
 
@@ -1145,37 +1145,23 @@ gwt.add &quot;Drawers&quot;, -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;table class=&quot;vc left&quot; vc=&quot;drawers&quot; side=&quot;left&quot;&gt;&lt;tr&gt;
-  &lt;td class=&quot;vc panels&quot; vc=&quot;panel_switcher&quot;&gt;
-    &lt;div class=&quot;vc active One&quot;
-         style=&quot;background-color:red&quot;&gt;1111111111&lt;/div&gt;
-    &lt;div class=&quot;vc Two&quot;
-         style=&quot;background-color:green&quot;&gt;222222222&lt;/div&gt;
-    &lt;div class=&quot;vc Three&quot;
-         style=&quot;background-color:blue&quot;&gt;3333333333&lt;/div&gt;
-    &lt;div class=&quot;vc Four selected&quot;
-         style=&quot;background-color:yellow&quot;&gt;4444444444&lt;/div&gt;
-  &lt;/td&gt;&lt;td&gt;
-  &lt;div class=&quot;vc tabs&quot; vc=&quot;tab_view&quot;
-    &gt;&lt;a class=&quot;vc&quot; panel=&quot;One&quot;&gt;One&lt;/a
-    &gt;&lt;a class=&quot;vc&quot; panel=&quot;Two&quot;&gt;Two&lt;/a
-    &gt;&lt;a class=&quot;vc&quot; panel=&quot;Three&quot;&gt;Three&lt;/a
-    &gt;&lt;a class=&quot;vc active&quot; panel=&quot;Four&quot;&gt;Four&lt;/a
-  &gt;&lt;/div&gt;&lt;/td&gt;
-&lt;/tr&gt;&lt;/table&gt;
+&lt;div class=&quot;vc left&quot; vc=&quot;drawers&quot; side=&quot;left&quot;&gt;
+  &lt;div class=&quot;vc active One&quot; name=&quot;One&quot;
+       style=&quot;background-color:red&quot;&gt;1111111111&lt;/div&gt;
+  &lt;div class=&quot;vc Two&quot; name=&quot;Two&quot;
+       style=&quot;background-color:green&quot;&gt;222222222&lt;/div&gt;
+  &lt;div class=&quot;vc Three&quot; name=&quot;Three&quot;
+       style=&quot;background-color:blue&quot;&gt;3333333333&lt;/div&gt;
+  &lt;div class=&quot;vc Four selected&quot; name=&quot;Four&quot;
+       style=&quot;background-color:yellow&quot;&gt;4444444444&lt;/div&gt;
+&lt;/div&gt;
 
-&lt;table class=&quot;vc right&quot; vc=&quot;drawers&quot; side=&quot;right&quot;&gt;&lt;tr&gt;
-  &lt;td class=&quot;vc panels&quot; vc=&quot;panel_switcher&quot;&gt;
-    &lt;div class=&quot;vc active One&quot;
-         style=&quot;background-color:red&quot;&gt;1111111111&lt;/div&gt;
-    &lt;div class=&quot;vc Two&quot;
-         style=&quot;background-color:green&quot;&gt;222222222&lt;/div&gt;
-  &lt;/td&gt;&lt;td&gt;
-  &lt;div class=&quot;vc tabs&quot; vc=&quot;tab_view&quot;
-    &gt;&lt;a class=&quot;vc&quot; panel=&quot;One&quot;&gt;One&lt;/a
-    &gt;&lt;a class=&quot;vc&quot; panel=&quot;Two&quot;&gt;Two&lt;/a
-  &gt;&lt;/div&gt;&lt;/td&gt;
-&lt;/tr&gt;&lt;/table&gt;</pre>
+&lt;div class=&quot;vc right&quot; vc=&quot;drawers&quot; side=&quot;right&quot;&gt;
+  &lt;div class=&quot;vc active One&quot; name=&quot;One&quot;
+       style=&quot;background-color:red&quot;&gt;1111111111&lt;/div&gt;
+  &lt;div class=&quot;vc Two&quot; name=&quot;Two&quot;
+       style=&quot;background-color:green&quot;&gt;222222222&lt;/div&gt;
+&lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
@@ -1222,12 +1208,12 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
         return if not check(&#39;Four&#39;, &#39;yellow&#39;)
         body.left.select(&#39;Two&#39;)
         return if not check(&#39;Two&#39;, &#39;green&#39;)
-        body.left.tabs.walk(&#39;Three&#39;).click()
+        body.left.tabs.child(&#39;Three&#39;).click()
         return if not check(&#39;Three&#39;, &#39;blue&#39;)
         body.right.select(&#39;Two&#39;)
         return if not check(&#39;Two&#39;, &#39;green&#39;)
         gwt.pass()
-  setTimeout go, 4#000
+  setTimeout go, 4000
  </pre>
 
 <p>&nbsp;</p>

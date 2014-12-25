@@ -6,6 +6,21 @@ class Integrant extends events.EventEmitter
   constructor: -> @initialisers = []
     
   parse_host: -> # parse host contents before processing
+  
+  html_initialisers: (initialisers = @host, target = @host) ->
+    inits = (child for child in initialisers.children)
+    initialisers.innerHTML = "" if target is initialisers
+    for child in @view_node.children
+      target.appendChild child.cloneNode(true)
+    
+    for panel in inits
+      do (panel) => @initialisers.push =>
+        attr = panel: {}, tab: {}
+        for attribute in panel.attributes
+          attr.panel[attribute.name] = attribute.value
+        added = @add panel.getAttribute('name'), attr, ->
+        added.appendChild panel.firstChild while panel.firstChild
+        @select added.tab if panel.classList.contains('active')
     
   get_vc_for: (el) -> # find the vc owning this element
     if typeof el is 'string'
