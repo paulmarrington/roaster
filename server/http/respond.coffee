@@ -12,7 +12,7 @@ class Respond
   constructor: (@exchange) ->
     @exchange.response.setHeader(
       'Access-Control-Allow-Origin',
-      exchange.environment.cors_whitelist.join ' ')
+      @exchange.environment.cors_whitelist.join ' ')
     @exchange.response.setHeader(
       'Access-Control-Allow-Headers', 'Content-Type')
     @exchange.response.setHeader(
