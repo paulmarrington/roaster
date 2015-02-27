@@ -22,7 +22,7 @@ class TabbedPanels extends Integrant
     return tab.panel
     
   add: (name, attributes, ready) ->
-    tab = @tabs.add name, attributes.tab, ready
+    tab = @tabs.add name, attributes.tab ? attributes, ready
     panel = @panels.add name,
       attributes.panel ? attributes, ready
     tab.panel = panel

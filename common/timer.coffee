@@ -10,7 +10,7 @@ class Timer # Use to report elapsed times
   # options.silent = true to stop logging of results
   constructor: (@options) ->
     @log = (->) if @options?.silent
-    options.pre ?= ''; options.post ?= ''
+    @options.pre ?= ''; @options.post ?= ''
     @start = @now = new Date()
     @log "#{@now}"
   # timer.elapsed()

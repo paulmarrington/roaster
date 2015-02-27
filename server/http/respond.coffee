@@ -1,7 +1,7 @@
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 send = require 'send'; gzip = require 'morph/gzip'
 fs = require 'fs'; templates = require 'templates'
-path = require 'path'
+path = require 'path'; dirs = require 'dirs'
 
 clients = {}
 
@@ -27,10 +27,8 @@ class Respond
     return @
   send_static: (next = ->) ->
     fs.stat name = @exchange.request.filename, (err, stats) =>
-      if stats?.isDirectory() and name.slice(-1) != path.sep
-        name += path.sep
-      if path.sep isnt '/'
-        name = name.replace new RegExp("\\#{path.sep}","g"), "/"
+      name = dirs.normalise name
+      name += '/' if stats?.isDirectory() and name.slice(-1) != '/'
       # gzip name, (error, zipped-name) =>
       #   @exchange.response.setHeader 'Content-Encoding', 'gzip'
       #   @set_mime_type name

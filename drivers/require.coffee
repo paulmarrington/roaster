@@ -1,6 +1,7 @@
 # Copyright (C) 2013 paul@marrington.net, see GPL for license
 npm = require 'npm'; node_library = require 'node_library'
 driver = require 'http/driver'; path = require 'path'
+dirs = require 'dirs'
 
 cache = {}
 
@@ -26,7 +27,7 @@ module.exports = (exchange, next, add_driver) ->
     done require.resolve path.join 'client', module_name
   catch
     try
-      module_path = require.resolve module_name
+      module_path = dirs.normalise(require.resolve(module_name))
       slash = module_path.lastIndexOf('/')
       return done(module_path) if slash isnt -1
       node_library.resolve_built_in module_name,

@@ -98,6 +98,15 @@ var home = function() {
   return path.join.apply(path, [home].concat(names));
 };
 
+// Normalise a path - ensuring path separator is always slash /
+var normalise = function(full_path) {
+    full_path = path.normalize(full_path);
+    if (path.sep !== '/') {
+        full_path = full_path.replace(new RegExp("\\"+path.sep,"g"), "/");
+    }
+    return full_path;
+}
+
 // split and return [base,relative] based on known bases
 var split = function(full_path) {
   var to_find = path.resolve(full_path);
@@ -117,6 +126,8 @@ module.exports = {
   mkdirsSync: mkdirsSync,
   rmdirs: rmdirs,
   in_directory: in_directory,
+  normalise: normalise,
+  normalize: normalise,
   split: split,
   node: node, base: base, home: home, 
   bases: ['',process.env.cwd, process.env.rwd]

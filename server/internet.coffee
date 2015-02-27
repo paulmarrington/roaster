@@ -100,7 +100,6 @@ class Internet extends events.EventEmitter
     # restore the query string - and add any from @options
     query = querystring.stringify clone.shallow \
               address.query, @_options.query
-    console.log "query", query, # 5/08/2014 DELETE ME
     address.path =
       if query.length then "#{address.pathname}?#{query}"
       else address.pathname
@@ -114,12 +113,11 @@ class Internet extends events.EventEmitter
       on_request: ->
     # see if we are http or https
     if address.protocol is 'http:'
-      address.port ?= 80; transport = http
+      options.port = address.port ?= 80; transport = http
     else
-      address.port ?= 443; transport = https
+      options.port = address.port ?= 443; transport = https
       options.rejectUnauthorized = false
       options.agent = new https.Agent(options)
-    options.port = address.port
     if @cookies
       c = (k+'='+v for k,v of @cookies)
       c.unshift(@options.headers.Cookie) if @options.headers.Cookie
@@ -130,10 +128,8 @@ class Internet extends events.EventEmitter
     @request = null
     do requesting = =>
       @request?.abort()
-      console.log "path", options.path # 5/08/2014 DELETE ME
       @request = transport.request options, (@response) =>
         status = @response.statusCode
-        console.log "status", status # 5/08/2014 DELETE ME
         if status >= 300 and status < 400
           if not (to = @response.headers["location"])
             return @request.emit new Error "Bad redirect"

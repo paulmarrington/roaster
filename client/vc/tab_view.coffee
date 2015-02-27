@@ -3,6 +3,7 @@ Integrant = require 'vc/Integrant'
 
 class TabView extends Integrant
   init: ->
+    super()
     @prepare(tab) for tab in @host.children
     @initialisers_for_select()
     

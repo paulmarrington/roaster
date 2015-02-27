@@ -1,22 +1,20 @@
-/* Copyright (C) 2013 paul@marrington.net, see /GPL license */
+/* Copyright (C) 2013-15 paul@marrington.net, see /GPL license */
 // tweak module loading path
 var module = require('module'), path = require('path');
 globalPaths = ['.'];
-var dlm = path.delimiter, sep = path.sep;
+var dlm = path.delimiter;
 var ext = path.resolve(process.execPath, "..", "..", "..");
 var rwd = path.resolve(ext, ".."); process.env.rwd = rwd;
 var cwd = process.cwd(); process.env.cwd = cwd;
 function ap(p) { globalPaths.push(p); }
 function nwd(bwd) {
   ap(bwd);
-  globalPaths.push(
-    bwd+sep+"server", bwd+sep+"common", bwd+sep+"scripts");
+  globalPaths.push(bwd+"/server", bwd+"/common", bwd+"/scripts");
 }
 nwd(cwd); nwd(rwd);
-ap([ext,"node_modules"].join(sep));
-ap([ext,"node","lib","node_modules"].join(sep));
-// var np = ext+"/node/bin".replace(/\//g, sep);
-var np = [ext,"node","bin"].join(sep);
+ap([ext,"node_modules"].join('/'));
+ap([ext,"node","lib","node_modules"].join('/'));
+var np = [ext,"node","bin"].join('/');
 process.env.PATH = np + dlm + process.env.PATH;
 process.env.NODE_PATH = globalPaths.join(dlm);
 module._initPaths();

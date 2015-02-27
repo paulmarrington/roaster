@@ -13,10 +13,10 @@ files =
     return next(cache[name], base_cache[name], name) if cache[name]
     find_one = (bases) ->
       return next() if bases.length is 0
-      full_path = path.join (base = bases.shift()), name
+      full_path = dirs.normalise path.join (base = bases.shift()), name
       found = (it) ->
         next(cache[name] = it, base_cache[name] = base, name)
-      return find_one(bases) if full_path is path.sep
+      return find_one(bases) if full_path is '/'
       fs.stat full_path, (err, stat) ->
         return find_one(bases) if err
         if not stat.isDirectory()
