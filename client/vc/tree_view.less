@@ -1,11 +1,14 @@
 .tree_view {
   @icons: "/client/icons";
-  @indent: 0 ;
+  @indent: 0;
+  @scroll-bar-space: 10px;
   
   @icon-width: 14px;
   @icon-height: 14px;
   @icon-size: @icon-width @icon-height;
   
+  white-space: nowrap;
+
   .icon-image(@name) {
     background-image:    url("@{icons}/@{name}.svg");
     padding-left: @icon-width + 5;
@@ -35,6 +38,7 @@
   
   &, & ol {
     padding-left: @indent;
+    padding-right: @scroll-bar-space;  
     margin: 0 0 0 0;
   }
   li {
