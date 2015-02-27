@@ -45,7 +45,7 @@ var morph = function(source, target_ext, builder) {
 module.exports = morph;
 module.exports.multi_morph = multi_morph;
 // Extend node require() to include a new source file type
-// Has to be synhronous because require() is synchronous
+// Has to be synchronous because require() is synchronous
 module.exports.extend_require =
 function (source_ext, compiler) {
   require.extensions[source_ext] = function(module, source) {
