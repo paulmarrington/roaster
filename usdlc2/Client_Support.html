@@ -1542,7 +1542,7 @@ gwt.add &quot;Tree View&quot;, -&gt; @page.test -&gt;
           if height &gt;= one.clientHeight
             return gwt.fail(&#39;open&#39;)
           gwt.pass()
-  setTimeout go, 4000 </pre>
+  setTimeout go, 4#000 </pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span></div>
 
@@ -1586,7 +1586,7 @@ gwt.add &quot;Tree View&quot;, -&gt; @page.test -&gt;
       main = body.main
 
       process.nextTick -&gt;
-        one = main.walk(&#39;one&#39;)
+        one = main.child(&#39;one&#39;)
         chk = one.getElementsByTagName(&#39;input&#39;)[0]
         height = one.clientHeight
         chk.click()
@@ -1594,7 +1594,7 @@ gwt.add &quot;Tree View&quot;, -&gt; @page.test -&gt;
           if height &gt;= one.clientHeight
             return gwt.fail(&#39;open&#39;)
           gwt.pass()
-  setTimeout go, 4000</pre>
+  setTimeout go, 4#000</pre>
 
 <p>&nbsp;</p>
 
