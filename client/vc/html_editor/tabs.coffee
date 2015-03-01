@@ -5,5 +5,7 @@ class Tabs
     @view = @vc.get_vc_for('tabs')
     @view.on 'selected', (tab) =>
       @vc.toolbar.show tab.getAttribute('name')
+      
+  select: (tab) -> @view.select tab
     
 module.exports = Tabs

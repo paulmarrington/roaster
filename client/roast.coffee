@@ -1,7 +1,6 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
 window.roaster ?=
   message: (msg...) -> console?.log(msg.join('\n'))
-  error:   (msg...) -> roaster.message 'Error: ', msg...
   head:    document.getElementsByTagName('head')[0]
   opts:    {}
 

@@ -1,6 +1,7 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL license
 Integrant = require 'vc/Integrant'
 
+# type: title - body
 re = /^(?:\s*(.+?)\s*:)?\s*(.+?)\s*(?:-\s*(.*)\s*)?$/
 
 class Messages extends Integrant
@@ -12,18 +13,20 @@ class Messages extends Integrant
       alert:   age: 48*60
       pass:    age: 60
       message: age: 60
+      flash:   age: 0.1
+      clear:   age: 0
     idx = 0
     for name, type of @types
       type.priority = idx++
       type.age *= 60000
       type.name = name
+    roaster.message = (msgs...) => @add msgs.join('\n - ')
     
   add: (contents) ->
     now = (new Date).getTime()
     
     try [text, type, title, body] = re.exec contents
-    catch
-      type = 'fatal'; body = contents
+    catch then type = 'fatal'; body = contents
     type ?= 'message'; body ?= ''
     title ?= 'Invalid Message'
     type = @types[type.toLowerCase()] ? @types.message

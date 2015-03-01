@@ -1620,13 +1620,17 @@ gwt.add &quot;HTML Editor&quot;, -&gt; @page.test -&gt;
       ed = html_editor.ed
       ed.setData &quot;The rain in spain&quot;
       process.nextTick -&gt;
-        gwt.check ed.getData(), &quot;The rain in spain&quot;
+        contents = ed.getData()
+        if contents.indexOf(&quot;The rain in spain&quot;) is -1
+          return gwt.fail(&#39;Contents incorrect&#39;)
+        return gwt.fail(&#39;fix lost buttons&#39;)
+        gwt.pass()
         
   setTimeout go, 4000
 
 </pre>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="html_editor"><a href="javascript:usdlc.edit_source({value:'html_editor.coffee',path:'../roaster/client/vc/html_editor.coffee',category:'vc'})">html_editor.coffee</a> </span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/html_editor/open.coffee',category:'html_editor'})">open.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="tabs"><a href="javascript:usdlc.edit_source({value:'tabs.coffee',path:'../roaster/client/vc/html_editor/tabs.coffee',category:'html_editor'})">tabs.coffee</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.coffee',path:'../roaster/client/vc/messages.coffee',category:'vc'})">messages.coffee</a> </span></div>
 
 <h4>HTML View</h4>
 
@@ -1661,7 +1665,9 @@ gwt.add &quot;HTML Editor View&quot;, -&gt; @page.test -&gt;
       ed = body.get_vc_for(&#39;editor&#39;).ed
       ed.setData &quot;The rain in spain&quot;
       process.nextTick -&gt;
-        gwt.check ed.getData(), &quot;The rain in spain&quot;
+        if contents.indexOf(&quot;The rain in spain&quot;) is -1
+          return gwt.fail(&#39;Contents incorrect&#39;)
+        gwt.pass()
   setTimeout go, 4000</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a>&nbsp;</span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/html_editor/open.coffee',category:'html_editor'})">open.coffee</a> </span><span class="html_editor"><a href="javascript:usdlc.edit_source({value:'html_editor.coffee',path:'../roaster/client/vc/html_editor.coffee',category:'vc'})">html_editor.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="toolbar"><a href="javascript:usdlc.edit_source({value:'toolbar.coffee',path:'../roaster/client/vc/html_editor/toolbar.coffee',category:'html_editor'})">toolbar.coffee</a> </span></div>

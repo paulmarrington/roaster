@@ -35,7 +35,7 @@ class Open
             @cke.container.show()
             @cke.resize '100%', height
           dom.resize_event adjust_height
-        @vc.select('tabs/Font')
+        @vc.tabs.select 'Font'
         @cke.focus()
         @vc.emit "html_editor_ready", @vc.ed
         @vc.tabs.view.reset_selection()
