@@ -53,10 +53,11 @@ module.exports = (container, opt_list..., ready) ->
     (div = empty_div.cloneNode()).innerHTML = html
     
     templates = div.getElementsByClassName('templates')
-    vc_cache[type]::templates = empty_div
     if templates.length
       vc_cache[type]::templates = templates[0]
       templates[0].parentNode.removeChild templates[0]
+    else
+      vc_cache[type]::templates = div
       
     if (children = div.children).length is 1
       if (child = children[0]).classList.contains(type)

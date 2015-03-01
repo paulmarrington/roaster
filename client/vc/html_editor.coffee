@@ -2,6 +2,10 @@
 Integrant = require 'vc/Integrant'
 
 class HtmlEditorView extends Integrant
+  parse_host: ->
+    if @child("html_editor").children.length is 0
+      @wrap_inner(@host, 'html_editor')
+    
   init: (ready) ->
     tabs = @get_vc_for 'tabs'
     @require 'open,tabs,toolbar,file'
