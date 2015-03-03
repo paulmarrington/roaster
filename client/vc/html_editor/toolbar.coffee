@@ -2,96 +2,87 @@
 class Toolbar
   prepare: (cke) ->
     @ckelement = cke.container.$
-    buttons = {'Unprocessed':[]}
-    for group, name of @layout
-      for button in name
-        button = button[1..-1] if button[0] is '!'
-        buttons[button] = group: group
     tbx = @ckelement.getElementsByClassName('cke_toolbox')[0]
-    elements = (b for b in \
-      tbx.getElementsByClassName('cke_button')).concat( \
-      c for c in tbx.getElementsByClassName('cke_combo_button'))
-    for element in elements
-      name = element.title
-      name = 'Unprocessed' if not buttons[name]
-      buttons[name].element = element
-    if buttons['Unprocessed'].length
-      console.log "Unknown buttons:",buttons['Unprocessed']
+    tbx_clone = tbx.cloneNode()
+    new_container = true
     sep = tbx.getElementsByClassName('cke_toolbar_separator')[0]
     grp = tbx.getElementsByClassName('cke_toolbar')[0]
-    cnt = grp.getElementsByClassName('cke_toolgroup')[0]
-    cnt.innerHTML = tbx.innerHTML = ''; container = tab = null
-    new_container = true
+    cnt = grp.getElementsByClassName('cke_toolgroup')[0].cloneNde()
+    cnt.innerHTML = tbx.innerHTML = ''
     
-    add_tab = (name) ->
+    for group, class_names of @layout
       tbx.appendChild tab = document.createElement('span')
       tab.style.display = 'none'
-      tab.classList.add "#{name}_buttons", 'tab_buttons'
-    add_container = ->
-      return if not new_container
-      new_container = false
-      tab.appendChild  container = cnt.cloneNode()
-    add_button = (name, to) ->
-      if (button = buttons[name])?.element
-        to.appendChild button.element
-      else
-        console.log "Lost button '#{name}'"
-    for group in @groups
-      add_tab group
-      new_container = true
-      for name in @layout[group]
-        switch name[0]
+      tab.classList.add "#{group}_buttons", 'tab_buttons'
+      
+      add_container = ->
+        return if not new_container
+        new_container = false
+        tab.appendChild  container = cnt.cloneNode()
+        
+      add_button = (name, to) ->
+        name = "cke_#{name}"
+        if el = tbx_clone.getElementsByClassName(name)?[0]
+          to.appendChild el
+        else
+          console.log "Lost button '#{name}'"
+          
+      for class_name in class_names
+        switch class_name[0]
           when '-'
             new_container = true
           when '!'
-            add_button name[1..-1], tab
+            add_button "combo__#{class_name[1..-1]}", tab
             new_container = true
           when '|'
             add_container()
             container.appendChild sep.cloneNode()
           else
             add_container()
-            add_button name, container
+            add_button "button__#{class_name}", container
+    # sweep for unused buttons/combos
+    for el in tbx_clone.getElementsByClassName('cke_button')
+      console.log "Unused button", el.classList
+    for el in tbx_clone.getElementsByClassName('cke_combo')
+      console.log "Unused combo", el.classList
+          
   show: (name) ->
     for tb in @ckelement.getElementsByClassName('tab_buttons')
       tb.style.display = 'none'
     tb = @ckelement.getElementsByClassName("#{name}_buttons")
     tb[0].style.display = null
     
-  groups: "Font,Paragraph,Insert,Form,View".split(',')
-  
   layout:
     'Font':
-      ['Bold','Italic','Underline','Strike Through','Subscript',
-       'Superscript','Wrap code','|','Remove Format',
-       'Text Color',
-       'Background Color','!Font Name','!Font Size'
+      ['bold','italic','underline','strike','subscript',
+       'superscript','Wrap code','|','removeformat',
+       'textcolour',
+       'bgcolour','!font','!fontsize'
        ]
     'Paragraph':
-      ['!Formatting Styles','!Paragraph Format',
-       'Insert/Remove Numbered List','Insert/Remove Bulleted List',
-       '|','Decrease Indent','Increase Indent','|','Block Quote',
-       'Create Div Container', '--',
-       'Align Left','Center','Align Right','Justify','--',
-       'Text direction from left to right',
-      'Text direction from right to left','Set language']
+      ['!styles','!format',
+       'numberedlist','bulletedlist',
+       '|','outdent','indent','|','blockquote',
+       'creatediv', '--',
+       'justifyleft','justifycenter','justifyright',
+       'justifyblock','--','bidiltr','bidirtl','language']
     'Insert':
-      ['Select All','|','Cut','Copy','Paste','|',
-       'Paste as plain text', 'Paste from Word','--',
-       'Undo','Redo','--','Link','Unlink', 'Anchor','--',
-       'Templates','|','CreateDiv','Table','Leaflet Map','|',
-        'Insert code snippet','Placeholder',
-       'Image','Flash','Page Break','Insert Horizontal Line',
-        'Smiley','Insert Special Character',
-        'Insert Page Break for Printing','|','IFrame']
+      ['selectall','|','cut','copy','paste','|',
+       'pastetext', 'pastefromword','--',
+       'undo','redo','--','link','unlink', 'anchor','--',
+       'templates','|','CreateDiv','table','Leaflet Map','|',
+        'Insert code snippet','createplaceholder',
+       'image','flash','Page Break','horizontalrule',
+        'smiley','specialchar',
+        'pagebreak','|','iframe']
     'Form':
-      ['Form','--','Checkbox','Radio Button','|','Text Field',
-       'Textarea','Selection Field','|','Button','Image Button',
-       '--','Hidden Field']
+      ['form','--','checkbox','radio','|','textfield',
+       'textarea','select','|','button','imagebutton',
+       '--','hiddenfield']
     'View':
-      ['Maximize','|','Preview','Print','--','Find','Replace','--',
-      'Spell Check As You Type','--'
-      'Source','|','Show Blocks','--','About CKEditor']
+      ['maximize','|','preview','print','--','find','replace','--',
+      'scayt','--'
+      'source','|','showblocks','--','about']
     'Unused':
-      ['Save','New Page']
+      ['save','newpage']
 module.exports = Toolbar

@@ -1669,7 +1669,7 @@ gwt.add &quot;HTML Editor View&quot;, -&gt; @page.test -&gt;
         if contents.indexOf(&quot;The rain in spain&quot;) is -1
           return gwt.fail(&#39;Contents incorrect&#39;)
         gwt.pass()
-  setTimeout go, 4000</pre>
+  setTimeout go, 4#000</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a>&nbsp;</span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/html_editor/open.coffee',category:'html_editor'})">open.coffee</a> </span><span class="html_editor"><a href="javascript:usdlc.edit_source({value:'html_editor.coffee',path:'../roaster/client/vc/html_editor.coffee',category:'vc'})">html_editor.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="toolbar"><a href="javascript:usdlc.edit_source({value:'toolbar.coffee',path:'../roaster/client/vc/html_editor/toolbar.coffee',category:'html_editor'})">toolbar.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="drawers"><a href="javascript:usdlc.edit_source({value:'drawers.coffee',path:'../roaster/client/vc/drawers.coffee',category:'vc'})">drawers.coffee</a> </span><span class="popup_menu"><a href="javascript:usdlc.edit_source({value:'popup_menu.coffee',path:'../roaster/client/vc/popup_menu.coffee',category:'vc'})">popup_menu.coffee</a> </span></div>
 
@@ -1680,7 +1680,24 @@ gwt.add &quot;HTML Editor View&quot;, -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-&nbsp;</pre>
+gwt.open_page &quot;test/index.html&quot;
+
+gwt.add &quot;Code Editor&quot;, -&gt; @page.test -&gt;
+  go = -&gt;
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;code_editor&#39;, (err, editor) -&gt;
+      
+      #### Everything below is verification
+
+      ed = editor.ed
+      process.nextTick -&gt;
+        contents = ed.getData()
+        if contents.indexOf(&quot;implement&quot;) is -1
+          return gwt.fail(&#39;Contents incorrect&#39;)
+        gwt.pass()
+        
+  setTimeout go, 4000
+ </pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
 
