@@ -3,26 +3,24 @@ class Toolbar
   prepare: (cke) ->
     @ckelement = cke.container.$
     tbx = @ckelement.getElementsByClassName('cke_toolbox')[0]
-    tbx_clone = tbx.cloneNode()
-    new_container = true
+    container = null; tabs = []
     sep = tbx.getElementsByClassName('cke_toolbar_separator')[0]
     grp = tbx.getElementsByClassName('cke_toolbar')[0]
-    cnt = grp.getElementsByClassName('cke_toolgroup')[0].cloneNde()
-    cnt.innerHTML = tbx.innerHTML = ''
+    cnt = grp.getElementsByClassName('cke_toolgroup')[0]
     
     for group, class_names of @layout
-      tbx.appendChild tab = document.createElement('span')
-      tab.style.display = 'none'
+      tabs.push tab = document.createElement('span')
+      tab.style.display = 'none'; new_container = true
       tab.classList.add "#{group}_buttons", 'tab_buttons'
       
       add_container = ->
         return if not new_container
         new_container = false
-        tab.appendChild  container = cnt.cloneNode()
+        tab.appendChild container = cnt.cloneNode()
         
       add_button = (name, to) ->
         name = "cke_#{name}"
-        if el = tbx_clone.getElementsByClassName(name)?[0]
+        if el = tbx.getElementsByClassName(name)?[0]
           to.appendChild el
         else
           console.log "Lost button '#{name}'"
@@ -41,10 +39,14 @@ class Toolbar
             add_container()
             add_button "button__#{class_name}", container
     # sweep for unused buttons/combos
-    for el in tbx_clone.getElementsByClassName('cke_button')
+    for el in tbx.getElementsByClassName('cke_button')
       console.log "Unused button", el.classList
-    for el in tbx_clone.getElementsByClassName('cke_combo')
+    for el in tbx.getElementsByClassName('cke_combo')
       console.log "Unused combo", el.classList
+      
+    tbx.innerHTML = ''
+    tbx.appendChild tab for tab in tabs
+    return
           
   show: (name) ->
     for tb in @ckelement.getElementsByClassName('tab_buttons')
@@ -55,9 +57,9 @@ class Toolbar
   layout:
     'Font':
       ['bold','italic','underline','strike','subscript',
-       'superscript','Wrap code','|','removeformat',
-       'textcolour',
-       'bgcolour','!font','!fontsize'
+       'superscript','code','|','removeformat',
+       'textcolor',
+       'bgcolor','!font','!fontsize'
        ]
     'Paragraph':
       ['!styles','!format',
@@ -65,14 +67,16 @@ class Toolbar
        '|','outdent','indent','|','blockquote',
        'creatediv', '--',
        'justifyleft','justifycenter','justifyright',
-       'justifyblock','--','bidiltr','bidirtl','language']
-    'Insert':
+       'justifyblock']
+    'Edit':
       ['selectall','|','cut','copy','paste','|',
        'pastetext', 'pastefromword','--',
-       'undo','redo','--','link','unlink', 'anchor','--',
-       'templates','|','CreateDiv','table','Leaflet Map','|',
-        'Insert code snippet','createplaceholder',
-       'image','flash','Page Break','horizontalrule',
+       'undo','redo','--','bidiltr','bidirtl','language']
+    'Insert':
+      ['link','unlink', 'anchor','--',
+       'templates','|','creatediv','table','leaflet','|',
+        'codesnippet','createplaceholder',
+       'image','flash','pagebreak','horizontalrule',
         'smiley','specialchar',
         'pagebreak','|','iframe']
     'Form':
@@ -80,8 +84,8 @@ class Toolbar
        'textarea','select','|','button','imagebutton',
        '--','hiddenfield']
     'View':
-      ['maximize','|','preview','print','--','find','replace','--',
-      'scayt','--'
+      ['maximize','|','preview','print','--',
+      'find','replace','--','scayt','--'
       'source','|','showblocks','--','about']
     'Unused':
       ['save','newpage']
