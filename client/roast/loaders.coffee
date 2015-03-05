@@ -25,7 +25,7 @@ require.packages = (packages..., ready) ->
   do load_one = ->
     return ready() if not packages.length
     name = packages.shift()
-    require("client/packages/#{name}") load_one
+    require("client/pkgs/#{name}") load_one
 
 require.json = (url, on_loaded) ->
   @data url, (error, text) ->
