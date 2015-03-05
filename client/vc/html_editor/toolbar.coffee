@@ -64,8 +64,7 @@ class Toolbar
     'Paragraph':
       ['!styles','!format',
        'numberedlist','bulletedlist',
-       '|','outdent','indent','|','blockquote',
-       'creatediv', '--',
+       '|','outdent','indent','|','blockquote','--',
        'justifyleft','justifycenter','justifyright',
        'justifyblock']
     'Edit':
@@ -77,8 +76,7 @@ class Toolbar
        'templates','|','creatediv','table','leaflet','|',
         'codesnippet','createplaceholder',
        'image','flash','pagebreak','horizontalrule',
-        'smiley','specialchar',
-        'pagebreak','|','iframe']
+        'smiley','specialchar','|','iframe']
     'Form':
       ['form','--','checkbox','radio','|','textfield',
        'textarea','select','|','button','imagebutton',
