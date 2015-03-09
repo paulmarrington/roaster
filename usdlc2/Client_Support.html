@@ -1222,6 +1222,13 @@ gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
 
 <h3>Modal Panel</h3>
 
+<p>Because modal panels are used everywhere, there is a shortcut:</p>
+
+<div style="background:#eee;border:1px solid #ccc;padding:5px 10px;"><code>roaster.modal (panel) -&gt;<br />
+&nbsp;&nbsp;panel.innerHTML = &quot;Hello world&quot;</code></div>
+
+<div class="metadata Ref">Ref: <span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.coffee',path:'../roaster/client/vc/modal_panel.coffee',category:'vc'})">modal_panel.coffee</a> </span><span class="compile"><a href="javascript:usdlc.edit_source({value:'compile.coffee',path:'../roaster/client/vc/code_editor/compile.coffee',category:'code_editor'})">compile.coffee</a> </span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/code_editor/open.coffee',category:'code_editor'})">open.coffee</a> </span><span class="loaders"><a href="javascript:usdlc.edit_source({value:'loaders.coffee',path:'../roaster/client/roast/loaders.coffee',category:'roast'})">loaders.coffee</a> </span><span class="roast"><a href="javascript:usdlc.edit_source({value:'roast.coffee',path:'../roaster/client/roast.coffee',category:'client'})">roast.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="mode"><a href="javascript:usdlc.edit_source({value:'mode.coffee',path:'../roaster/client/vc/code_editor/mode.coffee',category:'code_editor'})">mode.coffee</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.coffee',path:'../roaster/client/vc/messages.coffee',category:'vc'})">messages.coffee</a> </span></div>
+
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
@@ -1684,11 +1691,11 @@ gwt.open_page &quot;test/index.html&quot;
 gwt.add &quot;Code Editor&quot;, -&gt; @page.test -&gt;
   go = -&gt;
     vc = require &#39;vc&#39;
-    vc document.body, vc: &#39;code_editor&#39;, (err, editor) -&gt;
+    vc document.body, vc: &#39;code_editor&#39;, (err, ed) -&gt;
+      ed.load( &quot;test.js&quot;, go.toString())
       
       #### Everything below is verification
 
-      ed = editor.ed
       process.nextTick -&gt;
         contents = ed.getData()
         if contents.indexOf(&quot;implement&quot;) is -1
@@ -1698,7 +1705,9 @@ gwt.add &quot;Code Editor&quot;, -&gt; @page.test -&gt;
   setTimeout go, 4000
  </pre>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="mode"><a href="javascript:usdlc.edit_source({value:'mode.coffee',path:'../roaster/client/vc/code_editor/mode.coffee',category:'code_editor'})">mode.coffee</a> </span><span class="coffeelint"><a href="javascript:usdlc.edit_source({value:'coffeelint.coffee',path:'../roaster/client/pkgs/coffeelint.coffee',category:'pkgs'})">coffeelint.coffee</a> </span><span class="codemirror"><a href="javascript:usdlc.edit_source({value:'codemirror.coffee',path:'../roaster/client/pkgs/codemirror.coffee',category:'pkgs'})">codemirror.coffee</a> </span><span class="jshint"><a href="javascript:usdlc.edit_source({value:'jshint.coffee',path:'../roaster/client/pkgs/jshint.coffee',category:'pkgs'})">jshint.coffee</a> </span><span class="jsonlint"><a href="javascript:usdlc.edit_source({value:'jsonlint.coffee',path:'../roaster/client/pkgs/jsonlint.coffee',category:'pkgs'})">jsonlint.coffee</a> </span><span class="coffee-script"><a href="javascript:usdlc.edit_source({value:'coffee-script.coffee',path:'../roaster/client/pkgs/coffee-script.coffee',category:'pkgs'})">coffee-script.coffee</a> </span><span class="roast"><a href="javascript:usdlc.edit_source({value:'roast.coffee',path:'../roaster/client/roast.coffee',category:'client'})">roast.coffee</a> </span></div>
+
+<p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
 
 <h4>HTML View</h4>
 

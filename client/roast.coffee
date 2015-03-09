@@ -10,6 +10,7 @@ parse_require_name = (name) ->
   return name
 
 window.require = (name) ->
+  debugger
   return require.cache[name] if require.cache[name]
   # CodeMirror insists on CommonJS with a mixed-up path
   return roaster.cache[next] = {} if name[0] is '.'

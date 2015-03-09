@@ -1,8 +1,71 @@
 # Copyright (C) 2015 paul@marrington.net, see /GPL for license
+          
+instance_index = 0
 
 class Open
-  editor: (@container, ready) ->
-    require.packages 'codemirror', =>
-      ready()
+  editor: (@container) ->
+    CodeMirror.modeURL =
+      '/ext/codemirror/CodeMirror-master/mode/%N/%N.js'
+    @vc.editor = CodeMirror @container, @options()
+    @vc.editor.id = "codemirror_#{++instance_index}"
 
+    allow_autocomplete = false
+
+    @vc.editor.on 'changes', (cm, event) ->
+      @save_in 1000
+      # trigger auto-complete list on typing
+      return if @vc.editor.somethingSelected()
+      cursor = @vc.editor.doc.getCursor()
+      line = @vc.editor.doc.getLine(cursor.line)
+      if cursor.ch and allow_autocomplete
+        if line[cursor.ch - 1].match(alnum)
+          CodeMirror.commands.auto_complete(@vc.editor)
+
+    @vc.editor.on 'keydown', (cm, event) ->
+      allow_autocomplete = false
+
+    @vc.editor.on 'keypress', (cm, event) ->
+      char_code = event.which ? event.keyCode
+      ch = String.fromCharCode(char_code)
+      allow_autocomplete = true if ch.match(alnum)
+
+    @vc.editor.on 'focus', ->
+
+    @vc.editor.on 'blur', -> @save_in 0
+      
+  save_in: (ms) ->
+    clearTimeout @save_timer
+    roaster.message "clear: saved"
+    @save_timer = setTimeout (=> @vc.save()), ms
+        
+  options: ->
+    return @_options if @_options
+    if @_options = localStorage.CodeMirror_options
+      @_options = JSON.parse(options)
+    else
+      @_options =
+        lineNumbers:        true
+        foldGutter:         true
+        gutters:            ["CodeMirror-lint-markers",
+                             "CodeMirror-foldgutter"]
+        lint:               true
+        matchBrackets:      true
+        autoCloseBrackets:  true
+        matchTags:          true
+        showTrailingSpace:  true
+        inputStyle:         "contenteditable"
+        autofocus:          true
+        dragDrop:           false
+        cursorScrollMargin: 5
+        extra_keys:
+          'Cmd-Left':   'goLineStartSmart'
+          'Ctrl-Q':     'fold_at_cursor'
+          'Ctrl-Space': 'auto_complete'
+          'Cmd-/':      'toggleComment'
+          'Alt-<':      'goColumnLeft'
+          'Alt->':      'goColumnRight'
+          'Ctrl-Shift-F':'clearSearch'
+          'Alt-{':      'toMatchingTag'
+          'Alt-S':      'view_source'
+      
 module.exports = Open

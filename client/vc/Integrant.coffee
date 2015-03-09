@@ -38,7 +38,7 @@ class Integrant extends events.EventEmitter
     base = @base
     base = base[0..-2] if base[-1..-1] is '/'
     for name in names.split(',')
-      @[name] = new (require("#{base}/#{name}"))()
+      @[name] = new (require("#{base}/#{name}"))(@)
       @[name].vc = @
     
   style: (element, styles) ->

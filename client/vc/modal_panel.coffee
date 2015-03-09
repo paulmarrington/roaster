@@ -37,5 +37,11 @@ class ModalPanel extends Integrant
   hide: ->
     @host.style.display = 'none'
     clearInterval @interval
+    
+# shortcut so that modal panels can be created easily
+vc = require 'vc'
+roaster.modal = (filler) ->
+  vc document.body, vc: 'modal_panel', (err, modal) ->
+    filler(modal.container)
 
 module.exports = ModalPanel
