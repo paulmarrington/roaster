@@ -2,5 +2,5 @@
 
 module.exports = (loaded) ->
   require.dependency(
-  jshint: 'https://raw.githubusercontent.com/jshint/jshint/master/dist/jshint.js|codemirror/jshint'
-  '/ext/codemirror/jshint.js', loaded)
+    jshint: 'https://raw.githubusercontent.com/jshint/jshint/master/dist/jshint.js|codemirror/jshint'
+    '/ext/codemirror/jshint.js', loaded)

@@ -11,14 +11,14 @@ class Open
 
     allow_autocomplete = false
 
-    @vc.editor.on 'changes', (cm, event) ->
+    @vc.editor.on 'changes', (cm, event) =>
       @save_in 1000
       # trigger auto-complete list on typing
       return if @vc.editor.somethingSelected()
       cursor = @vc.editor.doc.getCursor()
       line = @vc.editor.doc.getLine(cursor.line)
       if cursor.ch and allow_autocomplete
-        if line[cursor.ch - 1].match(alnum)
+        if line[cursor.ch - 1].match(/\w/)
           CodeMirror.commands.auto_complete(@vc.editor)
 
     @vc.editor.on 'keydown', (cm, event) ->
@@ -27,11 +27,11 @@ class Open
     @vc.editor.on 'keypress', (cm, event) ->
       char_code = event.which ? event.keyCode
       ch = String.fromCharCode(char_code)
-      allow_autocomplete = true if ch.match(alnum)
+      allow_autocomplete = true if ch.match(/\w/)
 
     @vc.editor.on 'focus', ->
 
-    @vc.editor.on 'blur', -> @save_in 0
+    @vc.editor.on 'blur', => @save_in 0
       
   save_in: (ms) ->
     clearTimeout @save_timer

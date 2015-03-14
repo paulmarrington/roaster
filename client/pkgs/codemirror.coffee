@@ -12,13 +12,15 @@ libs = [
 
 module.exports = (loaded) ->
   require.packages 'coffeelint', 'jshint', 'jsonlint', ->
-    require.dependency pkgs, libs, ->
+    require.dependency pkgs, libs..., ->
       require.cache['../../lib/codemirror'] = CodeMirror
       addon = (type) -> return "#{base}/addon.#{type}.concat?"+
         "exclude=(standalone\.js|_test\.js|pig-hint\.js|"+
         "\.node\.js|merge\.js)"
       require.css addon 'css'
+      console_saver = window.console
       require.script addon('js'), ->
+        window.console = console_saver # 'cause tern replaces it
         require.script "#{base}/keymap.js.concat", ->
           require.css "#{base}/theme.css.concat"
           loaded()

@@ -7,13 +7,13 @@ class CodeEditorView extends Integrant
       @wrap_inner(@host, 'code_editor')
     
   init: (ready) ->
-    require.packages 'codemirror', =>
+    require.packages 'coffee-script', 'codemirror', =>
       @require 'mode,commands,open,compile'
-      @open.editor @child('doc')
+      @open.editor @child('code_editor')
       ready()
       
   load: (@filename, source) ->
-    mode = @mode.from_filename(filename)
+    mode = @mode.from_filename(@filename)
     lint = mode in ['javascript', 'coffeescript']
     @editor.setOption 'mode', mode
     CodeMirror.autoLoadMode(@editor, mode)

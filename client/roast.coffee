@@ -10,7 +10,6 @@ parse_require_name = (name) ->
   return name
 
 window.require = (name) ->
-  debugger
   return require.cache[name] if require.cache[name]
   # CodeMirror insists on CommonJS with a mixed-up path
   return roaster.cache[next] = {} if name[0] is '.'
@@ -20,7 +19,7 @@ window.require = (name) ->
   request.send null
   code = request.responseText + "\n//# sourceURL=" + name
   try eval code catch err
-    console.log "require '#{next}'", err.stack
+    console.log "require '#{name}'", err.stack
   module = require.cache[name] ? require.cache[url]
   module ?= require.cache[name.split('/')[-1..-1]]
   return module?.client ? module
