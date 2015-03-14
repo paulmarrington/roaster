@@ -19,17 +19,15 @@ class Open
       line = @vc.editor.doc.getLine(cursor.line)
       if cursor.ch and allow_autocomplete
         if line[cursor.ch - 1].match(/\w/)
-          CodeMirror.commands.auto_complete(@vc.editor)
+          CodeMirror.showHint(cm)
 
     @vc.editor.on 'keydown', (cm, event) ->
       allow_autocomplete = false
 
-    @vc.editor.on 'keypress', (cm, event) ->
+    @vc.editor.on 'akeypress', (cm, event) ->
       char_code = event.which ? event.keyCode
       ch = String.fromCharCode(char_code)
       allow_autocomplete = true if ch.match(/\w/)
-
-    @vc.editor.on 'focus', ->
 
     @vc.editor.on 'blur', => @save_in 0
       
@@ -46,8 +44,8 @@ class Open
       @_options =
         lineNumbers:        true
         foldGutter:         true
-        gutters:            ["CodeMirror-lint-markers",
-                             "CodeMirror-foldgutter"]
+#        gutters:            ["CodeMirror-lint-markers",
+#                             "CodeMirror-foldgutter"]
         lint:               true
         matchBrackets:      true
         autoCloseBrackets:  true
@@ -57,11 +55,11 @@ class Open
         autofocus:          true
         dragDrop:           false
         cursorScrollMargin: 5
-        extra_keys:
+        extraKeys:
           'Cmd-Left':   'goLineStartSmart'
           'Ctrl-Q':     'fold_at_cursor'
-          'Ctrl-Space': 'auto_complete'
-          'Cmd-/':      'toggleComment'
+          'Ctrl-Space': 'autocomplete'
+          'Ctrl-/':      'toggleComment'
           'Alt-<':      'goColumnLeft'
           'Alt->':      'goColumnRight'
           'Ctrl-Shift-F':'clearSearch'

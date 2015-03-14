@@ -63,10 +63,13 @@ module.exports = (exchange) ->
       next()
       throw error
   # run each driver in turn then fire off the response
+  console.log "driver for ",p=parts[parts.length - 2]
   do run_driver = ->
+    if p is 'css' then console.log drivers.length
     if not drivers.length
       return exchange.template -> exchange.reply ->
     drivers.shift() (err) ->
+      if p is 'css' then console.log "err",err
       return run_driver() if not err
       throw err
 
