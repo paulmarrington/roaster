@@ -20,13 +20,24 @@ class TreeView extends Integrant
     @icon_set 'file'
     
   activate_branch: (branch) ->
-    checkbox = @child('checkbox', branch)
-    title = @child('title', branch)
-    checkbox.addEventListener "change", =>
-      if checkbox.checked
-        title.classList.add 'open'
+    branch.checkbox = @child('checkbox', branch)
+    branch.title_span = @child('title', branch)
+    branch.checkbox.addEventListener "change", =>
+      if branch.checkbox.checked
+        @open(branch)
       else
-        title.classList.remove 'open'
+        @close(branch)
+            
+  open: (branch) ->
+    branch.title_span.classList.add 'open'
+    branch.checkbox.checked = true
+    if @opts.one_path
+      for li in branch.parentNode.getElementsByTagName('li')
+        @close(li) if li.title_span and li isnt branch
+          
+  close: (branch) ->
+    branch.title_span.classList.remove 'open'
+    branch.checkbox.checked = false
     
   branch: (name) ->
     child = @add name, template: 'branch', host: @current, ->

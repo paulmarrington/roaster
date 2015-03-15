@@ -11,6 +11,7 @@ class PopupMenu extends Integrant
   init: ->
     @modal_panel = @get_vc_for "modal_panel"
     @tree_view  = @get_vc_for "tree_view"
+    @tree_view.opts.one_path = @opts.one_path
     @tree_view.icon_set @opts.type if @opts.type
     @context_menu() if @opts.context_menu
     
