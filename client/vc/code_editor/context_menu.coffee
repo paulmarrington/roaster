@@ -1,7 +1,7 @@
 # Copyright (C) 2015 paul@marrington.net, see /GPL for license
           
 class ContextMenu
-  prepare: ->
+  prepare: (button) ->
     cm = @vc.editor
     key_map = {}
     one_map = (map) ->
@@ -31,5 +31,9 @@ class ContextMenu
         args = a.getAttribute('args')?.split(',') ? []
         menu.vc.hide()
         CodeMirror.commands[action](cm, args)
+        
+    button.addEventListener("click", ((ev) =>
+      ev.preventDefault(); menu.vc.at(ev)
+    ), true)
       
 module.exports = ContextMenu

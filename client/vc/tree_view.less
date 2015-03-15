@@ -1,39 +1,25 @@
+/* Copyright (C) 2014-15 paul@marrington.net, see /GPL license */
+@import "../icons/style";
+
 .tree_view {
-  @icons: "/client/icons";
   @indent: 0;
   @scroll-bar-space: 10px;
   
-  @icon-width: 14px;
-  @icon-height: 14px;
-  @icon-size: @icon-width @icon-height;
-  
   white-space: nowrap;
-
-  .icon-image(@name) {
-    background-image:    url("@{icons}/@{name}.svg");
-    padding-left: @icon-width + 5;
-  }
   
   &.file {
-    li.leaf { .icon-image("file"); }
+    li.leaf { #icons > .image("file"); }
     label .title {
-      .icon-image("folder-closed");
-      &.open { .icon-image("folder-open"); }
+      #icons > .image("folder-closed");
+      &.open { #icons > .image("folder-open"); }
     }
   }
   &.menu {
-    li.leaf { .icon-image(""); }
+    li.leaf { #icons > .image(""); }
     label .title {
-      .icon-image("triangle-right");
-      &.open { .icon-image("triangle-down"); }
+      #icons > .image("triangle-right");
+      &.open { #icons > .image("triangle-down"); }
     }
-  }
-  
-  .icon-bg() {
-    background-size:     @icon-size;
-    background-repeat:   no-repeat;
-    background-position: 2 3;
-    display: block;
   }
   
   &, & ol {
@@ -45,7 +31,6 @@
     list-style: none;
     
     &.leaf {
-      .icon-bg();
       a {
         text-decoration: none;
         color: inherit;
@@ -63,9 +48,8 @@
 	label {
       cursor: pointer;
       display: block;
-      & > ol { padding-left: @icon-width + 5; }
+      & > ol { padding-left: 19px; }
       .title {
-        .icon-bg();
         &:hover {
           background-color: #66CCFF;
           color: white;

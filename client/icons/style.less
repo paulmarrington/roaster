@@ -1,0 +1,14 @@
+/* Copyright (C) 2015 paul@marrington.net, see /GPL license */
+
+#icons {
+  @icons: "/client/icons";
+  
+  .image(@name, @width: 14px, @height: 14px) {
+    background-image:    url("@{icons}/@{name}.svg");
+    padding-left:        @width + 5;
+    background-size:     @width @height;
+    background-repeat:   no-repeat;
+    background-position: 2 3;
+    display:             block;
+  }
+}
