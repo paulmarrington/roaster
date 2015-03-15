@@ -4,18 +4,31 @@
 <ol class='vc code_editor_menu' vc="popup_menu"
 context_menu="true" type="menu" start_closed='true'
 one_path='true'>
+  <li><a action=''>File</a>
+    <ol>
+      <li><a action='save'>Save</a></li>
+    </ol>
+  </li>
   <li><a action=''>Edit</a>
     <ol>
       <li><a action='redo'>Redo</a></li>
       <li><a action='undo'>Undo</a></li>
+      <li><a action='redoSelection'>Redo Selection</a></li>
+      <li><a action='undoSelection'>Undo Selection</a></li>
       <li><hr></li>
       <li><a action='toggleOverwrite'>Insert/Overwrite</a></li>
       <li><a action='toggleComment'>Comment/Uncomment</a></li>
+      <li><a action='insertTab'>Insert Tab</a></li>
+      <li><a action='insertSoftTab'>Insert Soft Tab</a></li>
+      <li><a action='defaultTab'>Insert Default Tab</a></li>
       <li><a action=''>Delete</a>
         <ol>
           <li><a action='deleteLine'>Line</a></li>
           <li><a action='killLine'>Line Right</a></li>
           <li><a action='delLineLeft'>Line Left</a></li>
+          <li><hr></li>
+          <li><a action='delWrappedLineLeft'>Wrapped Line Left</a></li>
+          <li><a action='delWrappedLineRight'>Wrapped Line Right</a></li>
           <li><hr></li>
           <li><a action='delWordBefore'>Word Left</a></li>
           <li><a action='delWordAfter'>Word Right</a></li>
@@ -27,18 +40,26 @@ one_path='true'>
           <li><a action='delCharAfter'>Character&nbsp;Right</a></li>
         </ol>
       </li>
+      <li><a action='indentAuto'>Auto Indent</a></li>
       <li><a action='indentLess'>Indent Left</a></li>
       <li><a action='indentMore'>Indent Right</a></li>
+      <li><a action='newlineAndIndent'>New line and indent</a></li>
       <li><hr></li>
       <li><a action='moveLinesUp'>Move Lines Up</a></li>
       <li><a action='moveLinesDown'>Move Lines Down</a></li>
       <li><a action='transposeChars'>Transpose Characters</a></li>
+      <li><hr></li>
+      <li><a action='selectAll'>Select All</a></li>
+      <li><a action='singleSelection'>Single Selection</a></li>
     </ol>
   </li>
   <li><a action=''>Go</a>
     <ol>
       <li><a action='goDocStart'>Document&nbsp;Start</a></li>
       <li><a action='goDocEnd'>Document End</a></li>
+      <li><hr></li>
+      <li><a action='goCharLeft'>Char Left</a></li>
+      <li><a action='goCharRight'>Char Right</a></li>
       <li><hr></li>
       <li><a action='goColumnLeft'>Column Left</a></li>
       <li><a action='goColumnRight'>Column Right</a></li>
@@ -48,6 +69,17 @@ one_path='true'>
       <li><hr></li>
       <li><a action='goWordLeft'>Word Left</a></li>
       <li><a action='goWordRight'>Word Right</a></li>
+      <li><hr></li>
+      <li><a action='goLineStart'>Line Start</a></li>
+      <li><a action='goLineStartSmart'>Smart Line Start</a></li>
+      <li><a action='goLineEnd'>Line End</a></li>
+      <li><hr></li>
+      <li><a action='goLineLeft'>Line Left</a></li>
+      <li><a action='goLineLeftSmart'>Smart Line Left</a></li>
+      <li><a action='goLineRight'>Line Right</a></li>
+      <li><hr></li>
+      <li><a action='goLineUp'>Line Up</a></li>
+      <li><a action='goLineDown'>Line Down</a></li>
       <li><hr></li>
       <li><a action='goPageUp'>Page Up</a></li>
       <li><a action='goPageDown'>Page Down</a></li>
@@ -68,34 +100,48 @@ one_path='true'>
   </li>
   <li><a action=''>View</a>
     <ol>
-      <li><a action='file_manager'>File Manager</a></li>
-      <li><a action='play_current'>Instrument</a></li>
       <li><a action='view_source'>View&nbsp;Source</a></li>
       <li><a action=''>Theme</a>
         <ol>
           <li><a action=''>Dark</a>
             <ol>
+            <li><a action='set_option' args='theme,3024-night'>3024</a></li>
             <li><a action='set_option' args='theme,ambiance'>Ambience</a></li>
-            <li><a action='set_option' args='theme=ambiance-mobile'>Ambience&nbsp;(mobile)</a></li>
+            <li><a action='set_option' args='theme,ambiance-mobile'>Ambience&nbsp;(mobile)</a></li>
+            <li><a action='set_option' args='theme,base16-dark'>Base 16</a></li>
             <li><a action='set_option' args='theme,blackboard'>Blackboard</a></li>
             <li><a action='set_option' args='theme,cobalt'>Cobalt</a></li>
+            <li><a action='set_option' args='theme,colorforth'>Colour Forth</a></li>
             <li><a action='set_option' args='theme,erlang-dark'>Erlang Dark</a></li>
             <li><a action='set_option' args='theme,lesser-dark'>Lesser Dark</a></li>
+            <li><a action='set_option' args='theme,mbo'>MBO</a></li>
             <li><a action='set_option' args='theme,midnight'>Midnight</a></li>
+            <li><a action='set_option' args='theme,monokai'>Monokai</a></li>
             <li><a action='set_option' args='theme,night'>Night</a></li>
+            <li><a action='set_option' args='theme,paraiso-dark'>Paraiso</a></li>
+            <li><a action='set_option' args='theme,pastel-on-dark'>Pastel</a></li>
             <li><a action='set_option' args='theme,rubyblue'>Ruby Blue</a></li>
+            <li><a action='set_option' args='theme,the-matrix'>The Matrix</a></li>
+            <li><a action='set_option' args='theme,tomorrow-night-bright'>Tomorrow Night</a></li>
+            <li><a action='set_option' args='theme,tomorrow-night-eighties'>Tomorrow Night Eighties</a></li>
             <li><a action='set_option' args='theme,twilight'>Twilight</a></li>
             <li><a action='set_option' args='theme,vibrant-ink'>Vibrant Ink</a></li>
             <li><a action='set_option' args='theme,xq-dark'>XQ Dark</a></li>
-            <li><a action='set_option' args='theme,monokai'>Monokai</a></li>
-          </ol>
+            <li><a action='set_option' args='theme,zenburn'>Zenburn</a></li>
+          </ol>            
+
           </li>
           <li><a action=''>Light</a>
             <ol>
+            <li><a action='set_option' args='theme,3024-day'>3024</a></li>
+            <li><a action='set_option' args='theme,base16-light'>Base 16</a></li>
             <li><a action='set_option' args='theme,default'>Default</a></li>
             <li><a action='set_option' args='theme,eclipse'>Eclipse</a></li>
             <li><a action='set_option' args='theme,elegant'>Elegant</a></li>
+            <li><a action='set_option' args='theme,mdn-line'>MDN</a></li>
             <li><a action='set_option' args='theme,neat'>Neat</a></li>
+            <li><a action='set_option' args='theme,neo>Neo</a></li>
+            <li><a action='set_option' args='theme,paraiso-light'>Paraiso</a></li>
             <li><a action='set_option' args='theme,solarized'>Solarized</a></li>
             <li><a action='set_option' args='theme,xq-light'>XQ Light</a></li>
           </ol>
