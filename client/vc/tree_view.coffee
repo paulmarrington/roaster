@@ -22,7 +22,7 @@ class TreeView extends Integrant
   activate_branch: (branch) ->
     checkbox = @child('checkbox', branch)
     title = @child('title', branch)
-    checkbox.addEventListener "change", (ev) ->
+    checkbox.addEventListener "change", =>
       if checkbox.checked
         title.classList.add 'open'
       else
@@ -45,6 +45,12 @@ class TreeView extends Integrant
     while @current = @current.parentNode
       return true if @current.nodeName.toLowerCase() is 'ol'
     return false
+  
+  close_all: ->
+    for checkbox in @list('checkbox')
+      checkbox.checked = false
+    for title in @list('title')
+      title.classList.remove 'open'
   
   # file, menu
   icon_set: (name) ->

@@ -46,10 +46,12 @@ module.exports = requests =
     if module_name[0] is '.'
       return roaster.cache[module_name] = {}
     request = new XMLHttpRequest()
-    request.open 'GET',
-      "/#{module_name}.require?domain=client", false
-    request.send null
-    try eval request.responseText catch err
+    try
+      request.open 'GET',
+        "/#{module_name}.require?domain=client", false
+      request.send null
+      eval request.responseText
+    catch err
       console.log "require '#{module_name}'", err.stack
     return roaster.cache[module_name]
 

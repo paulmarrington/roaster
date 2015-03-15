@@ -8,8 +8,9 @@ class CodeEditorView extends Integrant
     
   init: (ready) ->
     require.packages 'coffee-script', 'codemirror', =>
-      @require 'mode,commands,open,compile'
+      @require 'context_menu,mode,commands,open,compile'
       @open.editor @child('code_editor')
+      @context_menu.prepare()
       ready()
       
   load: (@filename, source) ->

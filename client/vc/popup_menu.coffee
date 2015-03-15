@@ -17,14 +17,20 @@ class PopupMenu extends Integrant
   branch: (name)     -> @tree_view.branch name
   leaf: (name, href) -> @tree_view.leaf name, href
   up:                -> @tree_view.up()
+  close_all:         -> @tree_view.close_all()
   
-  show:    -> @modal_panel.show()
-  hide:    -> @modal_panel.hide()
-  at: (ev) -> @modal_panel.at(ev)
+  show:    ->
+    @close_all() if @opts.start_closed
+    @modal_panel.show()
+  at: (ev) ->
+    @modal_panel.at(ev)
+    @show()
+  hide:    ->
+    @modal_panel.hide()
   
   context_menu: ->
     document.addEventListener("contextmenu", ((ev) =>
-      ev.preventDefault(); @modal_panel.at(ev)
+      ev.preventDefault(); @at(ev)
     ), true)
    
 module.exports = PopupMenu

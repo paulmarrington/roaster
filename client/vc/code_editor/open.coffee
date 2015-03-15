@@ -24,7 +24,7 @@ class Open
     @vc.editor.on 'keydown', (cm, event) ->
       allow_autocomplete = false
 
-    @vc.editor.on 'akeypress', (cm, event) ->
+    @vc.editor.on 'keypress', (cm, event) ->
       char_code = event.which ? event.keyCode
       ch = String.fromCharCode(char_code)
       allow_autocomplete = true if ch.match(/\w/)
@@ -55,6 +55,7 @@ class Open
         autofocus:          true
         dragDrop:           false
         cursorScrollMargin: 5
+        scrollbarStyle:     'overlay'
         extraKeys:
           'Cmd-Left':   'goLineStartSmart'
           'Ctrl-Q':     'fold_at_cursor'
