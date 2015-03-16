@@ -31,10 +31,9 @@ class Commands
       
     set_option: (cm, name, value) ->
       cm.setOption(name, value)
-      opt = _.clone cm.options
-      delete opt.value
-      delete opt[k] for k,v of opt\
-        when v instanceof RegExp
+      opt = {}
+      for k,v of cm.options when not v instanceof RegExp
+        opt[k] = v if k isnt 'value'
       localStorage['CodeMirrorOptions'] =
         JSON.stringify(opt)
 

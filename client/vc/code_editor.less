@@ -7,12 +7,17 @@
     color:       #bbb;
     font-size:   smaller;
     margin-left: 1em;
+    padding-top: 0.2em;
   }
   .menu_icon {
     position: fixed;
+    right:    0;
     #icons > .image("3-bars");
     height:   19px;
     z-index:  5;
     cursor:   pointer;
+    &:hover {
+      border: thin solid #ddd;
+    }
   }
 }

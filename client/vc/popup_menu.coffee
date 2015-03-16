@@ -24,8 +24,8 @@ class PopupMenu extends Integrant
     @close_all() if @opts.start_closed
     @modal_panel.show()
   at: (ev) ->
+    @close_all() if @opts.start_closed
     @modal_panel.at(ev)
-    @show()
   hide:    ->
     @modal_panel.hide()
   
