@@ -4,7 +4,9 @@ class Commands
     @add @extra_commands
     
   add: (commands) ->
-    CodeMirror.commands[k] = v for k, v of commands
+    for k, v of commands then do (k, v) =>
+      CodeMirror.commands[k] = (args...) =>
+        v.apply @, args
     
   extra_commands:
     fold_at_cursor: (cm) -> cm.foldCode(cm.getCursor())
@@ -51,11 +53,12 @@ class Commands
         return result
       CodeMirror.showHint(cm, notOnly, completeSingle: false)
       
-    defaultTab: (cm) ->
-      if cm.somethingSelected()
-        cm.indentSelection("add")
-      else
-        tab = cm.getOption("indentUnit") + 1
-        cm.replaceSelection(spaces[0..tab], "end", "+input")
+    insertTab: (cm) ->
+      tab = cm.getOption("indentUnit") + 1
+      cm.replaceSelection(spaces[0..tab], "end", "+input")
+
+    save: (cm) -> @vc.save()
+
+spaces = "                "
 
 module.exports = Commands
