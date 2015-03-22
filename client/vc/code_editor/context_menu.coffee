@@ -30,7 +30,7 @@ class ContextMenu
       do (menu, action, cm, a) -> a.onclick = ->
         args = a.getAttribute('args')?.split(',') ? []
         menu.vc.hide()
-        CodeMirror.commands[action](cm, args)
+        CodeMirror.commands[action](cm, args...)
         
     button.addEventListener("click", ((ev) =>
       ev.preventDefault(); menu.vc.at(ev)

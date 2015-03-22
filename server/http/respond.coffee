@@ -35,8 +35,8 @@ class Respond
       sender = send @exchange.request, path.resolve(name), maxAge:
         @exchange.environment.maximum_browser_cache_age
       sender.req.res = @exchange.response # send bug
+      sender.on('end', next).on('error', next)
       sender.pipe(@exchange.response)
-      next()
   # respond to client with code to run in a sandbox
   client: (code) ->
     client = @exchange.request.filename

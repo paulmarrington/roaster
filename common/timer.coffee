@@ -8,7 +8,7 @@ class Timer # Use to report elapsed times
   # Timer = require 'common/timer'
   # timer = Timer() # creates instance and prints current date
   # options.silent = true to stop logging of results
-  constructor: (@options) ->
+  constructor: (@options = {}) ->
     @log = (->) if @options?.silent
     @options.pre ?= ''; @options.post ?= ''
     @start = @now = new Date()
@@ -20,6 +20,11 @@ class Timer # Use to report elapsed times
     @log "#{@hms(time)} elapsed" if time > 0
     @now = new Date()
     return time
+  # elapsed in ms granularity
+  ms: (comment) ->
+    time = (new Date().getTime() - @now.getTime()) / 1000
+    @log "#{time} seconds elapsed - #{comment}"
+    @now = new Date()
   # timer.total()
   # will print seconds since timer was instantiated
   total: ->

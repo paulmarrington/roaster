@@ -23,7 +23,7 @@
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee">browser = gwt.browser()
 gwt.open_page = (path = 'test/index.html') -&gt; gwt.preactions.push -&gt;
-  url = "http://localhost:9009/#{path}"
+  url = "http://127.0.0.1:9009/#{path}"
   instance = browser.page('live')
   #instance.platform 'Google Chrome Canary'
   @page = instance.open url, retain: true
@@ -1685,13 +1685,15 @@ gwt.add "HTML Editor View", -&gt; @page.test -&gt;
 
 <h4>Code View</h4>
 
+<p>0. why so slow on windows to load</p>
+
 <p>1. html version</p>
 
 <p>2. test all menu items (and matching keystroke)</p>
 
 <p>3. View source</p>
 
-<p>4. tab not working</p>
+<p>4. if at end of line calles clear saved indefinitely</p>
 
 <pre title="gwt.coffee" type="gwt.coffee">
 gwt.open_page "test/index.html"
@@ -1709,10 +1711,10 @@ gwt.add "Code Editor", -&gt; @page.test -&gt;
         if contents.indexOf("implement") is -1
           return gwt.fail('Contents incorrect')
         gwt.pass()
-  setTimeout go, 4000
+  setTimeout go, 4#000
  </pre>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a>&nbsp;</span><span class="context_menu"><a href="javascript:usdlc.edit_source({value:'context_menu.coffee',path:'../roaster/client/vc/code_editor/context_menu.coffee',category:'code_editor'})">context_menu.coffee</a> </span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/code_editor/open.coffee',category:'code_editor'})">open.coffee</a> </span><span class="code_editor"><a href="javascript:usdlc.edit_source({value:'code_editor.html',path:'../roaster/client/vc/code_editor.html',category:'vc'})">code_editor.html</a> </span><span class="commands"><a href="javascript:usdlc.edit_source({value:'commands.coffee',path:'../roaster/client/vc/code_editor/commands.coffee',category:'code_editor'})">commands.coffee</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a>&nbsp;</span><span class="context_menu"><a href="javascript:usdlc.edit_source({value:'context_menu.coffee',path:'../roaster/client/vc/code_editor/context_menu.coffee',category:'code_editor'})">context_menu.coffee</a> </span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/code_editor/open.coffee',category:'code_editor'})">open.coffee</a> </span><span class="code_editor"><a href="javascript:usdlc.edit_source({value:'code_editor.html',path:'../roaster/client/vc/code_editor.html',category:'vc'})">code_editor.html</a> </span><span class="commands"><a href="javascript:usdlc.edit_source({value:'commands.coffee',path:'../roaster/client/vc/code_editor/commands.coffee',category:'code_editor'})">commands.coffee</a> </span><span class="create-http-server"><a href="javascript:usdlc.edit_source({value:'create-http-server.coffee',path:'../roaster/server/boot/create-http-server.coffee',category:'boot'})">create-http-server.coffee</a> </span><span class="driver"><a href="javascript:usdlc.edit_source({value:'driver.coffee~',path:'../roaster/server/http/driver.coffee~',category:'http'})">driver.coffee~</a> </span><span class="timer"><a href="javascript:usdlc.edit_source({value:'timer.coffee',path:'../roaster/common/timer.coffee',category:'common'})">timer.coffee</a> </span><span class="dependency"><a href="javascript:usdlc.edit_source({value:'dependency.coffee',path:'../roaster/server/http/dependency.coffee',category:'http'})">dependency.coffee</a> </span><span class="packages"><a href="javascript:usdlc.edit_source({value:'packages.coffee',path:'../roaster/server/packages.coffee',category:'server'})">packages.coffee</a> </span></div>
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
 

@@ -10,6 +10,7 @@ global.http_processors.push (exchange, next_processor) ->
   files.find exchange.request.url.pathname, (filename) ->
     exchange.request.url.exists = filename
     filename ?= exchange.request.url.pathname
+    sfn=filename;sfn = sfn[-20..-1] if sfn.length > 20
     try
       exchange.request.filename = filename
       # all the set up is done, process the request based
@@ -29,6 +30,7 @@ global.http_processors.push (exchange, next_processor) ->
       next_processor()
 
 global.http_processors.push (exchange, next_processor) ->
+  # if we get here then all processing failed - tell browser we give up
   exchange.response.end()
 
 module.exports = (environment) ->
@@ -74,4 +76,5 @@ module.exports = (environment) ->
       request.url.pathname = request.url.pathname.slice slash
     # run through all the http processors until one says 'all done'
     processors = global.http_processors.slice(0) # clone
+	  
     do it = -> processors.shift()(exchange, it) if processors.length
