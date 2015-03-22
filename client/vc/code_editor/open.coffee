@@ -9,9 +9,10 @@ class Open
     @vc.editor = CodeMirror @container, @options()
     @vc.editor.id = "codemirror_#{++instance_index}"
 
-    allow_autocomplete = false
+    in_autocomplete = allow_autocomplete = false
 
     @vc.editor.on 'changes', (cm, event) =>
+      return if in_autocomplete
       @save_in 1000
       # trigger auto-complete list on typing
       return if @vc.editor.somethingSelected()
@@ -19,7 +20,11 @@ class Open
       line = @vc.editor.doc.getLine(cursor.line)
       if cursor.ch and allow_autocomplete
         if line[cursor.ch - 1].match(/\w/)
+          clearTimeout @save_timer
+          in_autocomplete = true
           CodeMirror.showHint(cm)
+          cm.on 'endCompletion', =>
+            in_autocomplete = false
 
     @vc.editor.on 'keydown', (cm, event) ->
       allow_autocomplete = false
