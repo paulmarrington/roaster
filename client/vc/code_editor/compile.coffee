@@ -2,7 +2,14 @@
 class Compile
   constructor: ->
     
+  coffee: (source) ->
+    return null if not CoffeeScript
+    source = CoffeeScript.compile(source, bare:true)
+    return source: source, type: 'js'
+    
   code: (source, options) ->
-    throw 'Not Implemented Yet'
+    mode = @vc.getOption 'mode'
+    compiler = @[mode]
+    return compiler?(source)
     
 module.exports = Compile

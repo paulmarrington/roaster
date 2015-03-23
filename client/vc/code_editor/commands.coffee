@@ -11,9 +11,6 @@ class Commands
   extra_commands:
     fold_at_cursor: (cm) -> cm.foldCode(cm.getCursor())
       
-    toggle_auto_complete: (cm) ->
-      alert "Under Construction"
-    
     view_source: (cm) ->
       if cm.somethingSelected()
         source = cm.doc.getSelection()
@@ -22,7 +19,8 @@ class Commands
       roaster.modal (panel) ->
         try
           code = @vc.compile.code(source, bare:true)
-          CodeMirror.runMode code.source, code.type, panel
+          if code
+            CodeMirror.runMode code.source, code.type, panel
         catch e
           location = JSON.stringify(e.location)
           panel.innerHTML = "#{e}<br>#{location}"
