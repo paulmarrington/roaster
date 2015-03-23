@@ -91,7 +91,7 @@ class Integrant extends events.EventEmitter
     template = @child(name, @templates)
     if not template
       if @templates.children.length
-        template = @templates.children[0] 
+        template = @templates.children[0]
       else
         template = @templates
     return template.cloneNode(true)

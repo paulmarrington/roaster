@@ -16,6 +16,7 @@ class CodeEditorView extends Integrant
   load: (@filename, source) ->
     mode = @mode.from_filename(@filename)
     lint = mode in ['javascript', 'coffeescript']
+    @editor.setOption 'lint', lint
     @editor.setOption 'mode', mode
     CodeMirror.autoLoadMode(@editor, mode)
     @editor.setValue source
