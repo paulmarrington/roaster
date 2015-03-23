@@ -3,7 +3,7 @@ sequential = require 'Sequential'
 vc_cache = {}
 
 module.exports = (container, opt_list..., ready) ->
-  container.classList.add 'hidden'
+  container.classList.add 'invisible'
   opts = {}  # flatten opts and add DOM attributes to opts
   opts[k] = v for k, v of opt for opt in opt_list
   opts[ca.name] = ca.value for ca in container.attributes
@@ -43,7 +43,7 @@ module.exports = (container, opt_list..., ready) ->
       
     inner_integrants -> instance_init ->
       component_initialisers ->
-        container.classList.remove 'hidden'
+        container.classList.remove 'invisible'
         ready(null, vc)
     return true
   
