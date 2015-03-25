@@ -26,6 +26,7 @@ roaster.process = window.process =
     platform: 'browser'
     env: {}
     nextTick: (action) -> setTimeout action, 0
+    stdout: { isTTY: false }
 roaster.global = window
 
 # Loading other modules - finishing with

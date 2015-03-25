@@ -35,13 +35,18 @@ class ModalPanel extends Integrant
     @interval = setInterval move_to, 250
   
   hide: ->
+    return @destroy() if not @opts.keep
     @host.style.display = 'none'
     clearInterval @interval
     
+  destroy: ->
+    @host.parentNode.removeChild @host
+    
 # shortcut so that modal panels can be created easily
 vc = require 'vc'
-roaster.modal = (filler) ->
+roaster.modal = global.modal = (filler) ->
   vc document.body, vc: 'modal_panel', (err, modal) ->
     filler(modal.container)
+    modal.show()
 
 module.exports = ModalPanel

@@ -54,7 +54,7 @@ class Integrant extends events.EventEmitter
     
   list: (cls, here = @host) ->
     list = (e for e in here.getElementsByClassName(cls))
-    list.unshift(here) if here.classList.contains(cls)
+    list.unshift(here) if here.classList?.contains(cls)
     return list
   
   child: (cls, here) -> return @list(cls, here)?[0] ? null

@@ -10,10 +10,11 @@ class PopupMenu extends Integrant
 
   init: ->
     @modal_panel = @get_vc_for "modal_panel"
+    @modal_panel.opts.keep = true
     @tree_view  = @get_vc_for "tree_view"
     @tree_view.opts.one_path = @opts.one_path
     @tree_view.icon_set @opts.type if @opts.type
-    @context_menu() if @opts.context_menu
+    @context_menu(@opts.context_menu) if @opts.context_menu
     
   branch: (name)     -> @tree_view.branch name
   leaf: (name, href) -> @tree_view.leaf name, href
@@ -29,8 +30,10 @@ class PopupMenu extends Integrant
   hide:    ->
     @modal_panel.hide()
   
-  context_menu: ->
-    document.addEventListener("contextmenu", ((ev) =>
+  context_menu: (for_element) ->
+    return if not for_element
+    for_element = @child for_element, document
+    for_element.addEventListener("contextmenu", ((ev) =>
       ev.preventDefault(); @at(ev)
     ), true)
    

@@ -5,11 +5,10 @@ class Compile
   coffee: (source) ->
     return null if not CoffeeScript
     source = CoffeeScript.compile(source, bare:true)
-    return source: source, type: 'js'
+    return source: source, type: 'javascript'
     
   code: (source, options) ->
-    mode = @vc.getOption 'mode'
-    compiler = @[mode]
+    compiler = @[@vc.ext]
     return compiler?(source)
     
 module.exports = Compile

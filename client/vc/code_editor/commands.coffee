@@ -16,11 +16,14 @@ class Commands
         source = cm.doc.getSelection()
       else
         source = cm.doc.getValue()
-      roaster.modal (panel) ->
+      roaster.modal (panel) =>
+        panel.innerHTML = "<pre></pre>"
+        panel = panel.firstChild
         try
           code = @vc.compile.code(source, bare:true)
           if code
             CodeMirror.runMode code.source, code.type, panel
+            panel.classList.add 'cm-s-default'
         catch e
           location = JSON.stringify(e.location)
           panel.innerHTML = "#{e}<br>#{location}"

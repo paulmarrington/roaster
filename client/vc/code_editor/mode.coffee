@@ -9,10 +9,10 @@ class Mode
       
   from_filename: (name) ->
     while name?.length
-      return ext if ext = @map[name]
+      return { mode: ext, ext: name } if ext = @map[name]
       break if not (dot = name.indexOf('.'))
       name = name[dot+1..]
-    return 'text'
+    return { mode:'text', ext: name }
   
   add: (more) ->
     @map[k] = v for k,v of more
