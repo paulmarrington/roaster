@@ -23,7 +23,5 @@ class CodeEditorView extends Integrant
     @editor.setValue source
     
   contents: -> @editor.getValue()
-    
-  save: (source) -> console.log("Save not implemented")
    
 module.exports = CodeEditorView

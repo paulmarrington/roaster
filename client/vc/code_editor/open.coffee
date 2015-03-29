@@ -11,9 +11,11 @@ class Open
 
     in_autocomplete = allow_autocomplete = false
 
-    @vc.editor.on 'changes', (cm, event) =>
+    @vc.editor.on 'change', (cm, change) =>
+      @vc.emit "change", [
+        change.from.line, change.from.ch,
+        change.to.line,   change.to.ch,   change.text]
       return if in_autocomplete
-      @save_in 1000
       # trigger auto-complete list on typing
       return if @vc.editor.somethingSelected()
       cursor = @vc.editor.doc.getCursor()
@@ -34,12 +36,7 @@ class Open
       ch = String.fromCharCode(char_code)
       allow_autocomplete = true if ch.match(/\w/)
 
-    @vc.editor.on 'blur', => @save_in 0
-      
-  save_in: (ms) ->
-    clearTimeout @save_timer
-    roaster.message "clear: saved"
-    @save_timer = setTimeout (=> @vc.save()), ms
+    @vc.editor.on 'blur', => @vc.emit 'blur'
         
   options: ->
     return @_options if @_options

@@ -17,7 +17,7 @@ default_options =
 
 class Open
   editor: (@container, ready) ->
-    require.packages 'ckeditor', =>  
+    require.packages 'ckeditor', =>
       CKEDITOR.config.font_names += ';GoogleWebFonts'
       opts = [@vc.options]
       options = {}; opts.unshift default_options
