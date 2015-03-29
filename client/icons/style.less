@@ -3,12 +3,18 @@
 #icons {
   @icons: "/client/icons";
   
-  .image(@name, @width: 14px, @height: 14px) {
+  .image(@name, @width: 14px, @height: 14px, @position: 2 3) {
     background-image:    url("@{icons}/@{name}.svg");
     padding-left:        @width + 5;
     background-size:     @width @height;
     background-repeat:   no-repeat;
-    background-position: 2 3;
+    background-position: @position;
     display:             block;
   }
+}
+
+.center, .centre {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
