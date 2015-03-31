@@ -22,19 +22,19 @@
 </ul>
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee">browser = gwt.browser()
-gwt.open_page = (path = 'test/index.html') -&gt; gwt.preactions.push -&gt;
-  url = "http://127.0.0.1:9009/#{path}"
-  instance = browser.page('live')
-  #instance.platform 'Google Chrome Canary'
+gwt.open_page = (path = &#39;test/index.html&#39;) -&gt; gwt.preactions.push -&gt;
+  url = &quot;http://127.0.0.1:9009/#{path}&quot;
+  instance = browser.page(&#39;live&#39;)
+  #instance.platform &#39;Google Chrome Canary&#39;
   @page = instance.open url, retain: true
-  @page.once 'open', =&gt; @next()
-  @page.once 'error', =&gt; @fail()</textarea></p>
+  @page.once &#39;open&#39;, =&gt; @next()
+  @page.once &#39;error&#39;, =&gt; @fail()</textarea></p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
 
 <h2>Initialisation</h2>
 
-<p>Every project starts at <em>/index.html</em>. For a 'standard' roaster based project this is an empty document that loads&nbsp;/client/bootstrap.coffee to start the heavy lifting. This script initialises a requires keyword anc calls another roaster specific script <em>/client/bootstrap/init.coffee</em>. All if this is just preparation. A project specific <em>/client/app.coffee</em>&nbsp;prepares the application and loads the screen.</p>
+<p>Every project starts at <em>/index.html</em>. For a &#39;standard&#39; roaster based project this is an empty document that loads&nbsp;/client/bootstrap.coffee to start the heavy lifting. This script initialises a requires keyword anc calls another roaster specific script <em>/client/bootstrap/init.coffee</em>. All if this is just preparation. A project specific <em>/client/app.coffee</em>&nbsp;prepares the application and loads the screen.</p>
 
 <div class="metadata Ref">Ref: <span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.html',path:'../roaster/client/integrants/tab_view.html',category:'integrants'})">tab_view.html</a> </span></div>
 
@@ -51,29 +51,29 @@ gwt.open_page = (path = 'test/index.html') -&gt; gwt.preactions.push -&gt;
 &lt;html&gt;
   &lt;head&gt;
     &lt;script&gt;
-      roaster = {opts: {'test-arg': 23}}
+      roaster = {opts: {&#39;test-arg&#39;: 23}}
     &lt;/script&gt;
-    &lt;script src='/client/bootstrap.coffee?domain=client,library'&gt;
+    &lt;script src=&#39;/client/bootstrap.coffee?domain=client,library&#39;&gt;
   &lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;/body&gt;
 &lt;/html&gt;</pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <pre title="coffee" type="coffee">
-gwt.open_page "gen/usdlc2/Roaster_Client_Support/"+
-              "Support/Page_Arguments.html?test-arg2=45"
+gwt.open_page &quot;gen/usdlc2/Roaster_Client_Support/&quot;+
+              &quot;Support/Page_Arguments.html?test-arg2=45&quot;
   
-gwt.add "Embedded Page Arguments", -&gt; @page.test -&gt;
-  usdlc2.check roaster.page_arg('test-arg'), '23'
+gwt.add &quot;Embedded Page Arguments&quot;, -&gt; @page.test -&gt;
+  usdlc2.check roaster.page_arg(&#39;test-arg&#39;), &#39;23&#39;
   
-gwt.add "Address Page Arguments", -&gt; @page.test -&gt;
-  usdlc2.check roaster.page_arg('test-arg2'), '45'
+gwt.add &quot;Address Page Arguments&quot;, -&gt; @page.test -&gt;
+  usdlc2.check roaster.page_arg(&#39;test-arg2&#39;), &#39;45&#39;
   
-gwt.add "Default Page Arguments", -&gt; @page.test -&gt;
-  usdlc2.check roaster.page_arg('unknown', '12'), '12'</pre>
+gwt.add &quot;Default Page Arguments&quot;, -&gt; @page.test -&gt;
+  usdlc2.check roaster.page_arg(&#39;unknown&#39;, &#39;12&#39;), &#39;12&#39;</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a>&nbsp;</span></div>
 
@@ -84,10 +84,10 @@ gwt.add "Default Page Arguments", -&gt; @page.test -&gt;
 <p>Roaster keeps a reference to the head element in <em>roaster.head</em>. This is used for adding script and style elements to the document.</p>
 
 <pre title="coffee" type="coffee">
-gwt.open_page "index.html"
+gwt.open_page &quot;index.html&quot;
 
-gwt.add "Header Element", -&gt; @page.test -&gt;
-  usdlc2.check roaster.head.nodeName, 'HEAD'</pre>
+gwt.add &quot;Header Element&quot;, -&gt; @page.test -&gt;
+  usdlc2.check roaster.head.nodeName, &#39;HEAD&#39;</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
 
@@ -99,14 +99,14 @@ gwt.add "Header Element", -&gt; @page.test -&gt;
 
 <p>Roaster provides a primative to set and/or get cookies from the browser conversation.</p>
 
-<div style="background: rgb(238, 238, 238); padding: 5px 10px; border: 1px solid rgb(204, 204, 204); border-image: none;"><code>cookies = require 'http:/cookies'<br />
+<div style="background: rgb(238, 238, 238); padding: 5px 10px; border: 1px solid rgb(204, 204, 204); border-image: none;"><code>cookies = require &#39;http:/cookies&#39;<br />
 <br />
 module.exports = (exchange) -&gt;<br />
-&nbsp;&nbsp;my_name = cookies.get exchange.request, 'my_name'<br />
+&nbsp;&nbsp;my_name = cookies.get exchange.request, &#39;my_name&#39;<br />
 &nbsp;&nbsp;if my_name.length is 0<br />
-&nbsp; &nbsp; my_name = 'Donald'<br />
+&nbsp; &nbsp; my_name = &#39;Donald&#39;<br />
 &nbsp;&nbsp; &nbsp;cookies.set exchange.response, my_name: my_name</code><br />
- </div>
+&nbsp;</div>
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
 
@@ -128,12 +128,12 @@ module.exports = (exchange) -&gt;<br />
 <p>Roaster provides an extended version of the CommonJS approach to modules and package management. To support client/server common code and library code, the global require function can take a single module name and return a reference to the code.</p>
 
 <pre title="coffee" type="coffee">
-gwt.open_page "index.html"
+gwt.open_page &quot;index.html&quot;
 
 gwt.add -&gt;
-  console.log "#2 CommonJS Requires"
+  console.log &quot;#2 CommonJS Requires&quot;
   @page.test -&gt;
-    util = require('util')
+    util = require(&#39;util&#39;)
     usdlc2.test(util.isDate(new Date()))</pre>
 
 <p>The downside is that if the module must be loaded from the server, a synchronous call will be needed - and will freeze the browser until completed. Given that most loads happen when accessing new functionality, and that roaster is designed for local network or same machine use, &nbsp;these freezes are both short and happen at a time when it should not be an annoyance.</p>
@@ -157,24 +157,24 @@ gwt.add -&gt;
 <pre title="coffee" type="coffee">
 # (2) This code will be executed on the server
 module.exports = (exchange) -&gt;
-  exchange.respond.json server: 'called'
+  exchange.respond.json server: &#39;called&#39;
 
 # (1) This code will be executed on the client
 module.exports.client = -&gt;
-  require.json "gen/usdlc2/Roaster_Client_Support/"+
-  "Package_Management/Client_Server_Hybrid_Modules",
+  require.json &quot;gen/usdlc2/Roaster_Client_Support/&quot;+
+  &quot;Package_Management/Client_Server_Hybrid_Modules&quot;,
   (error, data_from_server) -&gt;
-    usdlc2.check data_from_server.server, 'called'</pre>
+    usdlc2.check data_from_server.server, &#39;called&#39;</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/bootstrap/init.coffee',category:'bootstrap'})">init.coffee</a> </span><span class="loaders"><a href="javascript:usdlc.edit_source({value:'loaders.coffee',path:'../roaster/client/bootstrap/loaders.coffee',category:'bootstrap'})">loaders.coffee</a>&nbsp;</span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.coffee',path:'../roaster/client/bootstrap.coffee',category:'client'})">bootstrap.coffee</a>&nbsp;</span><span class="require"><a href="javascript:usdlc.edit_source({value:'require.coffee',path:'../roaster/drivers/require.coffee',category:'drivers'})">require.coffee</a> </span><span class="driver"><a href="javascript:usdlc.edit_source({value:'driver.coffee',path:'../roaster/server/http/driver.coffee',category:'http'})">driver.coffee</a> </span><span class="script"><a href="javascript:usdlc.edit_source({value:'script.coffee',path:'../roaster/drivers/script.coffee',category:'drivers'})">script.coffee</a> </span><span class="server"><a href="javascript:usdlc.edit_source({value:'server.coffee',path:'../roaster/drivers/server.coffee',category:'drivers'})">server.coffee</a> </span><span class="respond"><a href="javascript:usdlc.edit_source({value:'respond.coffee',path:'../roaster/server/http/respond.coffee',category:'http'})">respond.coffee</a> </span><span class="create-http-server"><a href="javascript:usdlc.edit_source({value:'create-http-server.coffee',path:'../roaster/server/boot/create-http-server.coffee',category:'boot'})">create-http-server.coffee</a> </span></div>
 
-<p><textarea readonly="readonly" source="true" type="gwt.coffee">gwt.open_page "index.html"
+<p><textarea readonly="readonly" source="true" type="gwt.coffee">gwt.open_page &quot;index.html&quot;
 
 gwt.add -&gt;
-  console.log "#2 Client/Server Hybrid Module"
+  console.log &quot;#2 Client/Server Hybrid Module&quot;
   @page.test -&gt;
-    a = require "gen/usdlc2/Roaster_Client_Support/"+
-    "Package_Management/Client_Server_Hybrid_Modules"
+    a = require &quot;gen/usdlc2/Roaster_Client_Support/&quot;+
+    &quot;Package_Management/Client_Server_Hybrid_Modules&quot;
     a()
 </textarea></p>
 
@@ -190,16 +190,16 @@ gwt.add -&gt;
 
 <pre title="coffee" type="coffee">
 if gwt?.open_page
-  gwt.open_page "index.html"
+  gwt.open_page &quot;index.html&quot;
 
   gwt.add -&gt;
-    console.log "#2 require.script(url, on_loaded)"
+    console.log &quot;#2 require.script(url, on_loaded)&quot;
     @page.test -&gt;
-      require.script "gen/usdlc2/"+
-      "Roaster_Client_Support/Package_Management/"+
-      "Basic_Loading_Support/Scripts.coffee", -&gt;
+      require.script &quot;gen/usdlc2/&quot;+
+      &quot;Roaster_Client_Support/Package_Management/&quot;+
+      &quot;Basic_Loading_Support/Scripts.coffee&quot;, -&gt;
 
-usdlc2.pass('this runs on client') if usdlc2?.pass</pre>
+usdlc2.pass(&#39;this runs on client&#39;) if usdlc2?.pass</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="client"><a href="javascript:usdlc.edit_source({value:'client.coffee',path:'../roaster/drivers/client.coffee',category:'drivers'})">client.coffee</a> </span><span class="respond"><a href="javascript:usdlc.edit_source({value:'respond.coffee',path:'../roaster/server/http/respond.coffee',category:'http'})">respond.coffee</a> </span><span class="driver"><a href="javascript:usdlc.edit_source({value:'driver.coffee',path:'../roaster/server/http/driver.coffee',category:'http'})">driver.coffee</a> </span><span class="create-http-server"><a href="javascript:usdlc.edit_source({value:'create-http-server.coffee',path:'../roaster/server/boot/create-http-server.coffee',category:'boot'})">create-http-server.coffee</a> </span><span class="loaders"><a href="javascript:usdlc.edit_source({value:'loaders.coffee',path:'../roaster/client/roast/loaders.coffee',category:'roast'})">loaders.coffee</a> </span><span class="roast"><a href="javascript:usdlc.edit_source({value:'roast.coffee',path:'../roaster/client/roast.coffee',category:'client'})">roast.coffee</a> </span><span class="init"><a href="javascript:usdlc.edit_source({value:'init.coffee',path:'../roaster/client/roast/init.coffee',category:'roast'})">init.coffee</a> </span></div>
 
@@ -227,27 +227,27 @@ usdlc2.pass('this runs on client') if usdlc2?.pass</pre>
 }
 </pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <pre title="coffee" type="coffee">
-gwt.open_page "index.html"
+gwt.open_page &quot;index.html&quot;
 
 gwt.add -&gt;
-  console.log "#2 require.css(url)"
+  console.log &quot;#2 require.css(url)&quot;
   @page.test -&gt;
     
-    require.css "gen/usdlc2/"+
-      "Roaster_Client_Support/Package_Management/"+
-      "Basic_Loading_Support/CSS.less"
+    require.css &quot;gen/usdlc2/&quot;+
+      &quot;Roaster_Client_Support/Package_Management/&quot;+
+      &quot;Basic_Loading_Support/CSS.less&quot;
       
-    document.body.innerHTML = "&lt;div class='box'&gt;a&lt;/div&gt;"
-    div = document.getElementsByClassName('box')[0]
+    document.body.innerHTML = &quot;&lt;div class=&#39;box&#39;&gt;a&lt;/div&gt;&quot;
+    div = document.getElementsByClassName(&#39;box&#39;)[0]
     # wait for css to load and take effect
     setTimeout (-&gt;
       left = div.offsetLeft
-      usdlc2.test left &gt; 100, "Box is at "+left), 200</pre>
+      usdlc2.test left &gt; 100, &quot;Box is at &quot;+left), 200</pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/integrants/panel_stack.coffee',category:'integrants'})">panel_stack.coffee</a> </span></div>
 
@@ -258,21 +258,21 @@ gwt.add -&gt;
 <p>Data is often transferred between client and server in JSON format.</p>
 
 <pre title="json" type="json">
-{ "server-side": true }
+{ &quot;server-side&quot;: true }
 </pre>
 
 <pre title="coffee" type="coffee">
-gwt.open_page "index.html"
+gwt.open_page &quot;index.html&quot;
 
 gwt.add -&gt;
-  console.log "#2 require.json(url, on_loaded)"
+  console.log &quot;#2 require.json(url, on_loaded)&quot;
   @page.test -&gt;
-    require.json "gen/usdlc2/Roaster_Client_Support/"+
-    "Package_Management/Basic_Loading_Support/JSON.json",
+    require.json &quot;gen/usdlc2/Roaster_Client_Support/&quot;+
+    &quot;Package_Management/Basic_Loading_Support/JSON.json&quot;,
     (error, from_server) -&gt;
-      usdlc2.test from_server["server-side"]</pre>
+      usdlc2.test from_server[&quot;server-side&quot;]</pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
 
@@ -286,18 +286,18 @@ gwt.add -&gt;
 Spanish rain</pre>
 
 <pre title="coffee" type="coffee">
-gwt.open_page "index.html"
+gwt.open_page &quot;index.html&quot;
 
 gwt.add -&gt;
-  console.log "#2 require.data(url, on_loaded)"
+  console.log &quot;#2 require.data(url, on_loaded)&quot;
   @page.test -&gt;
-    require.data "gen/usdlc2/Roaster_Client_Support/"+
-    "Package_Management/Basic_Loading_Support/Data.txt",
+    require.data &quot;gen/usdlc2/Roaster_Client_Support/&quot;+
+    &quot;Package_Management/Basic_Loading_Support/Data.txt&quot;,
     (error, from_server) -&gt;
-      rained = from_server.indexOf("Spanish rain")
+      rained = from_server.indexOf(&quot;Spanish rain&quot;)
       usdlc2.test rained isnt -1</pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="loaders"><a href="javascript:usdlc.edit_source({value:'loaders.coffee',path:'../roaster/client/bootstrap/loaders.coffee',category:'bootstrap'})">loaders.coffee</a> </span><span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
 
@@ -308,19 +308,19 @@ gwt.add -&gt;
 <p>For absolute control of data from the server, use <em>require.stream(url, headers..., on_data)</em>.</p>
 
 <pre title="coffee" type="coffee">
-gwt.open_page "index.html"
+gwt.open_page &quot;index.html&quot;
 
 gwt.add -&gt;
-  console.log "#2 require.stream"
+  console.log &quot;#2 require.stream&quot;
   @page.test -&gt;
     data = []
-    require.stream "gen/usdlc2/Roaster_Client_Support/"+
-    "Package_Management/Basic_Loading_Support/Data.txt",
-    pragma: "no-cache", (error, chunk, is_complete) -&gt;
+    require.stream &quot;gen/usdlc2/Roaster_Client_Support/&quot;+
+    &quot;Package_Management/Basic_Loading_Support/Data.txt&quot;,
+    pragma: &quot;no-cache&quot;, (error, chunk, is_complete) -&gt;
       data.push chunk
       if is_complete
-        data = data.join('')
-        rained = data.indexOf("Spanish rain")
+        data = data.join(&#39;&#39;)
+        rained = data.indexOf(&quot;Spanish rain&quot;)
         usdlc2.test rained isnt -1</pre>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="loaders"><a href="javascript:usdlc.edit_source({value:'loaders.coffee',path:'../roaster/client/bootstrap/loaders.coffee',category:'bootstrap'})">loaders.coffee</a> </span><span class="files"><a href="javascript:usdlc.edit_source({value:'files.coffee',path:'../roaster/server/files.coffee',category:'server'})">files.coffee</a> </span></div>
@@ -352,34 +352,34 @@ gwt.add -&gt;
 .main .code { background-color: green; }
 .main .windows { background-color: blue; }</pre>
 
-<p>Normally you will use <em>class="fill_parent"</em>&nbsp;instead.The heading is for an example of html. Often an outer integrant is empty.</p>
+<p>Normally you will use <em>class=&quot;fill_parent&quot;</em>&nbsp;instead.The heading is for an example of html. Often an outer integrant is empty.</p>
 
 <p>This example represents the view in HTML. This is fine for static views, but if we can add components dynamically, a code view would be more appropriate. Each of the examples below provide both.</p>
 
 <pre title="html" type="html">
-&lt;table class="vc main" vc="panel_stack" name="panel_stack_test"&gt;
+&lt;table class=&quot;vc main&quot; vc=&quot;panel_stack&quot; name=&quot;panel_stack_test&quot;&gt;
   &lt;tr&gt;
-    &lt;td class="doc" style="max-height:80%; height:50%"&gt;
+    &lt;td class=&quot;doc&quot; style=&quot;max-height:80%; height:50%&quot;&gt;
       Document
     &lt;/td&gt;
-  &lt;/tr&gt;&lt;tr class="resizable"&gt;
-    &lt;td class="code" style="max-height:80%; height:50%"&gt;
+  &lt;/tr&gt;&lt;tr class=&quot;resizable&quot;&gt;
+    &lt;td class=&quot;code&quot; style=&quot;max-height:80%; height:50%&quot;&gt;
       Code
     &lt;/td&gt;
   &lt;/tr&gt;&lt;tr&gt;
-    &lt;td class="windows" style="height:2em"&gt;
+    &lt;td class=&quot;windows&quot; style=&quot;height:2em&quot;&gt;
       Window Tabs
     &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/table&gt;
-&lt;div class="templates"&gt;
-  &lt;div template="sample"&gt;
+&lt;div class=&quot;templates&quot;&gt;
+  &lt;div template=&quot;sample&quot;&gt;
     Template content
-    &lt;span class='container'&gt;this will be replaced&lt;/span&gt;
+    &lt;span class=&#39;container&#39;&gt;this will be replaced&lt;/span&gt;
   &lt;/div&gt;
 &lt;/div&gt;</pre>
 
-<p>Anything with a class of <em>template</em> is recorded in the integrant array <em>@templates</em> - both as an array and by name if it has a name element. In the example above the single template can be retrieved as <em>@templates[0]</em> or <em>@templates.sample.&nbsp;</em>Once a template is captured it is removed from the DOM. In this example we don't use the template. It is available for repeating elements - see Panel Stack. Anything inside a template with a class of <em>container</em> will contain any inner integrants.</p>
+<p>Anything with a class of <em>template</em> is recorded in the integrant array <em>@templates</em> - both as an array and by name if it has a name element. In the example above the single template can be retrieved as <em>@templates[0]</em> or <em>@templates.sample.&nbsp;</em>Once a template is captured it is removed from the DOM. In this example we don&#39;t use the template. It is available for repeating elements - see Panel Stack. Anything inside a template with a class of <em>container</em> will contain any inner integrants.</p>
 
 <p>The controller consists if a class or prototype that:</p>
 
@@ -392,7 +392,7 @@ gwt.add -&gt;
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
@@ -403,7 +403,7 @@ try
   module.exports = Body
 catch</pre>
 
-<p>You won't need the try/catch - this just so the server will ignore it here.&nbsp;Integrants by default live in <em>/client/integrants</em>&nbsp;in the current or roaster project. If the name starts with a / then the path is absolute to the project and is not forced into a specific&nbsp;directory. This is useful here since the files are generated in the <em><strong>usdlc2</strong></em> document. Note that the host is a raw DOM element.</p>
+<p>You won&#39;t need the try/catch - this just so the server will ignore it here.&nbsp;Integrants by default live in <em>/client/integrants</em>&nbsp;in the current or roaster project. If the name starts with a / then the path is absolute to the project and is not forced into a specific&nbsp;directory. This is useful here since the files are generated in the <em><strong>usdlc2</strong></em> document. Note that the host is a raw DOM element.</p>
 
 <p>Integrants can be modified with options. The parent class responds to those below:</p>
 
@@ -416,21 +416,21 @@ catch</pre>
 </ul>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "VC", -&gt; @page.test -&gt;
+gwt.add &quot;VC&quot;, -&gt; @page.test -&gt;
   go = -&gt;
     # The following runs in the page under test
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-           "VC_-_Separation_of_Concerns/Core_VC/HTML_View"    
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+           &quot;VC_-_Separation_of_Concerns/Core_VC/HTML_View&quot;    
 
-    vc = require 'vc'
+    vc = require &#39;vc&#39;
     # Outer VC - using the html and css from above
     vc document.body, vc: name, (err, body) -&gt;
       process.nextTick -&gt; # allow window repaint
-      windows = body.child 'windows'
+      windows = body.child &#39;windows&#39;
       top = windows?.offsetTop ? 0
-      gwt.test top &gt; 100, "Box is at "+top
+      gwt.test top &gt; 100, &quot;Box is at &quot;+top
   setTimeout go, 4#000</pre>
 
 <p>In this example we create an integrant that fills the page. Inside it has a set of three vertically aligned resizeable panels. The panel_stack code can be viewed in the links below. In practice the three panels will themselves have other integrants:</p>
@@ -462,40 +462,40 @@ gwt.add "VC", -&gt; @page.test -&gt;
 <p><em>ready</em>&nbsp;is optional and is called immediately for static children and after the integrant is initialised if there is a vc attribute. In the latter case the newly created integrant is passed.</p>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Panel Switcher", -&gt; @page.test -&gt;
+gwt.add &quot;Panel Switcher&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
+    vc = require &#39;vc&#39;
     # Outer VC - using the html and css from above
-    vc document.body, vc: 'panel_stack', (err, stack) -&gt;
-      # let's add the same three panels
-      doc = stack.add 'doc',
-        style: 'height:50%; background-color: red;'
-      doc.contents.innerHTML = 'Document'
+    vc document.body, vc: &#39;panel_stack&#39;, (err, stack) -&gt;
+      # let&#39;s add the same three panels
+      doc = stack.add &#39;doc&#39;,
+        style: &#39;height:50%; background-color: red;&#39;
+      doc.contents.innerHTML = &#39;Document&#39;
 
-      code = stack.add 'code',
-      style: 'height:50%; background-color: green;'
-      code.contents.innerHTML = 'Code'
+      code = stack.add &#39;code&#39;,
+      style: &#39;height:50%; background-color: green;&#39;
+      code.contents.innerHTML = &#39;Code&#39;
 
-      windows = stack.add 'windows',
-      style: 'height:50%; background-color: blue;'
+      windows = stack.add &#39;windows&#39;,
+      style: &#39;height:50%; background-color: blue;&#39;
       # and change the tests to match the new structure
-      windows.contents.innerHTML = 'Window Tabs'
+      windows.contents.innerHTML = &#39;Window Tabs&#39;
 
       colour = (expected_colour) -&gt;
-        selected = stack.selected.style['background-color']
+        selected = stack.selected.style[&#39;background-color&#39;]
         return selected is expected_colour
 
-      return gwt.fail('Name') if doc isnt stack.child 'doc'
+      return gwt.fail(&#39;Name&#39;) if doc isnt stack.child &#39;doc&#39;
 
-      stack.select("doc")
+      stack.select(&quot;doc&quot;)
       process.nextTick -&gt;
-        return gwt.fail('doc') if not colour "red"
+        return gwt.fail(&#39;doc&#39;) if not colour &quot;red&quot;
 
-        stack.select("code")
+        stack.select(&quot;code&quot;)
         process.nextTick -&gt;
-          return gwt.fail('code') if not colour "green"
+          return gwt.fail(&#39;code&#39;) if not colour &quot;green&quot;
           gwt.pass()        
   setTimeout go, 4#000
 </pre>
@@ -523,7 +523,7 @@ gwt.add "Panel Switcher", -&gt; @page.test -&gt;
 
 <h5>select (item)</h5>
 
-<p>Called for integrants with items that can be active - such as tabs. The items themselves, if integrants, are also informed with events '<em>selected</em>' and '<em>deselected</em>'.</p>
+<p>Called for integrants with items that can be active - such as tabs. The items themselves, if integrants, are also informed with events &#39;<em>selected</em>&#39; and &#39;<em>deselected</em>&#39;.</p>
 
 <div class="metadata Ref">Ref: <span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/integrants/panel_stack.coffee',category:'integrants'})">panel_stack.coffee</a> </span><span class="panel_switcher"><a href="javascript:usdlc.edit_source({value:'panel_switcher.coffee',path:'../roaster/client/integrants/panel_switcher.coffee',category:'integrants'})">panel_switcher.coffee</a> </span><span class="dom"><a href="javascript:usdlc.edit_source({value:'dom.coffee',path:'../roaster/client/dom.coffee',category:'client'})">dom.coffee</a> </span></div>
 
@@ -533,7 +533,7 @@ gwt.add "Panel Switcher", -&gt; @page.test -&gt;
 
 <div style="background: rgb(238, 238, 238); padding: 5px 10px; border: 1px solid rgb(204, 204, 204); border-image: none;"><code>class Body<br />
 &nbsp; init: (ready) -&gt;<br />
-&nbsp; &nbsp; @require "moda,modb","modc"<br />
+&nbsp; &nbsp; @require &quot;moda,modb&quot;,&quot;modc&quot;<br />
 &nbsp; &nbsp; assert @mida.test == 2<br />
 &nbsp; &nbsp; ready()<br />
 module.exports = Body<br />
@@ -553,10 +553,10 @@ module.exports = Moda()</code></div>
 
 <p>Walk between mvc DOM elements. Use integrant or convenience method on the DOM element.</p>
 
-<div style="background: rgb(238, 238, 238); padding: 5px 10px; border: 1px solid rgb(204, 204, 204); border-image: none;"><code>main = body.integrant.walk 'main'<br />
-windows = main.walk 'windows'<br />
-doc = windows.integrant.walk '../doc'<br />
-code = doc.walk '/main/doc'</code></div>
+<div style="background: rgb(238, 238, 238); padding: 5px 10px; border: 1px solid rgb(204, 204, 204); border-image: none;"><code>main = body.integrant.walk &#39;main&#39;<br />
+windows = main.walk &#39;windows&#39;<br />
+doc = windows.integrant.walk &#39;../doc&#39;<br />
+code = doc.walk &#39;/main/doc&#39;</code></div>
 
 <h5>walk(subelement).select</h5>
 
@@ -569,12 +569,12 @@ code = doc.walk '/main/doc'</code></div>
 
 <h3>&nbsp;Panel Stacks</h3>
 
-<p>A panel stack is a group of empty elements stacked one on top of the other, all the width of the host element. The height of any element can be changed and the stack will adjust the height of the others to fill the host. How each panel behaves is controlled by it's style height option:</p>
+<p>A panel stack is a group of empty elements stacked one on top of the other, all the width of the host element. The height of any element can be changed and the stack will adjust the height of the others to fill the host. How each panel behaves is controlled by it&#39;s style height option:</p>
 
 <ul>
 	<li><strong>no height option</strong> - This panel will be high enough to fit content. If content height changes, the panel height changes and donor panels will also change to compensate. Fit panels are optional.</li>
-	<li><strong>style: height: '100%'</strong> - for donor panels. They will change height to fill the page should a fit or receiver panel change size. Their must be at least one donor panel and the sum of all the donor panels should be 100%.</li>
-	<li><strong>style: height: '200px'</strong> - Receiver panels are those of fixed height. They will take space from or give space back to donor panels as they change size. Receiver panels are optional.</li>
+	<li><strong>style: height: &#39;100%&#39;</strong> - for donor panels. They will change height to fill the page should a fit or receiver panel change size. Their must be at least one donor panel and the sum of all the donor panels should be 100%.</li>
+	<li><strong>style: height: &#39;200px&#39;</strong> - Receiver panels are those of fixed height. They will take space from or give space back to donor panels as they change size. Receiver panels are optional.</li>
 </ul>
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
@@ -584,40 +584,40 @@ code = doc.walk '/main/doc'</code></div>
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Panel Switcher", -&gt; @page.test -&gt;
+gwt.add &quot;Panel Switcher&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
+    vc = require &#39;vc&#39;
     # Outer VC - using the html and css from above
-    vc document.body, vc: 'panel_stack', (err, stack) -&gt;
-      # let's add the same three panels
-      doc = stack.add 'doc',
-        style: 'height:50%; background-color: red;'
-      doc.contents.innerHTML = 'Document'
+    vc document.body, vc: &#39;panel_stack&#39;, (err, stack) -&gt;
+      # let&#39;s add the same three panels
+      doc = stack.add &#39;doc&#39;,
+        style: &#39;height:50%; background-color: red;&#39;
+      doc.contents.innerHTML = &#39;Document&#39;
 
-      code = stack.add 'code',
-      style: 'height:50%; background-color: green;'
-      code.contents.innerHTML = 'Code'
+      code = stack.add &#39;code&#39;,
+      style: &#39;height:50%; background-color: green;&#39;
+      code.contents.innerHTML = &#39;Code&#39;
 
-      windows = stack.add 'windows',
-      style: 'height:50%; background-color: blue;'
+      windows = stack.add &#39;windows&#39;,
+      style: &#39;height:50%; background-color: blue;&#39;
       # and change the tests to match the new structure
-      windows.contents.innerHTML = 'Window Tabs'
+      windows.contents.innerHTML = &#39;Window Tabs&#39;
 
       colour = (expected_colour) -&gt;
-        selected = stack.selected.style['background-color']
+        selected = stack.selected.style[&#39;background-color&#39;]
         return selected is expected_colour
 
-      return gwt.fail('Name') if doc isnt stack.child 'doc'
+      return gwt.fail(&#39;Name&#39;) if doc isnt stack.child &#39;doc&#39;
 
-      stack.select("doc")
+      stack.select(&quot;doc&quot;)
       process.nextTick -&gt;
-        return gwt.fail('doc') if not colour "red"
+        return gwt.fail(&#39;doc&#39;) if not colour &quot;red&quot;
 
-        stack.select("code")
+        stack.select(&quot;code&quot;)
         process.nextTick -&gt;
-          return gwt.fail('code') if not colour "green"
+          return gwt.fail(&#39;code&#39;) if not colour &quot;green&quot;
           gwt.pass()        
   setTimeout go, 4#000
 </pre>
@@ -627,27 +627,27 @@ gwt.add "Panel Switcher", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="coffee" type="coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "VC", -&gt; @page.test -&gt;
+gwt.add &quot;VC&quot;, -&gt; @page.test -&gt;
   go = -&gt;
     # The following runs in the page under test
     # View the source in the section above
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-           "VC_-_Separation_of_Concerns/Core_VC/HTML_View"
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+           &quot;VC_-_Separation_of_Concerns/Core_VC/HTML_View&quot;
 
-    vc = require 'vc'
+    vc = require &#39;vc&#39;
     # Outer VC - using the html and css from above
     vc document.body, vc: name, (err, body) -&gt;
       process.nextTick -&gt; # allow window repaint
-      windows = body.child 'windows'
+      windows = body.child &#39;windows&#39;
       top = windows.offsetTop
-      gwt.test top &gt; 100, "Box is at "+top
+      gwt.test top &gt; 100, &quot;Box is at &quot;+top
   setTimeout go, 4000</pre>
 
 <p><textarea readonly="readonly" source="true" type="gwt.coffee"></textarea></p>
 
-<p class="metadata Ref"> </p>
+<p class="metadata Ref">&nbsp;</p>
 
 <div class="metadata Ref"><span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/Integrant.coffee',category:'client'})">Integrant.coffee</a>&nbsp;</span><span class="panel_switcher"><a href="javascript:usdlc.edit_source({value:'panel_switcher.coffee',path:'../roaster/client/vc/panel_switcher.coffee',category:'vc'})">panel_switcher.coffee</a> </span><span class="Resize2"><a href="javascript:usdlc.edit_source({value:'Resize2.coffee',path:'../roaster/client/Resize2.coffee',category:'client'})">Resize2.coffee</a> </span><span class="resize2"><a href="javascript:usdlc.edit_source({value:'resize2.coffee',path:'../roaster/client/resize2.coffee',category:'client'})">resize2.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="code_editor"><a href="javascript:usdlc.edit_source({value:'code_editor.coffee',path:'../roaster/client/vc/code_editor.coffee',category:'vc'})">code_editor.coffee</a> </span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/code_editor/open.coffee',category:'code_editor'})">open.coffee</a> </span></div>
 
@@ -658,36 +658,36 @@ gwt.add "VC", -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Panel Switcher", -&gt; @page.test -&gt;
+gwt.add &quot;Panel Switcher&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
-    vc document.body, vc: 'panel_switcher', (err, sw) -&gt;
-      one = sw.add 'one',
-        style: 'background-color: red;'
-      one.innerHTML = 'One'
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;panel_switcher&#39;, (err, sw) -&gt;
+      one = sw.add &#39;one&#39;,
+        style: &#39;background-color: red;&#39;
+      one.innerHTML = &#39;One&#39;
 
-      two = sw.add 'two',
-        style: 'background-color: green;'
-      two.innerHTML = 'Two'
+      two = sw.add &#39;two&#39;,
+        style: &#39;background-color: green;&#39;
+      two.innerHTML = &#39;Two&#39;
 
-      sw.select("one")
+      sw.select(&quot;one&quot;)
     
       #### Everything below is verification
       
       colour = (expected_colour) -&gt;
-        selected = sw.selected.style['background-color']
+        selected = sw.selected.style[&#39;background-color&#39;]
         return selected is expected_colour
 
-      return gwt.fail('Name') if one isnt sw.child('one')
+      return gwt.fail(&#39;Name&#39;) if one isnt sw.child(&#39;one&#39;)
 
       process.nextTick -&gt;
-        return gwt.fail('one') if not colour "red"
+        return gwt.fail(&#39;one&#39;) if not colour &quot;red&quot;
 
-        sw.select("two")
+        sw.select(&quot;two&quot;)
         process.nextTick -&gt;
-          return gwt.fail('two') if not colour "green"
+          return gwt.fail(&#39;two&#39;) if not colour &quot;green&quot;
           gwt.pass()        
   setTimeout go, 4#000</pre>
 
@@ -696,28 +696,28 @@ gwt.add "Panel Switcher", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc panels" vc="panel_switcher"&gt;
-  &lt;div class="active one"
-       style="background-color:red"&gt;One&lt;/div&gt;
-  &lt;div class="two"
-       style="background-color:green"&gt;Two&lt;/div&gt;
+&lt;div class=&quot;vc panels&quot; vc=&quot;panel_switcher&quot;&gt;
+  &lt;div class=&quot;active one&quot;
+       style=&quot;background-color:red&quot;&gt;One&lt;/div&gt;
+  &lt;div class=&quot;two&quot;
+       style=&quot;background-color:green&quot;&gt;Two&lt;/div&gt;
 &lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @panels = @get_vc_for 'panels'
+      @panels = @get_vc_for &#39;panels&#39;
       # do further initialisation requiring async access
 
-      @panels.on 'selected', (panel) =&gt;
-        @selected_colour = panel.style["background-color"]
+      @panels.on &#39;selected&#39;, (panel) =&gt;
+        @selected_colour = panel.style[&quot;background-color&quot;]
         # panel is displayed - update if necessary
       @panels.reset_selection()
       
-      @panels.on 'deselected', (panel) =&gt;
+      @panels.on &#39;deselected&#39;, (panel) =&gt;
         # turn of unnecessary panel updating
       ready(err = false)
 
@@ -725,26 +725,26 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Panel Switcher", -&gt; @page.test -&gt;
+gwt.add &quot;Panel Switcher&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "VC_-_Separation_of_Concerns/Panel_Switcher/"+
-         "HTML_View"
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Panel_Switcher/&quot;+
+         &quot;HTML_View&quot;
     # Outer VC - using the html and css from above
-    vc = require('vc')
+    vc = require(&#39;vc&#39;)
     vc document.body, vc: name, (err, body) -&gt;
       colour = (expected_colour) -&gt;
         return body.selected_colour is expected_colour
 
-      body.panels.select("one")
+      body.panels.select(&quot;one&quot;)
       process.nextTick -&gt;
-        return gwt.fail('One') if not colour "red"
+        return gwt.fail(&#39;One&#39;) if not colour &quot;red&quot;
 
-        body.select("two")
+        body.select(&quot;two&quot;)
         process.nextTick -&gt;
-          return gwt.fail('Two') if not colour "green"
+          return gwt.fail(&#39;Two&#39;) if not colour &quot;green&quot;
           gwt.pass()      
   setTimeout go, 4#000</pre>
 
@@ -757,7 +757,7 @@ gwt.add "Panel Switcher", -&gt; @page.test -&gt;
 <p>Messages consist of a title, a body and a priority. They are displayed by title and sorted by priority and time. &nbsp;They close when they are clicked, overflow their container or their age exceeds a defined point. Hovering shows their age and the longer text in the body.&nbsp;Priority defines colour and aging rules. The default is as follows:</p>
 
 <ol>
-	<li>Fatal: Red. Aged: never. Don't close on overflow</li>
+	<li>Fatal: Red. Aged: never. Don&#39;t close on overflow</li>
 	<li>Error: Dark red. Aged: never</li>
 	<li>Alert: Orange. Aged: 48 hours</li>
 	<li>Pass: Green. Aged: 1 hour</li>
@@ -781,33 +781,33 @@ gwt.add "Panel Switcher", -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Messages", -&gt; @page.test -&gt;
+gwt.add &quot;Messages&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
-    vc document.body, vc: 'messages', (err, messages) -&gt;
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;messages&#39;, (err, messages) -&gt;
       adder = (elapse, message) -&gt;
         setTimeout (-&gt; messages.add message), adder
         
-      adder 11, "Message: Test 1 - The first test"
-      adder 22, "Error: Error - Error message"
-      adder 33, "Message: Test 2 - One more message"
-      adder 44, "Fatal: Fatality"
-      adder 55, "Test 3 - checking sorting"
-      adder 66, "Test 1"
+      adder 11, &quot;Message: Test 1 - The first test&quot;
+      adder 22, &quot;Error: Error - Error message&quot;
+      adder 33, &quot;Message: Test 2 - One more message&quot;
+      adder 44, &quot;Fatal: Fatality&quot;
+      adder 55, &quot;Test 3 - checking sorting&quot;
+      adder 66, &quot;Test 1&quot;
     
       #### Everything below is verification
       
       check = (against) -&gt;
-        text = messages.host.innerHTML.replace /&lt;.*?&gt;+/g, ' '
-        text = text.replace(/\s+/g, ' ').trim()
+        text = messages.host.innerHTML.replace /&lt;.*?&gt;+/g, &#39; &#39;
+        text = text.replace(/\s+/g, &#39; &#39;).trim()
         return true if text is against
-        gwt.fail "Expecting '#{against}', found '#{text}'"
+        gwt.fail &quot;Expecting &#39;#{against}&#39;, found &#39;#{text}&#39;&quot;
         return false
         
       process.nextTick -&gt;
-        if check "Test 1 Test 3 Fatality Test 2 Error"
+        if check &quot;Test 1 Test 3 Fatality Test 2 Error&quot;
           gwt.pass()
 
   setTimeout go, 4#000 </pre>
@@ -817,15 +817,15 @@ gwt.add "Messages", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;span class="vc" vc="messages"&gt;&lt;/span&gt;</pre>
+&lt;span class=&quot;vc&quot; vc=&quot;messages&quot;&gt;&lt;/span&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @messages = @get_vc_for 'messages'
+      @messages = @get_vc_for &#39;messages&#39;
       # do further initialisation requiring async access
 
       ready(err = null)
@@ -836,69 +836,69 @@ try
 catch  </pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Tab View", -&gt; @page.test -&gt;
+gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "VC_-_Separation_of_Concerns/Messages/"+
-         "HTML_View"    
-    vc = require 'vc'
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Messages/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, body) -&gt;
-      body.message "Hello world"
-      body.message "Alert: Read Me - False alarm"
+      body.message &quot;Hello world&quot;
+      body.message &quot;Alert: Read Me - False alarm&quot;
 
       check = (against) -&gt;
-        text = body.messages.host.innerHTML.replace /&lt;.*?&gt;+/g, ' '
-        text = text.replace(/\s+/g, ' ').trim()
+        text = body.messages.host.innerHTML.replace /&lt;.*?&gt;+/g, &#39; &#39;
+        text = text.replace(/\s+/g, &#39; &#39;).trim()
         return true if text is against
-        gwt.fail "Expecting '#{against}', found '#{text}'"
+        gwt.fail &quot;Expecting &#39;#{against}&#39;, found &#39;#{text}&#39;&quot;
         return false
         
       process.nextTick -&gt;
-        if check "Read Me Hello world"
+        if check &quot;Read Me Hello world&quot;
           gwt.pass()
           
   setTimeout go, 4#000 </pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.less',path:'../roaster/client/vc/messages.less',category:'vc'})">messages.less</a> </span></div>
 
 <h3>Tab View</h3>
 
-<p>Display tabs. When selected, it's action property is called. You can select() a tab programmatically.</p>
+<p>Display tabs. When selected, it&#39;s action property is called. You can select() a tab programmatically.</p>
 
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Tab View", -&gt; @page.test -&gt;
+gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
-    vc document.body, vc: 'tab_view', (err, tabs) -&gt;
-      one   = tabs.add 'One'
-      two   = tabs.add 'Two'
-      three = tabs.add 'Three'
-      four  = tabs.add 'Four'
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;tab_view&#39;, (err, tabs) -&gt;
+      one   = tabs.add &#39;One&#39;
+      two   = tabs.add &#39;Two&#39;
+      three = tabs.add &#39;Three&#39;
+      four  = tabs.add &#39;Four&#39;
 
-      tabs.select "Four"
+      tabs.select &quot;Four&quot;
       
       #### Everything below is verification
 
       check = (expected) -&gt;
         actual = tabs.selected?.innerHTML
         return true if actual is expected
-        gwt.fail "Expected " + expected + ", found " + actual
+        gwt.fail &quot;Expected &quot; + expected + &quot;, found &quot; + actual
         return false
       
       process.nextTick -&gt;
-        return if not check('Four')
-        tabs.select('Two')
-        return if not check('Two')
-        tabs.child('Three').click()
-        return if not check('Three')
+        return if not check(&#39;Four&#39;)
+        tabs.select(&#39;Two&#39;)
+        return if not check(&#39;Two&#39;)
+        tabs.child(&#39;Three&#39;).click()
+        return if not check(&#39;Three&#39;)
         gwt.pass()
   setTimeout go, 4#000
 </pre>
@@ -908,27 +908,27 @@ gwt.add "Tab View", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc tabs" vc="tab_view"&gt;
+&lt;div class=&quot;vc tabs&quot; vc=&quot;tab_view&quot;&gt;
   &lt;a&gt;One&lt;/a&gt;
   &lt;a&gt;Two&lt;/a&gt;
   &lt;a&gt;Three&lt;/a&gt;
-  &lt;a class="active"&gt;Four&lt;/a&gt;
+  &lt;a class=&quot;active&quot;&gt;Four&lt;/a&gt;
 &lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @tabs = @get_vc_for 'tabs'
+      @tabs = @get_vc_for &#39;tabs&#39;
       # do further initialisation requiring async access
 
-      @tabs.on 'selected', (tab) =&gt;
+      @tabs.on &#39;selected&#39;, (tab) =&gt;
         @selected = tab.innerHTML
         # tab is displayed - update if necessary
       
-      @tabs.on 'deselected', (panel) =&gt;
+      @tabs.on &#39;deselected&#39;, (panel) =&gt;
         # turn off unnecessary tabs updating
         
       @tabs.reset_selection()
@@ -938,29 +938,29 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Tab View", -&gt; @page.test -&gt;
+gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "VC_-_Separation_of_Concerns/Tab_View/"+
-         "HTML_View"    
-    vc = require 'vc'
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Tab_View/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, body) -&gt;
       tabs = body.tabs
 
       check = (expected) -&gt;
         return true if body.selected is expected
-        gwt.fail "Expected " + expected +
-        ", found " + body.selected
+        gwt.fail &quot;Expected &quot; + expected +
+        &quot;, found &quot; + body.selected
         return false
 
       process.nextTick -&gt;
-        return if not check('Four')
-        tabs.select('Two')
-        return if not check('Two')
-        tabs.child('Three').click()
-        return if not check('Three')
+        return if not check(&#39;Four&#39;)
+        tabs.select(&#39;Two&#39;)
+        return if not check(&#39;Two&#39;)
+        tabs.child(&#39;Three&#39;).click()
+        return if not check(&#39;Three&#39;)
         gwt.pass()
   setTimeout go, 4#000</pre>
 
@@ -975,43 +975,43 @@ gwt.add "Tab View", -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Tab View", -&gt; @page.test -&gt;
+gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
-    vc document.body, vc: 'tabbed_panels', (err, tp) -&gt;
-      one   = tp.add 'One',
-        panel: style: 'background-color: red;'
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;tabbed_panels&#39;, (err, tp) -&gt;
+      one   = tp.add &#39;One&#39;,
+        panel: style: &#39;background-color: red;&#39;
       one.innerHTML = 1
-      two   = tp.add 'Two',
-        panel: style: 'background-color: green;'
+      two   = tp.add &#39;Two&#39;,
+        panel: style: &#39;background-color: green;&#39;
       two.innerHTML = 2
-      three = tp.add 'Three',
-        panel: style: 'background-color: blue;'
+      three = tp.add &#39;Three&#39;,
+        panel: style: &#39;background-color: blue;&#39;
       three.innerHTML = 3
-      four  = tp.add 'Four',
-        panel: style: 'background-color: yellow;'
+      four  = tp.add &#39;Four&#39;,
+        panel: style: &#39;background-color: yellow;&#39;
       four.innerHTML = 4
 
-      tp.select "Four"
+      tp.select &quot;Four&quot;
       
       #### Everything below is verification
 
       check = (tab, colour) -&gt;
         st = tp.selected.tab.innerHTML
-        sc = tp.selected.style["background-color"]
+        sc = tp.selected.style[&quot;background-color&quot;]
         return true if st is tab and sc is colour
-        gwt.fail "Expected #{tab}/#{colour}" +
-                 ", found #{st}/#{sc}"
+        gwt.fail &quot;Expected #{tab}/#{colour}&quot; +
+                 &quot;, found #{st}/#{sc}&quot;
         return false
 
       process.nextTick -&gt;
-        return if not check('Four', 'yellow')
-        tp.select('Two')
-        return if not check('Two', 'green')
-        tp.tabs.child('Three').click()
-        return if not check('Three', 'blue')
+        return if not check(&#39;Four&#39;, &#39;yellow&#39;)
+        tp.select(&#39;Two&#39;)
+        return if not check(&#39;Two&#39;, &#39;green&#39;)
+        tp.tabs.child(&#39;Three&#39;).click()
+        return if not check(&#39;Three&#39;, &#39;blue&#39;)
         gwt.pass()
   setTimeout go, 4#000
 </pre>
@@ -1021,30 +1021,30 @@ gwt.add "Tab View", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc main" vc="tabbed_panels"&gt;
-  &lt;div name="One"
-       style="background-color:red"&gt;1&lt;/div&gt;
-  &lt;div name="Two"
-       style="background-color:green"&gt;2&lt;/div&gt;
-  &lt;div name="Three"
-       style="background-color:blue"&gt;3&lt;/div&gt;
-  &lt;div name="Four" class="active"
-       style="background-color:yellow"&gt;4&lt;/div&gt;
+&lt;div class=&quot;vc main&quot; vc=&quot;tabbed_panels&quot;&gt;
+  &lt;div name=&quot;One&quot;
+       style=&quot;background-color:red&quot;&gt;1&lt;/div&gt;
+  &lt;div name=&quot;Two&quot;
+       style=&quot;background-color:green&quot;&gt;2&lt;/div&gt;
+  &lt;div name=&quot;Three&quot;
+       style=&quot;background-color:blue&quot;&gt;3&lt;/div&gt;
+  &lt;div name=&quot;Four&quot; class=&quot;active&quot;
+       style=&quot;background-color:yellow&quot;&gt;4&lt;/div&gt;
 &lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @main = @get_vc_for 'main'
+      @main = @get_vc_for &#39;main&#39;
       
       do set_selected = =&gt;
         @selected =
           tab:   @main.tabs.selected.innerHTML
-          panel: @main.panels.selected.style["background-color"]
-      @main.on 'selected', set_selected
+          panel: @main.panels.selected.style[&quot;background-color&quot;]
+      @main.on &#39;selected&#39;, set_selected
 
       # do further initialisation requiring async access
       ready(err = null)
@@ -1053,14 +1053,14 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Tab View", -&gt; @page.test -&gt;
+gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "VC_-_Separation_of_Concerns/Tabbed_Panels/"+
-         "HTML_View"    
-    vc = require 'vc'
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Tabbed_Panels/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, body) -&gt;
       main = body.main
 
@@ -1068,20 +1068,20 @@ gwt.add "Tab View", -&gt; @page.test -&gt;
         sel = body.selected
         if sel.tab is tab and sel.panel is colour
           return true
-        gwt.fail "Expected #{tab}/#{colour}" +
-                 ", found #{sel.tab}/#{sel.panel}"
+        gwt.fail &quot;Expected #{tab}/#{colour}&quot; +
+                 &quot;, found #{sel.tab}/#{sel.panel}&quot;
         return false
 
       process.nextTick -&gt;
-        return if not check('Four', 'yellow')
-        main.select('Two')
-        return if not check('Two', 'green')
-        main.tabs.child('Three').click()
-        return if not check('Three', 'blue')
+        return if not check(&#39;Four&#39;, &#39;yellow&#39;)
+        main.select(&#39;Two&#39;)
+        return if not check(&#39;Two&#39;, &#39;green&#39;)
+        main.tabs.child(&#39;Three&#39;).click()
+        return if not check(&#39;Three&#39;, &#39;blue&#39;)
         gwt.pass()
   setTimeout go, 4#000</pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a>&nbsp;</span><span class="tabbed_panels"><a href="javascript:usdlc.edit_source({value:'tabbed_panels.coffee',path:'../roaster/client/vc/tabbed_panels.coffee',category:'vc'})">tabbed_panels.coffee</a> </span><span class="panel_switcher"><a href="javascript:usdlc.edit_source({value:'panel_switcher.css',path:'../roaster/client/vc/panel_switcher.css',category:'vc'})">panel_switcher.css</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/vc/tab_view.coffee',category:'vc'})">tab_view.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Sequential"><a href="javascript:usdlc.edit_source({value:'Sequential.js',path:'../roaster/common/Sequential.js',category:'common'})">Sequential.js</a> </span></div>
 
@@ -1094,36 +1094,36 @@ gwt.add "Tab View", -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Drawers", -&gt; @page.test -&gt;
+gwt.add &quot;Drawers&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
+    vc = require &#39;vc&#39;
     add_drawer = (side, added) -&gt;
-      vc document.body, vc: 'drawers', side: side,
+      vc document.body, vc: &#39;drawers&#39;, side: side,
       (err, drawers) -&gt;
         fill = (dr, contents) -&gt;
-          dr.innerHTML = "&lt;&lt;&lt;&lt;&lt; #{contents} &gt;&gt;&gt;&gt;&gt;&lt;br&gt;"
+          dr.innerHTML = &quot;&lt;&lt;&lt;&lt;&lt; #{contents} &gt;&gt;&gt;&gt;&gt;&lt;br&gt;&quot;
           dr.innerHTML += dr.innerHTML for i in [1..5]
-        d1 = drawers.add "#{side} 1",
-          panel: style: 'background-color: red;'
+        d1 = drawers.add &quot;#{side} 1&quot;,
+          panel: style: &#39;background-color: red;&#39;
         fill(d1, 1)
-        d2 = drawers.add "#{side} 2",
-          panel: style: 'background-color: green;'
+        d2 = drawers.add &quot;#{side} 2&quot;,
+          panel: style: &#39;background-color: green;&#39;
         fill(d2, 2)
         added {drawers, d1, d2, side}
     
-    add_drawer 'left', (left) -&gt;
-      add_drawer 'right', (right) -&gt;
+    add_drawer &#39;left&#39;, (left) -&gt;
+      add_drawer &#39;right&#39;, (right) -&gt;
 
           #### Everything below is verification
 
         check = (x, colour) -&gt;
           panel = document.elementFromPoint(x, 20)
-          bc = panel.style["background-color"]
+          bc = panel.style[&quot;background-color&quot;]
           return true if not bc and not colour
           return true if bc is colour
-          gwt.fail "Expected #{colour}, found #{bc}"
+          gwt.fail &quot;Expected #{colour}, found #{bc}&quot;
           return false
 
         check_drawers = (one, pos) -&gt;
@@ -1131,10 +1131,10 @@ gwt.add "Drawers", -&gt; @page.test -&gt;
             return if not check(pos)
             one.drawers.select(one.d1.tab)
             process.nextTick -&gt;
-              return if not check(pos, 'red')
-              one.drawers.select("#{one.side}_2")
+              return if not check(pos, &#39;red&#39;)
+              one.drawers.select(&quot;#{one.side}_2&quot;)
               process.nextTick -&gt;
-                return if not check(pos, 'green')
+                return if not check(pos, &#39;green&#39;)
                 gwt.pass()
 
         check_drawers left, 20
@@ -1147,39 +1147,39 @@ gwt.add "Drawers", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc left" vc="drawers" side="left"&gt;
-  &lt;div name="One"
-       style="background-color:red"&gt;1111111111&lt;/div&gt;
-  &lt;div name="Two"
-       style="background-color:green"&gt;222222222&lt;/div&gt;
-  &lt;div name="Three"
-       style="background-color:blue"&gt;3333333333&lt;/div&gt;
-  &lt;div class="active" name="Four"
-       style="background-color:yellow"&gt;4444444444&lt;/div&gt;
+&lt;div class=&quot;vc left&quot; vc=&quot;drawers&quot; side=&quot;left&quot;&gt;
+  &lt;div name=&quot;One&quot;
+       style=&quot;background-color:red&quot;&gt;1111111111&lt;/div&gt;
+  &lt;div name=&quot;Two&quot;
+       style=&quot;background-color:green&quot;&gt;222222222&lt;/div&gt;
+  &lt;div name=&quot;Three&quot;
+       style=&quot;background-color:blue&quot;&gt;3333333333&lt;/div&gt;
+  &lt;div class=&quot;active&quot; name=&quot;Four&quot;
+       style=&quot;background-color:yellow&quot;&gt;4444444444&lt;/div&gt;
 &lt;/div&gt;
 
-&lt;div class="vc right" vc="drawers" side="right"&gt;
-  &lt;div class="active" name="One"
-       style="background-color:red"&gt;1111111111&lt;/div&gt;
-  &lt;div name="Two"
-       style="background-color:green"&gt;222222222&lt;/div&gt;
+&lt;div class=&quot;vc right&quot; vc=&quot;drawers&quot; side=&quot;right&quot;&gt;
+  &lt;div class=&quot;active&quot; name=&quot;One&quot;
+       style=&quot;background-color:red&quot;&gt;1111111111&lt;/div&gt;
+  &lt;div name=&quot;Two&quot;
+       style=&quot;background-color:green&quot;&gt;222222222&lt;/div&gt;
 &lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      loc = @left = @get_vc_for 'left'
-      @right = @get_vc_for 'right'
+      loc = @left = @get_vc_for &#39;left&#39;
+      @right = @get_vc_for &#39;right&#39;
       
       do set_selected = (loc) =&gt;
         @selected =
           tab:   loc.tabs.selected.innerHTML
-          panel: loc.panels.selected.style["background-color"]
-      @left.on 'selected', =&gt; set_selected @left
-      @right.on 'selected', =&gt; set_selected @right
+          panel: loc.panels.selected.style[&quot;background-color&quot;]
+      @left.on &#39;selected&#39;, =&gt; set_selected @left
+      @right.on &#39;selected&#39;, =&gt; set_selected @right
 
       # do further initialisation requiring async access
       ready(err = null)
@@ -1188,37 +1188,37 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Tab View", -&gt; @page.test -&gt;
+gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "VC_-_Separation_of_Concerns/Drawers/"+
-         "HTML_View"    
-    vc = require 'vc'
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Drawers/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, body) -&gt;
 
       check = (tab, colour) -&gt;
         sel = body.selected
         if sel.tab is tab and sel.panel is colour
           return true
-        gwt.fail "Expected #{tab}/#{colour}" +
-                 ", found #{sel.tab}/#{sel.panel}"
+        gwt.fail &quot;Expected #{tab}/#{colour}&quot; +
+                 &quot;, found #{sel.tab}/#{sel.panel}&quot;
         return false
 
       process.nextTick -&gt;
-        return if not check('Four', 'yellow')
-        body.left.select('Two')
-        return if not check('Two', 'green')
-        body.left.tabs.child('Three').click()
-        return if not check('Three', 'blue')
-        body.right.select('Two')
-        return if not check('Two', 'green')
+        return if not check(&#39;Four&#39;, &#39;yellow&#39;)
+        body.left.select(&#39;Two&#39;)
+        return if not check(&#39;Two&#39;, &#39;green&#39;)
+        body.left.tabs.child(&#39;Three&#39;).click()
+        return if not check(&#39;Three&#39;, &#39;blue&#39;)
+        body.right.select(&#39;Two&#39;)
+        return if not check(&#39;Two&#39;, &#39;green&#39;)
         gwt.pass()
   setTimeout go, 4000
  </pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="drawers"><a href="javascript:usdlc.edit_source({value:'drawers.coffee',path:'../roaster/client/vc/drawers.coffee',category:'vc'})">drawers.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="tabbed_panels"><a href="javascript:usdlc.edit_source({value:'tabbed_panels.coffee',path:'../roaster/client/vc/tabbed_panels.coffee',category:'vc'})">tabbed_panels.coffee</a> </span><span class="dialog"><a href="javascript:usdlc.edit_source({value:'dialog.coffee',path:'../roaster/client/dialog.coffee',category:'client'})">dialog.coffee</a> </span><span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.coffee',path:'../roaster/client/vc/modal_panel.coffee',category:'vc'})">modal_panel.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/vc/tab_view.coffee',category:'vc'})">tab_view.coffee</a></span></div>
 
@@ -1227,24 +1227,24 @@ gwt.add "Tab View", -&gt; @page.test -&gt;
 <p>Because modal panels are used everywhere, there is a shortcut:</p>
 
 <div style="background: rgb(238, 238, 238); padding: 5px 10px; border: 1px solid rgb(204, 204, 204); border-image: none;"><code>roaster.modal (panel) -&gt;<br />
-&nbsp;&nbsp;panel.innerHTML = "Hello world"</code></div>
+&nbsp;&nbsp;panel.innerHTML = &quot;Hello world&quot;</code></div>
 
 <div class="metadata Ref">Ref: <span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.coffee',path:'../roaster/client/vc/modal_panel.coffee',category:'vc'})">modal_panel.coffee</a> </span><span class="compile"><a href="javascript:usdlc.edit_source({value:'compile.coffee',path:'../roaster/client/vc/code_editor/compile.coffee',category:'code_editor'})">compile.coffee</a> </span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/code_editor/open.coffee',category:'code_editor'})">open.coffee</a> </span><span class="loaders"><a href="javascript:usdlc.edit_source({value:'loaders.coffee',path:'../roaster/client/roast/loaders.coffee',category:'roast'})">loaders.coffee</a> </span><span class="roast"><a href="javascript:usdlc.edit_source({value:'roast.coffee',path:'../roaster/client/roast.coffee',category:'client'})">roast.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="mode"><a href="javascript:usdlc.edit_source({value:'mode.coffee',path:'../roaster/client/vc/code_editor/mode.coffee',category:'code_editor'})">mode.coffee</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.coffee',path:'../roaster/client/vc/messages.coffee',category:'vc'})">messages.coffee</a> </span></div>
 
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Modal Panels", -&gt; @page.test -&gt;
+gwt.add &quot;Modal Panels&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    bg = ("123456789" for i in [1..500]).join(' ')
+    bg = (&quot;123456789&quot; for i in [1..500]).join(&#39; &#39;)
     document.body.innerHTML = bg
     
-    vc = require 'vc'
-    vc document.body, vc: 'modal_panel', (err, modal) -&gt;
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;modal_panel&#39;, (err, modal) -&gt;
       panel = modal.container
-      panel.innerHTML = "&lt;&lt;&lt;&lt;&lt; PANEL CONTENTS &gt;&gt;&gt;&gt;&gt;&lt;br&gt;"
+      panel.innerHTML = &quot;&lt;&lt;&lt;&lt;&lt; PANEL CONTENTS &gt;&gt;&gt;&gt;&gt;&lt;br&gt;&quot;
       panel.innerHTML += panel.innerHTML for i in [1..4]
       modal.show()
     
@@ -1252,14 +1252,14 @@ gwt.add "Modal Panels", -&gt; @page.test -&gt;
 
       process.nextTick -&gt;
         bg = document.elementFromPoint 0, 0
-        if not bg.classList.contains 'background'
-          return gwt.fail "modal not showing"
+        if not bg.classList.contains &#39;background&#39;
+          return gwt.fail &quot;modal not showing&quot;
         
         modal.hide()
         process.nextTick -&gt;
           bg = document.elementFromPoint 0, 0
-          if bg.classList.contains 'background'
-            return gwt.fail "modal not hidden"
+          if bg.classList.contains &#39;background&#39;
+            return gwt.fail &quot;modal not hidden&quot;
 
           modal.show()
           gwt.pass()
@@ -1272,7 +1272,7 @@ gwt.add "Modal Panels", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc" vc="modal_panel"&gt;
+&lt;div class=&quot;vc&quot; vc=&quot;modal_panel&quot;&gt;
   The rain in spain falls mainly on the plain.&lt;br&gt;
   Now is the time for all good men to come to the
   aid of the party.
@@ -1280,11 +1280,11 @@ gwt.add "Modal Panels", -&gt; @page.test -&gt;
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @panel = @get_vc_for 'modal_panel'
+      @panel = @get_vc_for &#39;modal_panel&#39;
       # do further initialisation requiring async access
       ready(err = null)
 
@@ -1292,33 +1292,33 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Tab View", -&gt; @page.test -&gt;
+gwt.add &quot;Tab View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "VC_-_Separation_of_Concerns/Modal_Panel/"+
-         "HTML_View"    
-    vc = require 'vc'
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Modal_Panel/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, modal) -&gt;
       modal.panel.show()
       process.nextTick -&gt;
         bg = document.elementFromPoint 0, 0
-        if not bg.classList.contains 'background'
-          return gwt.fail "modal not showing"
+        if not bg.classList.contains &#39;background&#39;
+          return gwt.fail &quot;modal not showing&quot;
         
         modal.panel.hide()
         process.nextTick -&gt;
           bg = document.elementFromPoint 0, 0
-          if bg.classList.contains 'background'
-            return gwt.fail "modal not hidden"
+          if bg.classList.contains &#39;background&#39;
+            return gwt.fail &quot;modal not hidden&quot;
 
           modal.panel.show()
           gwt.pass()
   setTimeout go, 4#000
   </pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.html',path:'../roaster/client/vc/modal_panel.html',category:'vc'})">modal_panel.html</a> </span><span class="tree_view"><a href="javascript:usdlc.edit_source({value:'tree_view.coffee',path:'../roaster/client/vc/tree_view.coffee',category:'vc'})">tree_view.coffee</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.html',path:'../roaster/client/vc/panel_stack.html',category:'vc'})">panel_stack.html</a> </span><span class="window_manager"><a href="javascript:usdlc.edit_source({value:'window_manager.coffee',path:'../roaster/client/vc/window_manager.coffee',category:'vc'})">window_manager.coffee</a> </span></div>
 
@@ -1327,35 +1327,35 @@ gwt.add "Tab View", -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Window Manager", -&gt; @page.test -&gt;
+gwt.add &quot;Window Manager&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
-    vc document.body, vc: 'window_manager', (err, wm) -&gt;
-      one   = wm.add 'One',
-        panel: style: 'background-color: red;'
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;window_manager&#39;, (err, wm) -&gt;
+      one   = wm.add &#39;One&#39;,
+        panel: style: &#39;background-color: red;&#39;
       one.innerHTML = 1
-      four  = wm.add 'Four',
-        panel: style: 'background-color: yellow;'
+      four  = wm.add &#39;Four&#39;,
+        panel: style: &#39;background-color: yellow;&#39;
       four.innerHTML = 4
 
-      wm.select "Four"
+      wm.select &quot;Four&quot;
       
       #### Everything below is verification
 
       check = (tab, colour) -&gt;
         st = wm.selected.tab.innerHTML
-        sc = wm.selected.style["background-color"]
+        sc = wm.selected.style[&quot;background-color&quot;]
         return true if st is tab and sc is colour
-        gwt.fail "Expected #{tab}/#{colour}" +
-                 ", found #{st}/#{sc}"
+        gwt.fail &quot;Expected #{tab}/#{colour}&quot; +
+                 &quot;, found #{st}/#{sc}&quot;
         return false
 
       process.nextTick -&gt;
-        return if not check('Four', 'yellow')
-        wm.tabs.child('One').click()
-        return if not check('One', 'red')
+        return if not check(&#39;Four&#39;, &#39;yellow&#39;)
+        wm.tabs.child(&#39;One&#39;).click()
+        return if not check(&#39;One&#39;, &#39;red&#39;)
         gwt.pass()
   setTimeout go, 4#000
  </pre>
@@ -1365,30 +1365,30 @@ gwt.add "Window Manager", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc main" vc="window_manager"&gt;
-  &lt;div name="One"
-       style="background-color:red"&gt;1&lt;/div&gt;
-  &lt;div name="Two"
-       style="background-color:green"&gt;2&lt;/div&gt;
-  &lt;div name="Three"
-       style="background-color:blue"&gt;3&lt;/div&gt;
-  &lt;div class='active' name="Four"
-       style="background-color:yellow"&gt;4&lt;/div&gt;
+&lt;div class=&quot;vc main&quot; vc=&quot;window_manager&quot;&gt;
+  &lt;div name=&quot;One&quot;
+       style=&quot;background-color:red&quot;&gt;1&lt;/div&gt;
+  &lt;div name=&quot;Two&quot;
+       style=&quot;background-color:green&quot;&gt;2&lt;/div&gt;
+  &lt;div name=&quot;Three&quot;
+       style=&quot;background-color:blue&quot;&gt;3&lt;/div&gt;
+  &lt;div class=&#39;active&#39; name=&quot;Four&quot;
+       style=&quot;background-color:yellow&quot;&gt;4&lt;/div&gt;
 &lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @main = @get_vc_for 'main'
+      @main = @get_vc_for &#39;main&#39;
       
       do set_selected = =&gt;
         @selected =
           tab:   @main.tabs.selected.innerHTML
-          panel: @main.tabs.selected.panel.style["background-color"]
-      @main.on 'selected', set_selected
+          panel: @main.tabs.selected.panel.style[&quot;background-color&quot;]
+      @main.on &#39;selected&#39;, set_selected
 
       # do further initialisation requiring async access
       ready(err = null)
@@ -1397,14 +1397,14 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Window Manager", -&gt; @page.test -&gt;
+gwt.add &quot;Window Manager&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "VC_-_Separation_of_Concerns/Window_Manager/"+
-         "HTML_View"    
-    vc = require 'vc'
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Window_Manager/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, body) -&gt;
       main = body.main
 
@@ -1412,20 +1412,20 @@ gwt.add "Window Manager", -&gt; @page.test -&gt;
         sel = body.selected
         if sel.tab is tab and sel.panel is colour
           return true
-        gwt.fail "Expected #{tab}/#{colour}" +
-                 ", found #{sel.tab}/#{sel.panel}"
+        gwt.fail &quot;Expected #{tab}/#{colour}&quot; +
+                 &quot;, found #{sel.tab}/#{sel.panel}&quot;
         return false
 
       process.nextTick -&gt;
-        return if not check('Four', 'yellow')
-        main.select('Two')
-        return if not check('Two', 'green')
-        main.tabs.child('Three').click()
-        return if not check('Three', 'blue')
+        return if not check(&#39;Four&#39;, &#39;yellow&#39;)
+        main.select(&#39;Two&#39;)
+        return if not check(&#39;Two&#39;, &#39;green&#39;)
+        main.tabs.child(&#39;Three&#39;).click()
+        return if not check(&#39;Three&#39;, &#39;blue&#39;)
         gwt.pass()
   setTimeout go, 4#000 </pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/vc/tab_view.coffee',category:'vc'})">tab_view.coffee</a> </span><span class="tree_view"><a href="javascript:usdlc.edit_source({value:'tree_view.coffee',path:'../roaster/client/vc/tree_view.coffee',category:'vc'})">tree_view.coffee</a> </span><span class="popup_menu"><a href="javascript:usdlc.edit_source({value:'popup_menu.coffee',path:'../roaster/client/vc/popup_menu.coffee',category:'vc'})">popup_menu.coffee</a> </span></div>
 
@@ -1434,18 +1434,18 @@ gwt.add "Window Manager", -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Pop-up Menu", -&gt; @page.test -&gt;
+gwt.add &quot;Pop-up Menu&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
-    vc document.body, vc: 'popup_menu', context_menu: true,
-    type: "menu", (err, pm) -&gt;
-      one   = pm.branch 'One'
-      leaf  = pm.leaf 'One a', 'javascript: alert("One a")'
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;popup_menu&#39;, context_menu: true,
+    type: &quot;menu&quot;, (err, pm) -&gt;
+      one   = pm.branch &#39;One&#39;
+      leaf  = pm.leaf &#39;One a&#39;, &#39;javascript: alert(&quot;One a&quot;)&#39;
       pm.up()
       for i in [2..100]
-        pm.leaf 'Leaf '+i, 'javascript: alert("Click")'
+        pm.leaf &#39;Leaf &#39;+i, &#39;javascript: alert(&quot;Click&quot;)&#39;
         
       pm.context_menu() # redundant: for example only
       pm.at clientX: 200, clientY: 100
@@ -1457,7 +1457,7 @@ gwt.add "Pop-up Menu", -&gt; @page.test -&gt;
         one.click()
         process.nextTick -&gt;
           if height &gt;= one.clientHeight
-            return gwt.fail('open')
+            return gwt.fail(&#39;open&#39;)
           gwt.pass()
   setTimeout go, 4#000 </pre>
 
@@ -1466,29 +1466,29 @@ gwt.add "Pop-up Menu", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc main" vc="popup_menu"&gt;
+&lt;div class=&quot;vc main&quot; vc=&quot;popup_menu&quot;&gt;
   
-    &lt;li class="one"&gt;One
+    &lt;li class=&quot;one&quot;&gt;One
        
         
-          &lt;a href='javascript:alert("1a")'&gt;One a&lt;/a&gt;
+          &lt;a href=&#39;javascript:alert(&quot;1a&quot;)&#39;&gt;One a&lt;/a&gt;
          &lt;/li&gt;
-          &lt;a href='javascript:alert("1b")'&gt;One b&lt;/a&gt;
+          &lt;a href=&#39;javascript:alert(&quot;1b&quot;)&#39;&gt;One b&lt;/a&gt;
         &lt;/li&gt;
       &lt;/ol&gt;
     &lt;/li&gt;
-    &lt;a href='javascript:alert("2")'&gt;Two&lt;/a&gt;&lt;/li&gt;
-    &lt;a href='javascript:alert("3")'&gt;Three&lt;/a&gt;&lt;/li&gt;
+    &lt;a href=&#39;javascript:alert(&quot;2&quot;)&#39;&gt;Two&lt;/a&gt;&lt;/li&gt;
+    &lt;a href=&#39;javascript:alert(&quot;3&quot;)&#39;&gt;Three&lt;/a&gt;&lt;/li&gt;
   &lt;/ol&gt;
 &lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @main = @get_vc_for 'main'
+      @main = @get_vc_for &#39;main&#39;
       # do further initialisation requiring async access
       ready(err = null)
 
@@ -1496,29 +1496,29 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Pop-up Menu", -&gt; @page.test -&gt;
+gwt.add &quot;Pop-up Menu&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "VC_-_Separation_of_Concerns/Popup_Menu_View/"+
-         "HTML_View"    
-    vc = require 'vc'
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Popup_Menu_View/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, body) -&gt;
       main = body.main
 
       process.nextTick -&gt;
-        one = main.child('one')
-        chk = one.getElementsByTagName('input')[0]
+        one = main.child(&#39;one&#39;)
+        chk = one.getElementsByTagName(&#39;input&#39;)[0]
         height = one.clientHeight
         chk.click()
         process.nextTick -&gt;
           if height &gt;= one.clientHeight
-            return gwt.fail('open')
+            return gwt.fail(&#39;open&#39;)
           gwt.pass()
   setTimeout go, 4000 </pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="popup_menu"><a href="javascript:usdlc.edit_source({value:'popup_menu.html',path:'../roaster/client/vc/popup_menu.html',category:'vc'})">popup_menu.html</a> </span><span class="modal_panel"><a href="javascript:usdlc.edit_source({value:'modal_panel.coffee',path:'../roaster/client/vc/modal_panel.coffee',category:'vc'})">modal_panel.coffee</a> </span><span class="Integrant"><a href="javascript:usdlc.edit_source({value:'Integrant.coffee',path:'../roaster/client/vc/Integrant.coffee',category:'vc'})">Integrant.coffee</a> </span><span class="vc"><a href="javascript:usdlc.edit_source({value:'vc.coffee',path:'../roaster/client/vc.coffee',category:'client'})">vc.coffee</a> </span><span class="tab_view"><a href="javascript:usdlc.edit_source({value:'tab_view.coffee',path:'../roaster/client/vc/tab_view.coffee',category:'vc'})">tab_view.coffee</a> </span><span class="tree_view"><a href="javascript:usdlc.edit_source({value:'tree_view.coffee',path:'../roaster/client/vc/tree_view.coffee',category:'vc'})">tree_view.coffee</a> </span><span class="drawers"><a href="javascript:usdlc.edit_source({value:'drawers.html',path:'../roaster/client/vc/drawers.html',category:'vc'})">drawers.html</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.html',path:'../roaster/client/vc/messages.html',category:'vc'})">messages.html</a> </span></div>
 
@@ -1531,16 +1531,16 @@ gwt.add "Pop-up Menu", -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Tree View", -&gt; @page.test -&gt;
+gwt.add &quot;Tree View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
-    vc document.body, vc: 'tree_view', (err, tv) -&gt;
-      one   = tv.branch 'One'
-      leaf  = tv.leaf 'One a', 'javascript: alert("One a")'
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;tree_view&#39;, (err, tv) -&gt;
+      one   = tv.branch &#39;One&#39;
+      leaf  = tv.leaf &#39;One a&#39;, &#39;javascript: alert(&quot;One a&quot;)&#39;
       tv.up()
-      tv.leaf 'Two', 'javascript: alert("Two")'
+      tv.leaf &#39;Two&#39;, &#39;javascript: alert(&quot;Two&quot;)&#39;
       
       #### Everything below is verification
 
@@ -1549,7 +1549,7 @@ gwt.add "Tree View", -&gt; @page.test -&gt;
         one.click()
         process.nextTick -&gt;
           if height &gt;= one.clientHeight
-            return gwt.fail('open')
+            return gwt.fail(&#39;open&#39;)
           gwt.pass()
   setTimeout go, 4#000 </pre>
 
@@ -1558,24 +1558,24 @@ gwt.add "Tree View", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc main" vc="tree_view"&gt;
+&lt;div class=&quot;vc main&quot; vc=&quot;tree_view&quot;&gt;
   &lt;ol&gt;
-    &lt;li class="one"&gt;One
+    &lt;li class=&quot;one&quot;&gt;One
       &lt;ol&gt; 
-        &lt;li&gt;&lt;a href=''&gt;One a&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#39;&#39;&gt;One a&lt;/a&gt;&lt;/li&gt;
       &lt;/ol&gt;
     &lt;/li&gt;
-    &lt;li&gt;&lt;a href=''&gt;Two&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#39;&#39;&gt;Two&lt;/a&gt;&lt;/li&gt;
   &lt;/ol&gt;
 &lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @main = @get_vc_for 'main'
+      @main = @get_vc_for &#39;main&#39;
       # do further initialisation requiring async access
       ready(err = null)
 
@@ -1583,29 +1583,29 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Tree View", -&gt; @page.test -&gt;
+gwt.add &quot;Tree View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-         "VC_-_Separation_of_Concerns/Tree_View/"+
-         "HTML_View"    
-    vc = require 'vc'
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+         &quot;VC_-_Separation_of_Concerns/Tree_View/&quot;+
+         &quot;HTML_View&quot;    
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, body) -&gt;
       main = body.main
 
       process.nextTick -&gt;
-        one = main.child('one')
-        chk = one.getElementsByTagName('input')[0]
+        one = main.child(&#39;one&#39;)
+        chk = one.getElementsByTagName(&#39;input&#39;)[0]
         height = one.clientHeight
         chk.click()
         process.nextTick -&gt;
           if height &gt;= one.clientHeight
-            return gwt.fail('open')
+            return gwt.fail(&#39;open&#39;)
           gwt.pass()
   setTimeout go, 4#000</pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="messages"><a href="javascript:usdlc.edit_source({value:'messages.coffee',path:'../roaster/client/vc/messages.coffee',category:'vc'})">messages.coffee</a> </span><span class="window_manager"><a href="javascript:usdlc.edit_source({value:'window_manager.coffee',path:'../roaster/client/vc/window_manager.coffee',category:'vc'})">window_manager.coffee</a> </span></div>
 
@@ -1616,22 +1616,22 @@ gwt.add "Tree View", -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "HTML Editor", -&gt; @page.test -&gt;
+gwt.add &quot;HTML Editor&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
-    vc document.body, vc: 'html_editor',
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;html_editor&#39;,
     (err, html_editor) -&gt;
       
       #### Everything below is verification
 
       ed = html_editor.ed
-      ed.setData "The rain in spain"
+      ed.setData &quot;The rain in spain&quot;
       process.nextTick -&gt;
         contents = ed.getData()
-        if contents.indexOf("The rain in spain") is -1
-          return gwt.fail('Contents incorrect')
+        if contents.indexOf(&quot;The rain in spain&quot;) is -1
+          return gwt.fail(&#39;Contents incorrect&#39;)
         gwt.pass()
         
   setTimeout go, 4#000
@@ -1643,15 +1643,15 @@ gwt.add "HTML Editor", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc editor" vc="html_editor"&gt;&lt;/div&gt;</pre>
+&lt;div class=&quot;vc editor&quot; vc=&quot;html_editor&quot;&gt;&lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @editor = @get_vc_for 'editor'
+      @editor = @get_vc_for &#39;editor&#39;
       # do further initialisation requiring async access
       ready(err = null)
 
@@ -1659,23 +1659,23 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "HTML Editor View", -&gt; @page.test -&gt;
+gwt.add &quot;HTML Editor View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-        "VC_-_Separation_of_Concerns/HTML_Editor_View/"+
-        "HTML_View"
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+        &quot;VC_-_Separation_of_Concerns/HTML_Editor_View/&quot;+
+        &quot;HTML_View&quot;
 
-    vc = require 'vc'
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, body) -&gt;
       return gwt.fail(err) if err
-      ed = body.get_vc_for('editor').ed
-      ed.setData "The rain in spain"
+      ed = body.get_vc_for(&#39;editor&#39;).ed
+      ed.setData &quot;The rain in spain&quot;
       process.nextTick -&gt;
         contents = ed.getData()
-        if contents.indexOf("The rain in spain") is -1
-          return gwt.fail('Contents incorrect')
+        if contents.indexOf(&quot;The rain in spain&quot;) is -1
+          return gwt.fail(&#39;Contents incorrect&#39;)
         gwt.pass()
   setTimeout go, 4#000</pre>
 
@@ -1688,20 +1688,20 @@ gwt.add "HTML Editor View", -&gt; @page.test -&gt;
 <h4>Code View</h4>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Code Editor", -&gt; @page.test -&gt;
+gwt.add &quot;Code Editor&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    vc = require 'vc'
-    vc document.body, vc: 'code_editor', (err, ed) -&gt;
-      ed.load( "test.coffee", "if true then live_a_little()")
+    vc = require &#39;vc&#39;
+    vc document.body, vc: &#39;code_editor&#39;, (err, ed) -&gt;
+      ed.load( &quot;test.coffee&quot;, &quot;if true then live_a_little()&quot;)
       
       #### Everything below is verification
 
       process.nextTick -&gt;
         contents = ed.editor.getValue()
-        if contents.indexOf("live_a_little") is -1
-          return gwt.fail('Contents incorrect')
+        if contents.indexOf(&quot;live_a_little&quot;) is -1
+          return gwt.fail(&#39;Contents incorrect&#39;)
         gwt.pass()
   setTimeout go, 4#000
  </pre>
@@ -1713,15 +1713,15 @@ gwt.add "Code Editor", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;div class="vc editor" vc="code_editor"&gt;&lt;/div&gt;</pre>
+&lt;div class=&quot;vc editor&quot; vc=&quot;code_editor&quot;&gt;&lt;/div&gt;</pre>
 
 <pre title="coffee" type="coffee">
 try
-  Integrant = require 'vc/Integrant'
+  Integrant = require &#39;vc/Integrant&#39;
 
   class Body extends Integrant
     init: (ready) -&gt;
-      @editor = @get_vc_for 'editor'
+      @editor = @get_vc_for &#39;editor&#39;
       # do further initialisation requiring async access
       ready(err = null)
 
@@ -1729,27 +1729,27 @@ try
 catch</pre>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "HTML Editor View", -&gt; @page.test -&gt;
+gwt.add &quot;HTML Editor View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    name = "/gen/usdlc2/Roaster_Client_Support/"+
-        "VC_-_Separation_of_Concerns/Code_Editor_View/"+
-        "HTML_View"
+    name = &quot;/gen/usdlc2/Roaster_Client_Support/&quot;+
+        &quot;VC_-_Separation_of_Concerns/Code_Editor_View/&quot;+
+        &quot;HTML_View&quot;
 
-    vc = require 'vc'
+    vc = require &#39;vc&#39;
     vc document.body, vc: name, (err, body) -&gt;
       return gwt.fail(err) if err
-      ed = body.get_vc_for('editor')
-      ed.load( "test.js", go.toString())
+      ed = body.get_vc_for(&#39;editor&#39;)
+      ed.load( &quot;test.js&quot;, go.toString())
       process.nextTick -&gt;
         contents = ed.editor.getValue()
-        if contents.indexOf("implement") is -1
-          return gwt.fail('Contents incorrect')
+        if contents.indexOf(&quot;implement&quot;) is -1
+          return gwt.fail(&#39;Contents incorrect&#39;)
         gwt.pass()
   setTimeout go, 4#000</pre>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><span class="code_editor"><a href="javascript:usdlc.edit_source({value:'code_editor.less',path:'../roaster/client/vc/code_editor.less',category:'vc'})">code_editor.less</a> </span><span class="html_editor"><a href="javascript:usdlc.edit_source({value:'html_editor.coffee',path:'../roaster/client/vc/html_editor.coffee',category:'vc'})">html_editor.coffee</a> </span><span class="open"><a href="javascript:usdlc.edit_source({value:'open.coffee',path:'../roaster/client/vc/html_editor/open.coffee',category:'html_editor'})">open.coffee</a> </span><span class="file"><a href="javascript:usdlc.edit_source({value:'file.coffee',path:'../roaster/client/vc/html_editor/file.coffee',category:'html_editor'})">file.coffee</a> </span></div>
 
@@ -1769,19 +1769,19 @@ gwt.add "HTML Editor View", -&gt; @page.test -&gt;
 <p>This component wraps the GPL version of DHTMLX scheduler.</p>
 
 <pre title="gwt.coffee" type="gwt.coffee">
-gwt.open_page "test/index.html"
+gwt.open_page &quot;test/index.html&quot;
 
-gwt.add "Scheduler View", -&gt; @page.test -&gt;
+gwt.add &quot;Scheduler View&quot;, -&gt; @page.test -&gt;
   go = -&gt;
-    picture = vc:'dhtmlx/scheduler', options:{}
+    picture = vc:&#39;dhtmlx/scheduler&#39;, options:{}
 
-    vc = require 'vc'
+    vc = require &#39;vc&#39;
     vc picture, document.body, (err, schd) -&gt;
       return gwt.fail(err) if err
       process.nextTick -&gt;
   setTimeout go, 4#000</pre>
 
-<div class="metadata Ref"> </div>
+<div class="metadata Ref">&nbsp;</div>
 </body>
 <link href="document.css" rel="stylesheet" type="text/css" />
 <link href="document.css" rel="stylesheet" type="text/css" /><br />
