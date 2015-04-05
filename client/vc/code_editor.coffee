@@ -13,14 +13,18 @@ class CodeEditorView extends Integrant
       @context_menu.prepare(@child('menu_icon'))
       ready()
       
-  load: (@filename, source) ->
+  load: (@filename, @model) ->
     meta = @mode.from_filename(@filename)
     lint = meta.mode in ['javascript', 'coffeescript']
     @editor.setOption 'lint', lint
     @editor.setOption 'mode', meta.mode
     CodeMirror.autoLoadMode(@editor, meta.mode)
     @ext = meta.ext
-    @editor.setValue source
+    @model.read (source) => @editor.setValue source
+    save = => @model.save @vc.editor.getValue()
+    @vc.editor.on 'blur',   save
+    @vc.editor.on 'change', save
+
     
   contents: -> @editor.getValue()
    

@@ -20,7 +20,7 @@ files =
       fs.stat full_path, (err, stat) ->
         return find_one(bases) if err
         if not stat.isDirectory()
-          return found(full_path) 
+          return found(full_path)
         fs.readdir full_path, (err, files) ->
           for file in files when /^index\./.test(file)
             return found(path.join(full_path, file))

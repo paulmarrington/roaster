@@ -1,19 +1,17 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL license
-roaster = require 'roaster'; file = require 'client/file'
+File = require 'client/model/File'
 
 class File
   load: (@file_name) ->
-    @file.read @file_name, (err, data) =>
-      roaster.message "Flash: New Document" if err
+    @file = new File(@file_name)
+    @file.on 'error', =>
+      @vc.ed.setData ''
+      message "Flash: New Document"
+    @file.read (data) => @vc.ed.setData data
     
   prepare: (@ed) ->
-    @ed.on 'blur', save = => @save()
-    @ed.on 'change', => file.on_change '*', save
-    
-  save: (done = ->) =>
-    content = @ed.getData()
-    file.write @file_name, content, (err, saved) ->
-      return roaster.message('Error: '+err) if err
-      roaster.message('Pass: Saved') if saved
+    save = => @file.save @vc.ed.getData()
+    @vc.ed.on 'blur',   save
+    @vc.ed.on 'change', save
     
 module.exports = File

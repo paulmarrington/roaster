@@ -1,18 +1,15 @@
 # Copyright (C) 2015 paul@marrington.net, see /GPL for license
 
 class Storage
-  constructor: (@name, @key, defaults={}) ->
+  constructor: (@name, @key, @opts) ->
     return if not @name
-    @key = "#{@name}__#{@key}"
+    @key = "#{@name.replace(/[\.\/]/g, '_')}__#{@key}"
     @value = localStorage[@key]
     try @value = JSON.parse(@value)
-    catch then @value = defaults
+    catch then @value = opts.default ? {}
       
-  save: (value...) ->
+  save: ->
     return if not @name
-    switch value.length
-      when 0 then value = @value
-      when 1 then value = value[0]
-    localStorage[@key] = JSON.stringify @value = value
+    localStorage[@key] = JSON.stringify @value
 
 module.exports = Storage

@@ -12,9 +12,6 @@ class Open
     in_autocomplete = allow_autocomplete = false
 
     @vc.editor.on 'change', (cm, change) =>
-      @vc.emit "change", [
-        change.from.line, change.from.ch,
-        change.to.line,   change.to.ch,   change.text]
       return if in_autocomplete
       # trigger auto-complete list on typing
       return if @vc.editor.somethingSelected()
@@ -23,7 +20,7 @@ class Open
       if cursor.ch and allow_autocomplete
         if line[cursor.ch - 1].match(/\w/)
           clearTimeout @save_timer
-          in_autocomplete = true
+          in_autocompleten = true
           CodeMirror.showHint(cm)
           cm.on 'endCompletion', =>
             in_autocomplete = false
@@ -35,8 +32,6 @@ class Open
       char_code = event.which ? event.keyCode
       ch = String.fromCharCode(char_code)
       allow_autocomplete = true if ch.match(/\w/)
-
-    @vc.editor.on 'blur', => @vc.emit 'blur'
         
   options: ->
     return @_options if @_options

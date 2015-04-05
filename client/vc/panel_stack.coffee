@@ -15,7 +15,7 @@ getTD = (tr) ->
 
 class PanelStack extends Integrant
   init: ->
-    @storage = new Storage(@opts.name, @opts.vc, [])
+    @storage = new Storage(@opts.name, @opts.vc, default:[])
     for lower, index in @list('resizable')
       upper = lower.previousSibling
       while upper?.nodeName isnt 'TR'
@@ -30,8 +30,7 @@ class PanelStack extends Integrant
         lower.style.height = sizes[1]
       do (index) =>
         resize2 { handle, upper, lower }, (args...) =>
-          @storage.value[index] = args
-          @storage.save()
+          @storage.save @storage.value[index] = args
     
   find_template_parent: (template) ->
     st = super(template)

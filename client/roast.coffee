@@ -3,6 +3,7 @@ window.roaster ?=
   message: (msg...) -> console?.log(msg.join('\n'))
   head:    document.getElementsByTagName('head')[0]
   opts:    {}
+window.message = (msg...) -> roaster.message(msg...)
 
 parse_require_name = (name) ->
   name = '/' + name if name[0] isnt '/'
