@@ -8,6 +8,8 @@ window.bind$ = (obj, key, target) ->
 
 pkg_dir = "/client/packages"
 
+window.global = {}
+
 window.roaster =
   context: {}
   # run code sequentially once roaster is ready
@@ -121,7 +123,7 @@ window.roaster =
     platform: 'browser'
     env: {}
     
-  global: {}
+  global: window.global
 
   cache: {}
   loading: {}

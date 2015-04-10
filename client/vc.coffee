@@ -3,7 +3,7 @@ sequential = require 'Sequential'
 vc_cache = {}
 
 module.exports = (container, opt_list..., ready) ->
-  container.classList.add 'invisible'
+  #container.classList.add 'invisible'
   opts = {}  # flatten opts and add DOM attributes to opts
   opts[k] = v for k, v of opt for opt in opt_list
   opts[ca.name] = ca.value for ca in container.attributes
@@ -40,34 +40,34 @@ module.exports = (container, opt_list..., ready) ->
     component_initialisers = (done) ->
       sequential.actions vc.initialisers, done
     ############
-      
+    
     inner_integrants -> instance_init ->
       component_initialisers ->
         container.classList.remove 'invisible'
         ready(null, vc)
     return true
-  
+
   return if activate()
   # come here if vc not loaded from server
   base = "#{base}#{type}"
   require.css "#{base}.css"
   vc_cache[type] = require base[1..-1]
-  require.static "#{base}.html", (error, html) ->
-    (div = empty_div.cloneNode()).innerHTML = html
-    
-    templates = div.getElementsByClassName('templates')
-    if templates.length
-      vc_cache[type]::templates = templates[0]
-      templates[0].parentNode.removeChild templates[0]
-    else
-      vc_cache[type]::templates = div
-      
-    if (children = div.children).length is 1
-      if (child = children[0]).classList.contains(type)
-        div = child
-    div.classList.add(type)
-    vc_cache[type]::view_node = div
-    
-    activate()
+  html = require.resource "#{base}.html"
+  (div = empty_div.cloneNode()).innerHTML = html
+
+  templates = div.getElementsByClassName('templates')
+  if templates.length
+    vc_cache[type]::templates = templates[0]
+    templates[0].parentNode.removeChild templates[0]
+  else
+    vc_cache[type]::templates = div
+
+  if (children = div.children).length is 1
+    if (child = children[0]).classList.contains(type)
+      div = child
+  div.classList.add(type)
+  vc_cache[type]::view_node = div
+
+  activate()
     
 empty_div = document.createElement("div")

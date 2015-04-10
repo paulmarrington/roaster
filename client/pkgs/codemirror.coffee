@@ -19,8 +19,8 @@ module.exports = (loaded) ->
         "\.node\.js|merge\.js)"
       require.css addon 'css'
       console_saver = window.console
-      require.script addon('js'), ->
-        window.console = console_saver # 'cause tern replaces it
-        require.script "#{base}/keymap.js.concat", ->
-          require.css "#{base}/theme.css.concat"
-          loaded()
+      require.code addon('js')
+      window.console = console_saver # 'cause tern replaces it
+      require.code "#{base}/keymap.js.concat"
+      require.css "#{base}/theme.css.concat"
+      loaded()

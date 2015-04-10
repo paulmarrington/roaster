@@ -3,7 +3,7 @@
 class Storage
   constructor: (@name, @key, @opts) ->
     return if not @name
-    @key = "#{@name.replace(/[\.\/]/g, '_')}__#{@key}"
+    @key = "#{@name.replace(/[\.\/]+/g, '_')}__#{@key}"
     @value = localStorage[@key]
     try @value = JSON.parse(@value)
     catch then @value = opts.default ? {}

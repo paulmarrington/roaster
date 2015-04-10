@@ -2,7 +2,7 @@
 events = require 'events'; Storage = require "Storage"
 
 class Resource extends events.EventEmitter
-  constructor: (@file_name, url, type="resource") ->
+  constructor: (@file_name, type="resource") ->
     @storage = new Storage @file_name, type
     @value = @storage.value
     @value.url = @file_name
@@ -11,7 +11,7 @@ class Resource extends events.EventEmitter
     if @value.original
       @server_newer (newer) -> @load_from_server ->
         message 'Warn: Update - Refresh to update resources'
-        read @value.original # pronounce as 'red'
+      read @value.original # pronounce as 'red'
     else
       @load_from_server read
       

@@ -14,11 +14,15 @@ class Respond
       'Access-Control-Allow-Origin',
       @exchange.environment.cors_whitelist.join ' ')
     @exchange.response.setHeader(
-      'Access-Control-Allow-Headers', 'Content-Type')
+      'Access-Control-Allow-Headers',
+      @exchange.request.headers['Access-Control-Request-Headers'] ?
+      "Content-Type pragma")
     @exchange.response.setHeader(
       'Access-Control-Allow-Credentials', 'true')
     @exchange.response.setHeader(
-      'Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS')
+      'Access-Control-Allow-Methods',
+      @exchange.request.headers['Access-Control-Request-Method'] ?
+      'GET,PUT,POST,HEADER')
   # by default send it as static content - browser caches forever
   static_file: (file_path) ->
     @exchange.request.filename = file_path if file_path
@@ -32,8 +36,9 @@ class Respond
       # gzip name, (error, zipped-name) =>
       #   @exchange.response.setHeader 'Content-Encoding', 'gzip'
       #   @set_mime_type name
-      sender = send @exchange.request, path.resolve(name), maxAge:
-        @exchange.environment.maximum_browser_cache_age
+      sender = send @exchange.request, path.resolve(name),
+        maxAge: @exchange.environment.maximum_browser_cache_age,
+        lastModified: true
       sender.req.res = @exchange.response # send bug
       sender.on('end', next).on('error', next)
       sender.pipe(@exchange.response)

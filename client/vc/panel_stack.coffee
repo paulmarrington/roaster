@@ -42,4 +42,4 @@ class PanelStack extends Integrant
       parent.appendChild tbody
     return tbody
     
-module.exports.client = PanelStack
+module.exports = PanelStack

@@ -1,0 +1,159 @@
+<!DOCTYPE HTML>
+<!-- Copyright (C) 2014-5 paul@marrington.net, see /GPL for license -->
+<html>
+<head>
+  <script>
+    // one global to rule them all
+    window.roaster = { opts: {}, cache: {} }
+    
+    // temporary messaging until ui loads
+    window.message = function(msg) {
+      if (console) console.log(msg);
+      message.messages.push(msg);
+    };
+    // so the UI can catch up on early messages
+    window.message.messages = []
+    
+    // node-like require must be synchronous
+    window.require = function(name) {
+      if (require.cache[name]) return require.cache[name];
+      
+      var url = name;
+      if (url[0] !== '/') url = '/' + url;
+      url += (url.indexOf('.') === -1) ? ".require" : ".client";
+      require.code(url);
+      return require.cache[name] ||
+             require.cache[url]  ||
+             require.cache[name.split('/').pop()];
+    };
+    require.cache = roaster.cache;
+    
+    // head is allways async - and returns last modified date
+    require.head = function(url, on_load) {
+      require.server({url: url, type: 'HEAD'}, on_load);
+    };
+    // server is async and loads from upstream service
+    require.server = function(opts, on_load) {
+      var server = require.server.prepare(opts, true);
+      server.request.onload = function() {
+        on_load(server.response());
+      };
+      server.request.onerror = function(err) {
+        on_load(null, err);
+      }
+      server.request.send();
+    };
+    // sync server is used for resource
+    require.server.sync = function(opts) {
+      var server = require.server.prepare(opts, false);
+      server.request.send();
+      return server.response();
+    };
+    // internal: prepare for server calls (async or sync)
+    require.server.prepare = function(opts, async) {
+      var server = {opts: opts};
+      if (opts.url.indexOf('.') === -1) opts.url += '.script';
+      server.request = new XMLHttpRequest();
+      server.request.open(opts.type || 'GET', opts.url, async);
+      if (opts.no_cache)
+        server.request.setRequestHeader('pragma', 'no-cache');
+      // prepare information returned from the server
+      server.response = function() {
+        if (server.request.status !== 200) return null;
+        var lm = server.request.getResponseHeader("Last-Modified");
+        return {
+          last_modified: Date.parse(lm),
+          original:      server.request.responseText,
+          url:           opts.url,
+          status:        server.request.status
+        }
+      };
+      return server;
+    };
+    // used when server data maps to DOM elements (script, css)
+    require.element = function(type, contents) {
+      var element = document.createElement(type);
+      try {
+        element.appendChild(document.createTextNode(contents));
+      } catch (e) {
+        element.text = contents;
+      }
+      document.head.appendChild(element);
+    };
+    // resource in javascript - telling roaster it is for client
+    require.code = function(url) {
+      var code = require.resource(url+'?domain=client');
+      require.element('script', code+"\n//# sourceURL="+url);
+    };
+    // resource in javascript - telling roaster it is for client
+    require.script = function(url) {
+      var code = require.resource(url+'?domain=client,library');
+      require.element('script', code+"\n//# sourceURL="+url);
+    };
+    // key used by localStorage for saving service data
+    require.key = function(url, type) {
+      return type+'__'+url.replace(/[\.\/]+/g, '_');
+    }
+    // retrieve cached data from localStorage
+    require.local = function(url, type) {
+      var key = require.key(url, type);
+      var response = localStorage[key]
+      try { response = JSON.parse(response); }
+      catch(e) { response = {last_modified: 0, url: url}; }
+      return response;
+    };
+    // save updated service data in localStorage
+    require.local.store = function(response, type) {
+      if (response.status !== 200)
+        return message("Error: Resource Missing - "+response.url);
+      key = require.key(response.url, type);
+      localStorage[key] = JSON.stringify(response);
+    }
+    // retrieve dynamic data - service source takes preference
+    require.data = function(url, on_load) {
+      var opts = {url: url, no_cache: true};
+      require.server(opts, function(response) {
+        if (response) {
+          require.local.store(response, 'data');
+        } else {
+          response = require.local(url, 'data');
+        }
+        on_load(response.original, response.last_modified);
+      });
+    };
+    // retrieve static resource - localStorage takes preference
+    require.resource = function(url) {
+      var value = {}
+      if (require.caching) value = require.local(url, 'resource');
+      if (value.original) {
+        check_newest = function() {
+          require.head(url, function(response, err) {
+            if (!response) {
+              return message("Error: Lost Resource - "+url);
+            }
+            if (!response.last_modified || 
+            (response.last_modified > value.last_modified)) {
+              require.server({url:url}, function(response) {
+                if (!response)
+                  return message("Error: No Resource - "+url)
+                require.local.store(response, 'resource');
+                message('Warn: Update - Refresh to update resources');
+                console.log("\n# Restart");
+              });
+            }
+          });
+        }; setTimeout(check_newest, 1000);
+        return value.original;
+      } else {
+        var response = require.server.sync({url:url});
+        require.local.store(response, 'resource');
+        return response.original;
+      }
+    };
+    require.caching = true
+    // At last we have enough to move into the real system
+    require("bootstrap");
+  </script>
+</head>
+<body></body>
+</html>
