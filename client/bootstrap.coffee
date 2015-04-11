@@ -58,6 +58,6 @@ require.dependency = (packages, libraries..., ready) ->
       if require.file_type(lib) is 'css' then require.css(lib)
       else require.lib(lib)
 
-require.css '/client/style.less'
+require.css '/client/common.less'
 # /client/app.coffee is specific to each server application
-require.code 'app.coffee'
+require.code roaster.opts.app ? 'app.coffee'

@@ -1,11 +1,13 @@
-# Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
+# Copyright (C) 2013,15 paul@marrington.net, see uSDLC2/GPL for license
 path = require 'path'; fs = require 'fs'; dirs = require 'dirs'
 mkdirs = require('dirs').mkdirs; files = require 'files'
 
-# curl 'http://localhost:9009/release/new-project.coffee?
+# curl 'http://localhost:9009/new-app/create.coffee?
 # path=..&name=test&port=9020'
 module.exports = (exchange) ->
   config = exchange.request.url.query
+  config.path ?= '..'
+  config.port = 9009
   config.error = false
 
   project_path = path.join config.path, config.name
@@ -18,7 +20,7 @@ module.exports = (exchange) ->
     config.error = true
     done error: msg.toString()
 
-  if not config.path or not config.name
+  if not config.name
     failure 'path=.. name=MyProjectName port=9009'
 
   make_project_dirs = (next) ->
@@ -31,14 +33,14 @@ module.exports = (exchange) ->
         make_next_project_dir()
 
   copy_files = (next) ->
-    files = ['go', 'go.bat', 'debug', 'debug.bat',
-             'index.html', 'app.coffee',
+    files = ['go', 'go.bat', 'index.html',
              'boot/project-init.coffee',
              'config/base.coffee', 'config/debug.coffee',
-             'config/production.coffee', 'client/favicon.ico']
+             'config/production.coffee',
+             'client/favicon.ico']
     do copy_next_file = (next) ->
       return next() if files.length is 0
-      source = dirs.node 'release', file = files.pop()
+      source = dirs.node 'new-app', file = files.pop()
       target = path.join project_path, file
       fs.exists target, (exists) ->
         if exists
@@ -49,13 +51,8 @@ module.exports = (exchange) ->
             copy_next_file()
 
   create_roaster_scripts = (next) ->
-    count = 3; ender = -> next() if not --count
-    fs.writeFile path.join(project_path, 'ext/roaster'),
-        "#!/bin/bash\n#{dirs.node 'go'} $@\n", ender
-    fs.writeFile path.join(project_path, 'ext/roaster.bat'),
-        "#{dirs.node 'go.bat'} %*\n", ender
-    fs.chmod path.join(project_path, 'go'), 0o700, ender
-
+    return next()
+  
   set_server_port = (next) ->
     return if config.error
     if config.port
