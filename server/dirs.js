@@ -105,7 +105,7 @@ var normalise = function(full_path) {
         full_path = full_path.replace(new RegExp("\\"+path.sep,"g"), "/");
     }
     return full_path;
-}
+};
 
 // split and return [base,relative] based on known bases
 var split = function(full_path) {
