@@ -38,7 +38,8 @@ module.exports = (exchange) ->
        'boot/project-init.coffee',
        'config/base.coffee', 'config/debug.coffee',
        'config/production.coffee',
-       'client/app.coffee']
+       'client/app.coffee', 'favicon.ico',
+       'usdlc2/index.html', 'usdlc2/usdlc2.css']
     do copy_next_file = ->
       return next() if project_files.length is 0
       file = project_files.pop()
@@ -53,7 +54,7 @@ module.exports = (exchange) ->
             copy_next_file()
 
   create_roaster_scripts = (next) ->
-    next()
+    fs.chmod path.join(project_path, 'go.sh'), 0o700, next
   
   set_server_port = (next) ->
     return next() if config.error
