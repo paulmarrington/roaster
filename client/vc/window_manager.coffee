@@ -3,7 +3,7 @@ Integrant = require 'vc/Integrant'
 
 default_specs =
   location: 0, menubar: 0, status: 0, titlebar: 0, toolbar: 0
-  
+
 set_specs = (list...) ->
   res = []
   for spec in list when spec
@@ -13,7 +13,7 @@ set_specs = (list...) ->
       res.push "#{k}=#{v}" for k, v of spec
   return res.join ','
 
-default_specs = () ->
+default_size_specs = () ->
   width = 600; left = 0; window_id++
   if width > window.screen.availWidth
     width = window.screen.availWidth
@@ -21,7 +21,6 @@ default_specs = () ->
   el = window.screenLeft
   ww = window.outerWidth
   er = window.screen.availWidth - el - ww
-  console.log el,ww,er
   if width < er
     left = el + ww
   else  if el < er
@@ -40,16 +39,16 @@ window_id = 0
 
 saved_specs = (name) ->
   specs = localStorage.getItem "Window:#{name}"
-  return specs ? default_specs()
+  return specs ? default_size_specs()
 
 store_specs = (name, win) ->
   localStorage.setItem "Window:#{name}",
   "left=#{win.screenLeft},top=#{win.screenTop},"+
   "width=#{win.outerWidth},height=#{win.innerHeight}"
-      
+
 class WindowManager extends Integrant
   parse_host: -> @html_initialisers()
-  
+
   init: ->
     @tabs = @get_vc_for 'tabs'
     @tabs.on 'selected', (tab) =>
@@ -57,14 +56,14 @@ class WindowManager extends Integrant
       @emit 'selected', @selected = tab.panel
     @tabs.on 'deselected', (tab) =>
       @emit 'deselected', tab.panel
-      
+
     @tabs.reset_selection()
-    
+
   add: (name, attributes, ready) ->
     tab = @tabs.add name, attributes.tab, ready
     specs = set_specs(
       default_specs, saved_specs(name), attributes.specs)
-    tab.window = win   = window.open "", name, specs
+    tab.window = win = window.open "", name, specs
     tab.panel  = panel = win.document.body
     @setAttributes panel, attributes.panel if attributes.panel
     window.addEventListener 'beforeunload', -> win.close()

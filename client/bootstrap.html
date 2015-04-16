@@ -146,6 +146,9 @@
         return value.original;
       } else {
         var response = require.server.sync({url:url});
+        if (!response) {
+          return message('Error: No resource '+url);
+        }
         require.local.store(response, 'resource');
         return response.original;
       }
