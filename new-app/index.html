@@ -1,12 +1,58 @@
 <html>
 <head>
-<!-- # Copyright (C) 2013-5s paul@marrington.net, see uSDLC2/GPL for license -->
   <title>New Roaster App</title>
-  <script type="text/javascript" src="/client/roaster.coffee?domain=client"></script>
+  <script>
+    default_specs =
+      {location: 0, menubar: 0, status: 0, titlebar: 0, toolbar: 0};
+      
+    set_specs = (list...) ->
+      res = []
+      for spec in list when spec
+        if typeof spec is 'string'
+          res.push spec
+        else
+          res.push "#{k}=#{v}" for k, v of spec
+      return res.join ','
+
+    default_size_specs = function() {
+      var width = 600, left = 0
+      if (width > window.screen.availWidth)
+        width = window.screen.availWidth
+      # | el ww er |
+      var el = window.screenLeft
+      var ww = window.outerWidth
+      var er = window.screen.availWidth - el - ww
+      if width < er
+        left = el + ww
+      else  if el < er
+        left = window.screen.availWidth - width
+      else if width <= el
+        left = el - width
+
+      top = window.screenTop
+      if (height = window.screen.availHeight) > 1000
+        height /= 2
+
+      return {left:left,top:top,width:width,height:height}
+    }
+
+    saved_specs = function(name) {
+      specs = localStorage.getItem "Window::usdlc2"
+      return specs || default_size_specs()
+    }
+
+    store_specs = function(name, win) {
+      localStorage.setItem "Window::usdlc2",
+      "left=#{win.screenLeft},top=#{win.screenTop},"+
+      "width=#{win.outerWidth},height=#{win.innerHeight}"
+    }
+    
+    specs = set_specs(default_specs saved_specs());
+    window.open("/client/bootstrap.html", "roaster", specs);
+    
+    window.location.href = 'usdlc2/index.html'
+  </script>
 </head>
 <body>
-  <h1>Congratulations</h1>
-  You have successfully installed a new roaster project.
-  Please replace this with your landing page.
 </body>
 <html>

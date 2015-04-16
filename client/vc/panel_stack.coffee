@@ -13,7 +13,7 @@ getTD = (tr) ->
     break if not (td = td.nextSibling)
   return td
 
-class PanelStack extends Integrant
+module.exports = class PanelStack extends Integrant
   init: ->
     @storage = new Storage(@opts.name, @opts.vc, default:[])
     for lower, index in @list('resizable')
@@ -31,15 +31,3 @@ class PanelStack extends Integrant
       do (index) =>
         resize2 { handle, upper, lower }, (args...) =>
           @storage.save @storage.value[index] = args
-    
-  find_template_parent: (template) ->
-    st = super(template)
-    parent = super(template)
-    if (tbody = parent.getElementsByTagName('tbody')).length
-      tbody = tbody[0]
-    else
-      tbody = document.createElement('tbody')
-      parent.appendChild tbody
-    return tbody
-    
-module.exports = PanelStack
