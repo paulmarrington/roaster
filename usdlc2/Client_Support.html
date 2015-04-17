@@ -661,8 +661,10 @@ gwt.add "VC", -&gt; @page.test -&gt;
 	<li><strong>style="width:30%"</strong> -- Control the width of panels in pixels, percentage or ems.</li>
 	<li><strong>style="min-width: 200px"</strong> -- Ensure that a panel does not become too narrow.</li>
 	<li><strong>style="max-width: 700px"</strong> -- Stop a panel hogging the width. If the content word wraps, this will happen at that width.</li>
-	<li><strong>overflow="hide"</strong> -- If all the panels with fixed or minimum widths add up to wider than the window you will normally get a horizontal scroll bar. Panels with this attribute will be hidden instead - in a right to left order. The panel will emit "hide" and "show" events so that the program can react.</li>
+	<li><strong>class="hide-on-overflow"</strong> -- If all the panels with fixed or minimum widths add up to wider than the window you will normally get a horizontal scroll bar. Panels with this attribute will be hidden instead - in a right to left order. The panel will emit "hide" and "show" events so that the program can react.</li>
 </ul>
+
+<div class="metadata Ref">Ref: <span class="resize2"><a href="javascript:usdlc.edit_source({value:'resize2.coffee',path:'../roaster/client/resize2.coffee',category:'client'})">resize2.coffee</a> </span><span class="dom"><a href="javascript:usdlc.edit_source({value:'dom.coffee',path:'../roaster/client/dom.coffee',category:'client'})">dom.coffee</a> </span></div>
 
 <h4>Code View</h4>
 
@@ -693,11 +695,15 @@ gwt.add "Panel Abreast", -&gt; @page.test -&gt;
 <h4>HTML View</h4>
 
 <pre title="html" type="html">
-&lt;table class="vc panels" vc="panel_abreast"&gt;&lt;tr&gt;
+&lt;table class="vc panels" vc="panel_abreast"&gt;
   &lt;td class="active one"
-       style="background-color:red"&gt;One&lt;/div&gt;
-  &lt;td class="two"
-       style="background-color:green"&gt;Two&lt;/div&gt;
+       style="background-color:red;min-width:400px;"&gt;
+       One
+  &lt;/td&gt;
+  &lt;td class="two hide-on-overflow"
+       style="background-color:green;min-width:400px;"&gt;
+       Two
+  &lt;/td&gt;
 &lt;/tr&gt;&lt;/table&gt;</pre>
 
 <pre title="coffee" type="coffee">
@@ -716,6 +722,7 @@ gwt.open_page "client/bootstrap.html"
 
 gwt.add "Panel Switcher", -&gt; @page.test -&gt;
   go = -&gt;
+    require.caching = false
     name = "/gen/usdlc2/Roaster_Client_Support/"+
          "VC_-_Separation_of_Concerns/Panel_Abreast/"+
          "HTML_View"
@@ -723,9 +730,11 @@ gwt.add "Panel Switcher", -&gt; @page.test -&gt;
     vc = require('vc')
     vc document.body, vc: name, (err, body) -&gt;
       gwt.pass()
-  setTimeout go, 4#000</pre>
+  setTimeout go, 4000</pre>
 
-<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span></div>
+<div class="metadata Ref">Ref: <span class="Bridge"><a href="javascript:usdlc.bridge_editor()">Bridge</a> </span><span class="Play"><a href="javascript:usdlc.play()">Play</a> </span><br />
+<span class="panel_abreast"><a href="javascript:usdlc.edit_source({value:'panel_abreast.coffee',path:'../roaster/client/vc/panel_abreast.coffee',category:'vc'})">panel_abreast.coffee</a> </span><span class="panel_stack"><a href="javascript:usdlc.edit_source({value:'panel_stack.coffee',path:'../roaster/client/vc/panel_stack.coffee',category:'vc'})">panel_stack.coffee</a> </span><br />
+<span class="index"><a href="javascript:usdlc.edit_source({value:'index.js',path:'../roaster/server/morph/index.js',category:'morph'})">index.js</a> </span><span class="bootstrap"><a href="javascript:usdlc.edit_source({value:'bootstrap.html',path:'../roaster/client/bootstrap.html',category:'client'})">bootstrap.html</a> </span></div>
 
 <h3>Panel Switcher</h3>
 
