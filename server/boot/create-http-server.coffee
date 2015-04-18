@@ -10,7 +10,6 @@ global.http_processors.push (exchange, next_processor) ->
   files.find exchange.request.url.pathname, (filename) ->
     exchange.request.url.exists = filename
     filename ?= exchange.request.url.pathname
-    sfn=filename;sfn = sfn[-20..-1] if sfn.length > 20
     try
       exchange.request.filename = filename
       # all the set up is done, process the request based
@@ -64,7 +63,7 @@ module.exports = (environment) ->
     exchange.respond = respond(exchange)
     # client wants to know what services are available
     if request.method is 'OPTIONS'
-      response.setHeader 'Allow', 'GET,PUT,DELETE,OPTIONS'
+      response.setHeader 'Allow', 'GET,PUT,DELETE,HEAD,OPTIONS'
       return response.end()
     # addresses can start with /!domains/absolute-path
     if request.url.pathname[1] == '!'

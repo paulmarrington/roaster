@@ -33,9 +33,6 @@ class Respond
     fs.stat name = @exchange.request.filename, (err, stats) =>
       name = dirs.normalise name
       name += '/' if stats?.isDirectory() and name.slice(-1) != '/'
-      # gzip name, (error, zipped-name) =>
-      #   @exchange.response.setHeader 'Content-Encoding', 'gzip'
-      #   @set_mime_type name
       sender = send @exchange.request, path.resolve(name),
         maxAge: @exchange.environment.maximum_browser_cache_age,
         lastModified: true
