@@ -39,14 +39,14 @@ var rmdirs = function(path, next) {
   };
   var _rmdirs = function(path, next) {
     fs.readdir(path, callback(function(err, files) {
-      if (error) return next();
+      if (error) return next(error);
       var delete_one = function() {
         if (files.length === 0) {
           return fs.rmdir(path, callback(next));
         }
         var curPath = path + "/" + files.pop();
         fs.stat(curPath, callback(function(err, stats) {
-          if (error) return next();
+          if (error) return next(error);
           if (stats.isDirectory()) { // recurse
             _rmdirs(curPath, callback(delete_one));
           } else { // delete file
@@ -64,11 +64,10 @@ var rmdirs = function(path, next) {
 var in_directory = function(to, action) {
   var cwd = process.cwd();
   try {
-    process.chdir(to);
+    try { process.chdir(to); } catch(e) {
+      console.log("Error: can't change to "+to);
+      throw e; }
     action();
-  } catch(e) {
-    console.log("Error: can't change to "+to);
-    throw e;
   } finally {
     process.chdir(cwd);
   }

@@ -33,6 +33,7 @@ class Processes
   # Spawn off a separate OS process -
   # next(code) provides return code
   spawn: (@args..., @next) ->
+    @program = @args.shift()
     @_exec(child_process.spawn)
     return @
 
@@ -116,4 +117,4 @@ class Processes
       decoded.push if value then "#{key}=#{value}" else key
     return decoded
 
-module.exports = (program) -> new Processes program
+module.exports = (program) -> new Processes(program)

@@ -132,7 +132,7 @@ class Internet extends events.EventEmitter
         status = @response.statusCode
         if status >= 300 and status < 400
           if not (to = @response.headers["location"])
-            return @request.emit new Error "Bad redirect"
+            return @request.emit 'error', new Error "Bad redirect"
           to = url.resolve address.href, to
           return @send_request method, to
         @emit 'connect', null, @request, @response
