@@ -2,8 +2,8 @@
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 base=$(cd $(dirname "$0"); pwd)
 
-nodeVersion=v0.12.0
-npmVersion=1.4.9
+nodeVersion=v0.12.2
+npmVersion=2.8.4
 
 mkdir "$base/../ext" 2>/dev/null
 cd "$base/../ext"
