@@ -48,6 +48,7 @@ module.exports = (container, opt_list..., ready) ->
     return true
 
   return if activate()
+  
   # come here if vc not loaded from server
   base = "#{base}#{type}"
   require.css "#{base}.css"

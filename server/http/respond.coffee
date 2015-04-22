@@ -10,32 +10,36 @@ clients = {}
 # contents of file is in the body of request as a binary stream
 class Respond
   constructor: (@exchange) ->
+    @exchange.response.setHeader 'Cache-Control', 'public, no-cache'
     @exchange.response.setHeader(
       'Access-Control-Allow-Origin',
       @exchange.environment.cors_whitelist.join ' ')
+    headers = @exchange.request.headers[\
+      'Access-Control-Request-Headers']
+    headers ?= ""; headers += "Content-Type pragma"
     @exchange.response.setHeader(
-      'Access-Control-Allow-Headers',
-      @exchange.request.headers['Access-Control-Request-Headers'] ?
-      "Content-Type pragma")
+      'Access-Control-Allow-Headers', headers)
     @exchange.response.setHeader(
       'Access-Control-Allow-Credentials', 'true')
     @exchange.response.setHeader(
       'Access-Control-Allow-Methods',
-      @exchange.request.headers['Access-Control-Request-Method'] ?
-      'GET,PUT,POST,HEADER')
-  # by default send it as static content - browser caches forever
+      @exchange.request.headers[\
+        'Access-Control-Request-Method'] ?
+        'GET,PUT,POST,HEADER')
+  # by default send it as static content
   static_file: (file_path) ->
     @exchange.request.filename = file_path if file_path
     @exchange.domain = 'client'
     @exchange.reply = (next) => @send_static(next)
     return @
   send_static: (next = ->) ->
-    fs.stat name = @exchange.request.filename, (err, stats) =>
+    filename = @exchange.request.filename
+    fs.stat name = filename, (err, stats) =>
       name = dirs.normalise name
-      name += '/' if stats?.isDirectory() and name.slice(-1) != '/'
-      sender = send @exchange.request, path.resolve(name),
-        maxAge: @exchange.environment.maximum_browser_cache_age,
-        lastModified: true
+      if stats?.isDirectory() and name.slice(-1) != '/'
+        name += '/'
+      sender = send @exchange.request,
+        path.resolve(name), lastModified: true
       sender.req.res = @exchange.response # send bug
       sender.on('end', next).on('error', next)
       sender.pipe(@exchange.response)
@@ -71,7 +75,6 @@ class Respond
     @text data.join('')
   # string representation of data that changes on every request
   text: (text = '') ->
-    @exchange.response.setHeader 'Cache-Control', 'public, no-cache'
     @exchange.response.setHeader 'content-length', text.length
     @exchange.response.end text
   # morph (compile) one language to another (usually javascriot or css)
