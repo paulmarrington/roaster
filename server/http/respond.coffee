@@ -38,8 +38,8 @@ class Respond
       name = dirs.normalise name
       if stats?.isDirectory() and name.slice(-1) != '/'
         name += '/'
-      sender = send @exchange.request,
-        path.resolve(name), lastModified: true
+      full_path = path.resolve(name)
+      sender = send @exchange.request, full_path
       sender.req.res = @exchange.response # send bug
       sender.on('end', next).on('error', next)
       sender.pipe(@exchange.response)
