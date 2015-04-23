@@ -9,15 +9,17 @@ cache = {}
 # local or remote (as in npm or node core source)
 module.exports = (exchange, next, add_driver) ->
   add_driver 'client'
+  exchange.is_module = true
   path_name = exchange.request.url.pathname
   if path_name[0] is '/'
     path_name = path_name[1..-1]
     exchange.request.url.pathname = path_name
   
   done = (module_path) ->
-    dot = module_path.lastIndexOf('.')
-    add_driver module_path.substring(dot + 1) if dot isnt -1
-    exchange.request.filename = cache[path_name] = module_path
+    if (dot = module_path.lastIndexOf('.')) isnt -1
+      add_driver module_path.substring(dot + 1)
+    exchange.request.filename =
+      cache[path_name] = module_path
     next()
   return done(module) if module = cache[path_name]
   
@@ -27,7 +29,8 @@ module.exports = (exchange, next, add_driver) ->
     done require.resolve path.join 'client', module_name
   catch
     try
-      module_path = dirs.normalise(require.resolve(module_name))
+      module_path = require.resolve(module_name)
+      module_path = dirs.normalise(module_path)
       slash = module_path.lastIndexOf('/')
       return done(module_path) if slash isnt -1
       node_library.resolve_built_in module_name,

@@ -35,14 +35,20 @@ require.build_url = (url, args) ->
   return "#{url}#{sep}#{items.join('&')}"
 
 require.json = (url, on_loaded) ->
-  @server url, 'GET', (response, err) ->
+  @server url:url, (err, response) ->
     return on_loaded(err) if err
-    on_loaded null, JSON.parse response.original
+    on_loaded null, JSON.parse response
+
+require.resource = (url) ->
+  return if require.cache[url]
+  require.cache[url] = true
+  return require.server.sync url:url
 
 require.css = (url) ->
   return if require.cache[url]
   require.cache[url] = true
-  require.element('style', require.resource(url))
+  require.server url:url, (err, css) ->
+    require.element('style', css)
 
 # Each package is loaded and called - in sequence
 # The packages themselves can be asynchronous
