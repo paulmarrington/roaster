@@ -3,7 +3,7 @@
 base=$(cd $(dirname "$0"); pwd)
 
 nodeVersion=v0.12.2
-npmVersion=2.8.4
+npmVersion=1.4.9
 
 mkdir "$base/../ext" 2>/dev/null
 cd "$base/../ext"
