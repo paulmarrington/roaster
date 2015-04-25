@@ -11,6 +11,14 @@ class Sax extends Writable
     @in_special = null
     @on 'finish', ->
       @emit('text', @partial) if @partial.length
+      
+  attributes_to_dictionary: (attributes) ->   
+    dict = {}
+    for attribute in attributes
+      [key, value] = attribute.split /\s*=\s*/
+      value ?= "''"
+      dict[key] = value[1..-2]
+    return dict
     
   _write: (data, encoding, next) ->
     data = @partial + data.toString()
