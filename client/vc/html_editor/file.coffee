@@ -10,7 +10,7 @@ class File
     @file.read (data) => @vc.ed.setData data
     
   prepare: (@ed) ->
-    save = => @file.save @vc.ed.getData()
+    save = => @file?.save @vc.ed.getData()
     @vc.ed.on 'blur',   save
     @vc.ed.on 'change', save
     

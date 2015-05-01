@@ -7,12 +7,6 @@ html, body {
   width: 100%;
 }
 
-.fill_parent {
-  position: absolute;
-  top: 0; bottom: 0;
-  left: 0; right: 0;
-}
-
 .float.right {
   float: right;
 }
@@ -27,13 +21,15 @@ html, body {
   transform-origin: @origin;
 }
 
-#fill {
-  .container {
-    position: relative;
+.fill.parent {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  & > table {
     height: 100%;
     width: 100%;
   }
-  .body {
+  & > div {
     position: absolute;
     top: 0; bottom: 0;
     left: 0; right: 0;

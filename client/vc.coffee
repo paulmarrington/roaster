@@ -14,6 +14,7 @@ module.exports = (container, opt_list..., ready) ->
     return false if not (Integrant = vc_cache[type])
     # vc loaded - activate it
     vc = new Integrant()
+    vc.initialisers = [] # so don't need super()
     vc[k] = v for k,v of {type, base, opts}
     if container.attributes.vc
       (vc.host = container).classList.add(type)
@@ -22,17 +23,25 @@ module.exports = (container, opt_list..., ready) ->
       vc.host = vc.view_node.cloneNode(true)
       container.appendChild vc.host
     vc.host.vc = vc
-      
+    
+    needing_fill = [].slice.call vc.host.getElementsByClassName("fill_parent")
+    needing_fill.push(vc.host) if vc.fill_parent ? opts.fill_parent
+    for fill in needing_fill
+      fill.classList.remove("fill_parent")
+      wrapper = relative_div.cloneNode()
+      fill.parentNode.insertBefore(wrapper, fill)
+      wrapper.appendChild(fill)
+
     ############
     inner_integrants = (done) ->
-      vcs = (it for it in vc.host.getElementsByClassName('vc'))
+      vcs = vc.host.getElementsByClassName('vc')
+      correct_parent = (el) ->
+        (vc.get_vc_for(el.parentElement) is vc)
+      vcs = (it for it in vcs when correct_parent(it))
       do process = =>
         return done() if not vcs.length # all processed
-        parent = vc.get_vc_for(el = vcs.shift())
-        return process() if parent isnt vc # sub-sub-vc
-        vc_type = el.getAttribute('vc')
+        vc_type = (el = vcs.shift()).getAttribute('vc')
         module.exports el, opts[vc_type] ? {}, process
-      
     instance_init = (done) ->
       vc.init(done)
       done() if not vc.init.length # synchronous
@@ -68,7 +77,13 @@ module.exports = (container, opt_list..., ready) ->
       div = child
   div.classList.add(type)
   vc_cache[type]::view_node = div
+  
+  has_fill = (el) -> el.classList.contains('fill_parent')
+  if has_fill(div) or has_fill(vc_cache[type]::templates)
+    vc_cache[type]::fill_parent = true
 
   activate()
     
 empty_div = document.createElement("div")
+relative_div = empty_div.cloneNode()
+relative_div.classList.add('fill', 'parent')

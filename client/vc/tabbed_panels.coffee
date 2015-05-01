@@ -1,7 +1,7 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
 Integrant = require 'vc/Integrant'
 
-class TabbedPanels extends Integrant
+module.exports = class TabbedPanels extends Integrant
   parse_host: -> @html_initialisers()
     
   init: ->
@@ -35,5 +35,3 @@ class TabbedPanels extends Integrant
       td = panel.parentNode.parentNode
       [height,td.style.height] = [td.style.height, '0']
       process.nextTick -> td.style.height = height
-      
-module.exports.client = TabbedPanels

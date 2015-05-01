@@ -86,7 +86,7 @@
       require.element('script', code+"\n//# sourceURL=/"+url);
     };
     // At last we have enough to move into the real system
-    require("bootstrap");
+    window.addEventListener("load", function() {require("bootstrap");}, false);
   </script>
 </head>
 <body></body>

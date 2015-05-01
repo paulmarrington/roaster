@@ -1,7 +1,7 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL license
 TabbedPanels = require 'vc/tabbed_panels'
 
-class Drawers extends TabbedPanels
+module.exports = class Drawers extends TabbedPanels
   constructor: ->
     super()
     @shared_host = true
@@ -40,5 +40,3 @@ class Drawers extends TabbedPanels
   hide: ->
     @panels.host.style["max-width"] = '0px'
     @panels.host.style.padding = '0px'
-  
-module.exports.client = Drawers

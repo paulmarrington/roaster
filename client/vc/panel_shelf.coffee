@@ -8,7 +8,7 @@ min_width = (td) ->
   mw = td.offsetWidth if not mw
   return mw
 
-module.exports = class PanelAbreast extends Integrant
+module.exports = class PanelShelf extends Integrant
   init: ->
     if (@overflows = @list('hide-on-overflow')).length
       @window_width = 10000
@@ -31,4 +31,4 @@ module.exports = class PanelAbreast extends Integrant
               abreast_width -= overflow.offsetWidth
               overflow.style.display = 'none'
         
-      dom.resize_event resizer
+      dom.resize_event @resizer

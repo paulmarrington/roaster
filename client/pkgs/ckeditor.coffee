@@ -31,5 +31,6 @@ pkgs =
   code_snippet: "#{ckurl}/codesnippet/releases/"+
     "codesnippet_#{version}.zip|#{plugin_dir}"
 
-module.exports = (loaded) -> 
+module.exports = (loaded) ->
+  window.CKEDITOR_BASEPATH = '/ext/ckeditor/'
   require.dependency pkgs, '/ext/ckeditor/ckeditor.js', loaded

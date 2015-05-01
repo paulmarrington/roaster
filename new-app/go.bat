@@ -1,6 +1,5 @@
-rem Copyright (C) 2013 paul@marrington.net, see uSDLC2/GPL for license
-
+rem Copyright (C) 2013-5 paul@marrington.net, see uSDLC2/GPL for license
 @echo off
-$~d
 cd $~p0
-..\roaster\go %*
+PATH %HOMEPATH%\bin;%PATH%
+bash go.sh %*

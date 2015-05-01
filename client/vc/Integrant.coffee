@@ -3,8 +3,6 @@ events = require 'events'
 vc_builder = require 'vc'
 
 class Integrant extends events.EventEmitter
-  constructor: -> @initialisers = []
-    
   parse_host: -> # parse host contents before processing
   
   html_initialisers: (initialisers = @host, target = @host) ->
@@ -27,8 +25,9 @@ class Integrant extends events.EventEmitter
       return @ if el is @type
       return null if not (el = @child(el))
     host = el
-    host = host.parentNode while host and not host.vc
-    return el.vc ?= host?.vc
+    while not (host.vc or host.classList?.contains('vc'))
+      return null if not (host = host.parentNode)
+    return el.vc ?= host.vc # can be null if not built yet
     
   shared_events: new events.EventEmitter
     

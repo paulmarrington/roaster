@@ -60,9 +60,10 @@ require.packages = (packages..., ready) ->
 require.dependency = (packages, libraries..., ready) ->
   url = require.build_url '/server/http/dependency.coffee', packages
   require.json url, ->
-    for lib in libraries.shift()
+    for lib in libraries
       if require.file_type(lib) is 'css' then require.css(lib)
-      else require.lib(lib)
+      else require.script(lib)
+    ready()
 
 require.css '/client/common.less'
 # /client/app.coffee is specific to each server application

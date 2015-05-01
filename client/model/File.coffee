@@ -1,5 +1,5 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL license
-Resource = require 'Resource'
+Resource = require 'model/Resource'
 
 class File extends Resource
   constructor: (@file_name, url) ->

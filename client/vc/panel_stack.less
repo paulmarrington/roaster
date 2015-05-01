@@ -1,15 +1,13 @@
+// Copyright (C) 2014-15 paul@marrington.net, see /GPL license
+
 @import "../icons/style";
 
 table.panel_stack {
   border-spacing: 0;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
 
   & > tbody > tr > td, & > tr > td {
-    border:  1px outset #888;
-    margin:  1px;
+    //border:  1px outset #888;
+    //margin:  1px;
   }
   
   tr.resizer > td {
@@ -18,6 +16,9 @@ table.panel_stack {
     background-color: #aaa;
     text-align:       center;
     padding:          0;
+    margin-top:       -1px;
+    margin-bottom:    -1px;
+    height:           2px;
     div {
       .center;
       position:       absolute;

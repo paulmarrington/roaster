@@ -1,7 +1,7 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL for license
 Integrant = require 'vc/Integrant'
 
-class TabView extends Integrant
+module.exports = class TabView extends Integrant
   init: ->
     super()
     @prepare(tab) for tab in @host.children
@@ -21,5 +21,3 @@ class TabView extends Integrant
   close: (name) ->
     tab = @child(name)
     tab.parentNode.removeChild(tab)
-    
-module.exports.client = TabView

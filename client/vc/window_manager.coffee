@@ -46,7 +46,7 @@ store_specs = (name, win) ->
   "left=#{win.screenLeft},top=#{win.screenTop},"+
   "width=#{win.outerWidth},height=#{win.innerHeight}"
 
-class WindowManager extends Integrant
+module.exports = class WindowManager extends Integrant
   parse_host: -> @html_initialisers()
 
   init: ->
@@ -76,5 +76,3 @@ class WindowManager extends Integrant
   close: (name) -> @tabs.child(name).window.close()
       
   select: (tab) -> @tabs.select tab
-      
-module.exports.client = WindowManager
