@@ -31,4 +31,4 @@ module.exports = class PanelShelf extends Integrant
               abreast_width -= overflow.offsetWidth
               overflow.style.display = 'none'
         
-      dom.resize_event @resizer
+      dom.resize_event -> resizer()

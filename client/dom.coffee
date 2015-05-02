@@ -27,9 +27,9 @@ module.exports = dom =
         document.removeEventListener "mouseup", mu
         document.removeEventListener "mousemove", mm
         capture?.up(evt)
-      
+        
   throttled_event: (event, element, action, delay = 300) ->
     id = null
     return element.addEventListener event, (args...) ->
       clearTimeout(id);
-      id = setTimeout (-> action.apply(window, args)), delay
+      id = setTimeout (-> action?.apply(element, args)), delay

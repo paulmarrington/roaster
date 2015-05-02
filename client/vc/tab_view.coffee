@@ -9,12 +9,16 @@ module.exports = class TabView extends Integrant
     
   add: (name, attributes, ready) ->
     tab = super name, attributes, ready
-    tab.innerHTML = name
+    if attributes.icon
+      svg = require.resource "/client/icons/#{attributes.icon}.svg"
+      tab.innerHTML = "<div>#{svg}</div>"
+    else
+      tab.innerHTML = name
     @prepare(tab)
     return tab
   
   prepare: (tab) ->
-    if tab.innerHTML.length
+    if 0 < tab.innerHTML.length < 32
       tab.classList.add(tab.innerHTML.replace(/\s+/, '_'))
     tab.onclick = => @select(tab)
   
