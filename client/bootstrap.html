@@ -16,9 +16,7 @@
     
     // node-like require must be synchronous
     window.require = function(name) {
-      if (require.cache[name]) {
-        return require.cache[name];
-      }
+      if (require.cache[name]) return require.cache[name];
       var url = name;
       if (url[0] === '.' && url[1] === '/') {
         url = url.slice(2); // relative
@@ -35,11 +33,24 @@
     };
     require.cache = roaster.cache;
     
+    require.cache.npm = function(name, next) {
+      if (require.cache[name]) return next( null, require.cache[name]);
+      require.server({url: '/'+name+".require"}, function(err, code) {
+        require.element('script', code+"\n//# sourceURL="+name);
+        next( null, require.cache[name]);
+      });
+    }
+    
     // server is async and loads from upstream service
     require.server = function(opts, on_load) {
       var server = require.server.prepare(opts, true);
       server.request.onload = function() {
-        on_load(null, server.response());
+        var lm = null;
+        if (opts.last_modified) {
+          lm = server.request.getResponseHeader("Last-Modified");
+          lm = Date.parse(lm)
+        }
+        on_load(null, server.response(), lm);
       };
       server.request.onerror = function(err) {
         on_load(err);
@@ -78,12 +89,12 @@
     // resource in javascript - telling roaster it is for client
     require.code = function(url) {
       var code = require.server.sync({url:url+'?domain=client'});
-      require.element('script', code+"\n//# sourceURL=/"+url);
+      require.element('script', code+"\n//# sourceURL="+url);
     };
     // resource in javascript - telling roaster it is for client
     require.script = function(url) {
       var code = require.server.sync({url:url+'?domain=client,library'});
-      require.element('script', code+"\n//# sourceURL=/"+url);
+      require.element('script', code+"\n//# sourceURL="+url);
     };
     // At last we have enough to move into the real system
     window.addEventListener("load", function() {require("bootstrap");}, false);

@@ -1,36 +1,38 @@
 # Copyright (C) 2014 paul@marrington.net, see /GPL license
-events = require 'events'; Storage = require "Storage"
+Storage = require "Storage"; Restful = require 'model/Restful'
+events = require 'events'
 
-class Resource extends events.EventEmitter
-  constructor: (@file_name, type="resource") ->
+module.exports = class Resource extends events.EventEmitter
+  constructor: (@file_name, type="resource", @service) ->
     @storage = new Storage @file_name, type
     @value = @storage.value
-    @value.url = @file_name
+    @service ?= "/server/http/file.coffee?name="
+    @rest = new Restful @service+@file_name
+    @value.file_name = @file_name
     
   read: (read) ->
-    if @value.original
-      @server_newer (newer) -> @load_from_server ->
-        message 'Warn: Update - Refresh to update resources'
+    if @value.original 
+      @server_newer (local_outdated) ->
+        if (local_outdated)
+          @load_from_server -> # load now, use after refresh of page
+            message 'Warn: Update - Refresh to update resources'
       read @value.original # pronounce as 'red'
     else
       @load_from_server read
       
   server_newer: (next) ->
-    require.head @value.url, (last_modified) ->
-      return last_modified > @value.last_modified
+    @rest.head (err, meta) =>
+      return @emit 'error', err if err
+      next meta["Last-Modified"] > @value.last_modified
       
   load_from_server: (read) ->
-    require.data @value.url, (err, contents, last_modified) ->
-      if err
-        @emit 'error', err
-        return read ''
-      @value.last_modified = last_modified
-      @storage.save @value.original = contents ? ''
+    @rest.read (err, data) =>
+      return @emit 'error', err, '' if err
+      last_modified = @rest.meta()["Last-Modified"]
+      @storage.update { original: data ? '', last_modified }
       read @value.original # pronounce as 'red'
 
   write: (contents) ->
     message 'Error: Resource - Resources are read-only'
     
   flush: ->
-    
-module.exports = Resource

@@ -28,14 +28,13 @@ module.exports = class Open
         @vc.toolbar.prepare(@cke)
         @vc.file.prepare(@cke)
         @vc.tabs.prepare()
-        @vc.adjust_height = =>
+        do @vc.adjust_height = => setTimeout (=>
           @cke.container.hide()
           process.nextTick =>
             height = @container.parentNode.clientHeight
             @cke.container.show()
-            @cke.resize '100%', height
+            @cke.resize '100%', height), 200
         dom.resize_event @vc.adjust_height
-        setTimeout (=> @vc.adjust_height()), 200
         @vc.tabs.select 'Font'
         @cke.focus()
         @vc.emit "html_editor_ready", @vc.ed
