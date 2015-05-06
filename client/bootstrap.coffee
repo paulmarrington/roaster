@@ -8,7 +8,7 @@ window.bind$ = (obj, key, target) ->
   return -> return (target || obj)[key].apply(obj, arguments)
 
 # fill opts from location.search
-for nvp in location.search.split('&')
+for nvp in location.search[1..-1].split('&')
   [k, v] = nvp.split('=')
   roaster.opts[k] = v
   
