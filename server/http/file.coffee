@@ -5,6 +5,7 @@ patch = require 'common/patch'
 module.exports = (exchange) ->
   error = (msg) ->
     exchange.respond.json error: true, message: "Error: "+msg
+    
   switch exchange.request.method
     when 'GET'
       file = dirs.base exchange.request.url.query.name
@@ -17,7 +18,7 @@ module.exports = (exchange) ->
       exchange.request.on 'end', -> file.end()
       file.on 'end',   ->
         exchange.respond.json message: file_path + " written"
-      file.on 'error', (err) -> error err
+      file.on 'error', (err) -> exchange.respond.error err
       
     when 'PUT' # patch file
       file_path = dirs.base exchange.request.url.query.name
@@ -25,11 +26,12 @@ module.exports = (exchange) ->
         exchange.respond.read_request (changes) ->
           patch.apply html ? '', changes, (html) ->
             if not html
-              return error "Error: source differs from expected"
+              return exchange.respond.json error: true, \
+                message: "Error: source differs from expected"
             fs.writeFile file_path, html, 'utf8', (err) ->
-              return error err if err
+              return exchange.respond.error err if err
               exchange.respond.json message: file_path + " written"
     
     when 'DELETE'
       file_path = dirs.base exchange.request.url.query.name
-      fs.unlink file_path, (err) -> error "deleting "+file_path
+      fs.unlink file_path, (err) -> exchange.respond.error "deleting "+file_path

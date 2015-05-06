@@ -6,11 +6,11 @@ module.exports = class File extends Resource
     super(@file_name, "filesystem")
     
   read: (read) ->
-    if @value.contents
-      return read @value.contents
+    return read @value.contents if @value.contents?
     @load_from_server read
 
   write: (contents) ->
+    return if contents is (@value.contents ? @value.original)
     message 'Clear: Saved'
     # save contents in browser persistent storage
     @storage.save @value.contents = contents
@@ -24,18 +24,21 @@ module.exports = class File extends Resource
     patch = require 'common/patch'
     return if @processing # don't flush while flushing
     clearTimeout @timer
-    return if @value.contents is @value.original
+    return if not @value.contents? or @value.contents is @value.original
     @processing = true
     patch.create @file_name, @value.original, @value.contents,
     (changes) =>
       @rest.update changes, (err, response) =>
-        if err or response.error
+        response = JSON.parse response
+        if err
           @delayed_write() # try again later
           @processing = false
-          message('Error: Merge - #{@file_name}')
+          message "Error: Merging - #{@file_name}, #{err}"
           return @emit 'error', err ? response
-        delete @value.contents
-        @storage.save @value.original = @value.contents
+        if response.error
+          message response.message
+          return @emit 'merge-failure'
+        @storage.update original: @value.contents, contents: null
         @processing = false
         message("Saved - #{@file_name}")
         @emit 'written', response
