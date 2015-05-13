@@ -7,7 +7,7 @@ module.exports = class TabView extends Integrant
     @prepare(tab) for tab in @host.children
     @initialisers_for_select()
     
-  add: (name, attributes, ready) ->
+  add: (name, attributes = {}, ready) ->
     tab = super name, attributes, ready
     if attributes.icon
       svg = require.resource "/client/icons/#{attributes.icon}.svg"

@@ -24,6 +24,7 @@ module.exports = class Open
       options[k] ?= v for k,v of o for o in opts
       @cke = CKEDITOR.appendTo @container, options
       @vc.ed = @cke
+      
       @cke.on 'instanceReady', =>
         @vc.toolbar.prepare(@cke)
         @vc.file.prepare(@cke)

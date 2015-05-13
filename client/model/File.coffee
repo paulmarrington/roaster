@@ -29,7 +29,8 @@ module.exports = class File extends Resource
     patch.create @file_name, @value.original, @value.contents,
     (changes) =>
       @rest.update changes, (err, response) =>
-        response = JSON.parse response
+        if response then response = JSON.parse response
+        else err = "Empty Response"
         if err
           @delayed_write() # try again later
           @processing = false

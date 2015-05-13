@@ -7,6 +7,17 @@ module.exports = class HtmlEditorView extends Integrant
       @wrap_inner(@host, 'html_editor')
     
   init: (ready) ->
-    tabs = @get_vc_for 'tabs'
     @require 'open,tabs,toolbar,file'
     @open.editor @child('doc'), ready
+    
+  link_action: (action) ->
+    @ed.on 'contentDom', =>
+      @ed.editable().on 'click', (event) =>
+        return if not (a = $(event.data.$.target)).is('a')
+        href = a.attr('href')
+        if /^\w+(\/\w+)?$/.test(href)
+          action(href)
+        else
+          window.open(href, '_blank')
+        event.preventDefault?()
+        event.cancel()
