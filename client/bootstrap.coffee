@@ -15,11 +15,14 @@ for nvp in location.search[1..-1].split('&')
 # so commonJS packages have global and process access
 window.global = roaster.global = window
 window.process = roaster.process =
-    noDeprecation: true
-    platform: 'browser'
-    env: {}
-    nextTick: (action) -> setTimeout action, 0
-    stdout: { isTTY: false }
+  noDeprecation: true
+  platform:      'browser'
+  env:           {}
+  stdout:        { isTTY: false }
+  nextTick:      (action) -> setTimeout action, 0
+  events:        {}
+  emit:          (name, args...) -> @events[name]?(args...)
+  on:            (name, cb) -> @events[name] = cb
 
 # If we specify uSDLC2 instrumentation, load accordingly
 if host = roaster.opts['usdlc2-instrumentation']
