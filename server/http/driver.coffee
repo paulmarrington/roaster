@@ -82,7 +82,7 @@ module.exports.use_template = (exchange, template, next) ->
       morph source, ext, (error, filename, content, save) ->
         return next(error, filename) if error
         url = exchange.request.url.pathname.split('.')[0]
-        url = url[1..-1] if url[1] is '/'
+        url = url[1..-1] while url[0] is '/'
         if content
           options =
             script: content, url: url, template_name: template

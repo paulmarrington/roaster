@@ -22,8 +22,10 @@ module.exports = class Open
       opts = [@vc.options]
       options = {}; opts.unshift default_options
       options[k] ?= v for k,v of o for o in opts
+      process.emit "html_editor_config", options
       @cke = CKEDITOR.appendTo @container, options
       @vc.ed = @cke
+      process.emit "html_editor_instance_created", @vc
       
       @cke.on 'instanceReady', =>
         @vc.toolbar.prepare(@cke)

@@ -39,6 +39,7 @@ class Integrant extends events.EventEmitter
     for name in names.split(',')
       @[name] = new (require("#{base}/#{name}"))(@)
       @[name].vc = @
+      @[name].init?()
     
   style: (element, styles) ->
     element.style[k] = v for k, v of styles
@@ -50,6 +51,9 @@ class Integrant extends events.EventEmitter
       vc.emit 'deselected', vc.selected if vc.selected
       vc.emit 'selected', vc.selected = item
     return item
+    
+  is_selected: (name) ->
+    return @selected.classList.contains name
     
   list: (cls, here = @host) ->
     list = (e for e in here.getElementsByClassName(cls))
@@ -74,10 +78,12 @@ class Integrant extends events.EventEmitter
     for k, v of attributes
       node.setAttribute(k, v) if typeof v isnt 'object'
         
-  add: (classes, attributes, ready = ->) ->
+  add: (classes, attributes = {}, ready = ->) ->
     attributes ?= {}
     child = @attach_template(attributes.template, attributes.host)
-    child.classList.add classes.split(' ')...
+    class_list = classes.split(' ')
+    child.classList.add class_list...
+    attributes.name ?= class_list[0]
     @setAttributes child, attributes
     child.contents = @child('container', child) ? child
     if attributes.vc
