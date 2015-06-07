@@ -129,5 +129,5 @@ module.exports = {
   normalize: normalise,
   split: split,
   node: node, base: base, home: home, 
-  bases: ['',process.env.cwd, process.env.rwd]
+  bases: [process.env.cwd, process.env.rwd, '']
 };
