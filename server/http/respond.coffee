@@ -41,7 +41,9 @@ class Respond
       full_path = path.resolve(name)
       sender = send @exchange.request, full_path
       sender.req.res = @exchange.response # send bug
-      sender.on('end', next).on('error', next)
+      sender.on('end', next).on 'error', (err) =>
+        @error(err, 404)
+        next()
       sender.pipe(@exchange.response)
   # respond to client with code to run in a sandbox
   client: (code) ->
