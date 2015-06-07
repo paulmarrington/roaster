@@ -2,9 +2,9 @@
 Resource = require 'model/Resource'
 
 module.exports = class File extends Resource
-  constructor: (@file_name, url) ->
-    super(@file_name, "filesystem")
-    
+  constructor: (@file_name, service) ->
+    super(@file_name, "filesystem", service)
+
   read: (read) ->
     return read @value.contents if @value.contents?
     @load_from_server read
@@ -15,11 +15,11 @@ module.exports = class File extends Resource
     # save contents in browser persistent storage
     @storage.save @value.contents = contents
     @delayed_write()
-    
+
   delayed_write: ->
     clearTimeout @timer
     @timer = setTimeout (=> @flush()), 30000
-      
+
   flush: -> # send changes to the server immediately (if possible)
     patch = require 'common/patch'
     return if @processing # don't flush while flushing
