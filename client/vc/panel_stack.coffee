@@ -28,6 +28,8 @@ module.exports = class PanelStack extends Integrant
       if sizes = @storage.value[index]
         upper.style.height = sizes[0]
         lower.style.height = sizes[1]
+      else
+        upper.style.height = lower.style.height = "50%"
       do (index) =>
         resize2 { handle, upper, lower }, (args...) =>
           @storage.save @storage.value[index] =
