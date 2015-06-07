@@ -3,7 +3,7 @@ dom = require 'dom'
 
 default_options =
   height: "auto"
-  fullPage: false
+  fullPage: true
   autoGrow_onStartup: false
   resize_enabled: false
   magicline_putEverywhere: true
