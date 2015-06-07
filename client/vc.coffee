@@ -1,6 +1,6 @@
 # Copyright (C) 2014,15 paul@marrington.net, see /GPL license
 sequential = require 'Sequential'
-vc_cache = {}
+vc_cache = {}; vcs = {}
 
 module.exports = (container, opt_list..., ready) ->
   #container.classList.add 'invisible'
@@ -14,6 +14,8 @@ module.exports = (container, opt_list..., ready) ->
     return false if not (Integrant = vc_cache[type])
     # vc loaded - activate it
     vc = new Integrant()
+    vcs[type] ?= vc
+    vcs[opts.name] ?= vc if opts.name
     vc.initialisers = [] # so don't need super()
     vc[k] = v for k,v of {type, base, opts}
     if container.attributes.vc
@@ -23,7 +25,7 @@ module.exports = (container, opt_list..., ready) ->
       vc.host = vc.view_node.cloneNode(true)
       container.appendChild vc.host
     vc.host.vc = vc
-    
+
     needing_fill = [].slice.call vc.host.getElementsByClassName("fill_parent")
     needing_fill.push(vc.host) if vc.fill_parent ? opts.fill_parent
     for fill in needing_fill
@@ -34,22 +36,22 @@ module.exports = (container, opt_list..., ready) ->
 
     ############
     inner_integrants = (done) ->
-      vcs = vc.host.getElementsByClassName('vc')
+      inners = vc.host.getElementsByClassName('vc')
       correct_parent = (el) ->
         (vc.get_vc_for(el.parentElement) is vc)
-      vcs = (it for it in vcs when correct_parent(it))
+      inners = (it for it in inners when correct_parent(it))
       do process = =>
-        return done() if not vcs.length # all processed
-        vc_type = (el = vcs.shift()).getAttribute('vc')
+        return done() if not inners.length # all processed
+        vc_type = (el = inners.shift()).getAttribute('vc')
         module.exports el, opts[vc_type] ? {}, process
     instance_init = (done) ->
       vc.init(done)
       done() if not vc.init.length # synchronous
-        
+
     component_initialisers = (done) ->
       sequential.actions vc.initialisers, done
     ############
-    
+
     inner_integrants -> instance_init ->
       component_initialisers ->
         container.classList.remove 'invisible'
@@ -57,7 +59,7 @@ module.exports = (container, opt_list..., ready) ->
     return true
 
   return if activate()
-  
+
   # come here if vc not loaded from server
   base = "#{base}#{type}"
   require.css "#{base}.css"
@@ -77,13 +79,15 @@ module.exports = (container, opt_list..., ready) ->
       div = child
   div.classList.add(type)
   vc_cache[type]::view_node = div
-  
+
   has_fill = (el) -> el.classList.contains('fill_parent')
   if has_fill(div) or has_fill(vc_cache[type]::templates)
     vc_cache[type]::fill_parent = true
 
   activate()
-    
+
+module.exports.find = (name) -> return vcs[name]
+
 empty_div = document.createElement("div")
 relative_div = empty_div.cloneNode()
 relative_div.classList.add('fill', 'parent')
