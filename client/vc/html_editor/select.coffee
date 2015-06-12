@@ -31,6 +31,10 @@ module.exports = class Select
     @vc.ed.getSelection().selectRanges([range])
     return range
 
+  before: (range) -> @previous null, any_element_parameter
+
+  after: (range) -> @next null, any_element_parameter
+
   next: (node_name, selector = node_name_comparator) ->
     return @goto selector(node_name),  'next',
     CKEDITOR.POSITION_AFTER_START, (range) =>
@@ -52,11 +56,12 @@ module.exports = class Select
 
   restore_caret: (action) ->
     range = @range()
-    node = range?.startContainer
-    if action
-      action = action.call(@)
-      @vc.ed.getSelection().selectRanges([range])
-      return action
+    result = action.call(@)
+    @restore_range(range)
+    return result
+
+  restore_range: (range) ->
+    @vc.ed.getSelection().selectRanges([range])
 
   range: ->
     if not range = @vc.ed.getSelection().getRanges()[0]
@@ -78,5 +83,14 @@ module.exports = class Select
     while node = walker[dir]() then
     return result
 
+any_element_parameter = -> return -> true
+
 node_name_comparator = (node_name) ->
-  return (node) -> node.$.nodeName.toLowerCase() == node_name
+  [node_name, classes...] = node_name.split('.')
+  if not classes # next occurence of a node
+    return (node) -> node.$.nodeName.toLowerCase() == node_name
+  return (node) -> # node.class1.class2 ...
+    return false if node.$.nodeName.toLowerCase() != node_name
+    for cls in classes
+      return false if not node.$.classList.contains(cls)
+    return true
