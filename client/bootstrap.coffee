@@ -11,7 +11,19 @@ window.bind$ = (obj, key, target) ->
 for nvp in location.search[1..-1].split('&')
   [k, v] = nvp.split('=')
   roaster.opts[k] = v
-  
+
+# generally used to wait for rendering to complete
+wait_for = (is_done) =>
+  timeout = 10000
+  waiter = 5; # Wait a few ticks the first time
+  do full_check = ->
+    return if is_done(false)
+    if (timeout -= waiter) > 0
+      setTimeout(full_check, waiter)
+      waiter = 50
+    else if is_done.length > 0
+      is_done(true) # only called if we have timed_out param
+
 # so commonJS packages have global and process access
 window.global = roaster.global = window
 window.process = roaster.process =
@@ -20,6 +32,8 @@ window.process = roaster.process =
   env:           {}
   stdout:        { isTTY: false }
   nextTick:      (action) -> setTimeout action, 0
+  sleep:         (ms, action) -> setTimeout action, ms
+  wait_for:      wait_for
   events:        {}
   emit:          (name, args...) -> @events[name]?(args...)
   on:            (name, cb) -> @events[name] = cb
