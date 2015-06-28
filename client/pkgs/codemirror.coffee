@@ -21,6 +21,6 @@ module.exports = (loaded) ->
       console_saver = window.console
       require.code addon('js')
       window.console = console_saver # 'cause tern replaces it
-      require.code "#{base}/keymap.js.concat"
+      require.script "#{base}/keymap.js.concat"
       require.css "#{base}/theme.css.concat"
       loaded()

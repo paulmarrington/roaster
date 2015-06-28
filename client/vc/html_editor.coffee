@@ -8,16 +8,20 @@ module.exports = class HtmlEditorView extends Integrant
 
   init: (ready) ->
     @require 'open,tabs,toolbar,file,select'
-    @open.editor @child('doc'), ready
+    @open.editor @child('doc'), =>
+      @ed.on 'contentDom', =>
+        @ed.editable().on 'click', (event) =>
+          target = event.data.$.target
+          return if not actions = @click_actions[target.nodeName]
+          action(target) for action in actions
+          event.preventDefault?()
+          event.cancel()
+      ready()
 
-  # link_action: (action) -> # do something when a link is clicked
-  #   @ed.on 'contentDom', =>
-  #     @ed.editable().on 'click', (event) =>
-  #       return if not (a = $(event.data.$.target)).is('a')
-  #       href = a.attr('href')
-  #       if /^\w+(\/\w+)?$/.test(href)
-  #         action(href)
-  #       else
-  #         window.open(href, '_blank')
-  #       event.preventDefault?()
-  #       event.cancel()
+  click_actions: {}
+
+  click_action: (node_names, action) -> # do something on click
+    for name in node_names.split(',')
+      @click_actions[name] ?= []
+      @click_actions[name].push(action)
+      @click_actions[name.toUpperCase()] = @click_actions[name]

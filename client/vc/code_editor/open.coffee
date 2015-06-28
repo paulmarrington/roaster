@@ -9,6 +9,14 @@ class Open
     @vc.editor = CodeMirror @container, @options()
     @vc.editor.id = "codemirror_#{++instance_index}"
 
+    # have code editor fill it's parent
+    wrap = @vc.editor.getWrapperElement()
+    wrap.style.width = ""
+    wrap.style.height = "auto"
+    wrap.style.position = 'absolute'
+    wrap.classList.add("absolute")
+    @container.style.overflow = "hidden"
+
     in_autocomplete = allow_autocomplete = false
 
     @vc.editor.on 'change', (cm, change) =>
@@ -20,7 +28,7 @@ class Open
       if cursor.ch and allow_autocomplete
         if line[cursor.ch - 1].match(/\w/)
           clearTimeout @save_timer
-          in_autocompleten = true
+          in_autocomplete = true
           CodeMirror.showHint(cm)
           cm.on 'endCompletion', =>
             in_autocomplete = false

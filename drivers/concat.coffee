@@ -11,7 +11,9 @@ module.exports = (exchange, next) ->
   parts = exchange.request.filename.split '.'
   base = dirs.base parts[0]
   type = '.' + parts[parts.length - 2]
-  exclude = new RegExp(query.exclude ? '^$')
+  exclude = (query.exclude ? '^$').trim()
+  exclude = exclude.replace(/\)[^\)].+$/, ')') if exclude[0] is '('
+  exclude = new RegExp(exclude)
   exchange.respond.set_mime_type type
   exchange.respond.static_file()
 

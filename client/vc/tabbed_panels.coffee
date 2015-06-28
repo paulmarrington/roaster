@@ -21,15 +21,20 @@ module.exports = class TabbedPanels extends Integrant
       tab.panel = @child(tab.panel, @panels)
     return tab.panel
     
-  add: (name, attributes, ready) ->
-    tab = @tabs.add name, attributes.tab ? attributes, ready
-    panel = @panels.add name,
-      attributes.panel ? attributes, ready
-    tab.panel = panel
-    panel.tab = tab
-    return panel
-      
+  add: (name, attributes, ready = ->) ->
+    @panels.add name, attributes.panel ? attributes, (panel) =>
+      @tabs.add name, attributes.tab ? attributes, (tab) =>
+        tab.panel = panel
+        panel.tab = tab
+        ready panel
+    
+  close: (child) ->
+    child = @tabs.child(child)
+    @tabs.close(child)
+    @panels.close child.panel
+    
   select: (tab) ->
+    tab = tab.tab if tab.tab # we were given the panel, not tab
     panel = @tab_panel(tab = @tabs.select tab)
     if not panel.clientHeight # a webkit redisplay bug
       td = panel.parentNode.parentNode

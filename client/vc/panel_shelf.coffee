@@ -18,7 +18,7 @@ module.exports = class PanelShelf extends Integrant
             overflow.style.display = 'table-cell'
         @window_width = window.innerWidth
             
-        process.nextTick =>
+        process.sleep 500, =>
           abreast_width = 0
           for td in @overflows[0].parentNode.children
             abreast_width += min_width(td)

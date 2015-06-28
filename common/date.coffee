@@ -1,6 +1,6 @@
 # Copyright (C) 2013 paul@marrington.net, see /GPL for license
 
-Date::format = (fmt = 'YYMMDD-HHmmSSsss') ->
+Date::format = (fmt = 'YYYYMMDD-HHmmSS.sss') ->
   text = []; zone = ''; index = 0
   # so we can create one or 2 digits on demand
   double = (num) ->
@@ -16,7 +16,7 @@ Date::format = (fmt = 'YYMMDD-HHmmSSsss') ->
       when 'U' then zone = 'UTC'
       when 'Y'
         year = get('FullYear')
-        if fmt[index..index+3] is 'YYYY'
+        if fmt[index..index+2] is 'YYY'
           text.push "#{year}"
           index += 3
         else if fmt[index] is 'Y'

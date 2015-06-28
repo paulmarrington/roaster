@@ -78,9 +78,9 @@ class Integrant extends events.EventEmitter
     for k, v of attributes
       node.setAttribute(k, v) if typeof v isnt 'object'
         
-  add: (classes, attributes = {}, ready = ->) ->
-    attributes ?= {}
+  add: (classes, attributes, ready) ->
     child = @attach_template(attributes.template, attributes.host)
+    @children.push child
     class_list = classes.split(' ')
     child.classList.add class_list...
     attributes.name ?= class_list[0]
@@ -90,7 +90,19 @@ class Integrant extends events.EventEmitter
       vc_builder child, attributes, -> ready(child)
     else
       ready(child)
-    return child
+    
+  children: []
+    
+  close: (child) ->
+    child = @child(child)
+    index = @children.indexOf(child)
+    @children.splice(index, 1) if index isnt -1
+    child.parentNode.removeChild(child)
+    
+  clear: ->
+    for child in @children
+      child.parentNode.removeChild(child)
+    @children = []
   
   template: (name = @type) ->
     template = @child(name, @templates)

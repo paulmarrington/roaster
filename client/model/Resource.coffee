@@ -11,8 +11,8 @@ module.exports = class Resource extends events.EventEmitter
     @value.file_name = @file_name
     
   read: (read) ->
-    if @value.original 
-      @server_newer (local_outdated) ->
+    if @value.original
+      @server_newer (local_outdated) =>
         if (local_outdated)
           @load_from_server -> # load now, use after refresh of page
             message 'Warn: Update - Refresh to update resources'

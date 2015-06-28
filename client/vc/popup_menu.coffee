@@ -14,7 +14,7 @@ class PopupMenu extends Integrant
     @tree_view  = @get_vc_for "tree_view"
     @tree_view.opts.one_path = @opts.one_path
     @tree_view.icon_set @opts.type if @opts.type
-    @context_menu(@opts.context_menu) if @opts.context_menu
+    @context_menu(@opts.context_menu)
     
   branch: (name)     -> @tree_view.branch name
   leaf: (name, href) -> @tree_view.leaf name, href

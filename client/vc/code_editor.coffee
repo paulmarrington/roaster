@@ -9,9 +9,10 @@ class CodeEditorView extends Integrant
   init: (ready) ->
     require.packages 'coffee-script', 'codemirror', =>
       @require 'context_menu,mode,commands,open,compile'
-      @open.editor @child('code_editor')
-      @context_menu.prepare(@child('menu_icon'))
-      ready()
+      process.sleep 50, => # wait for view to render
+        @open.editor @child('code_editor_container')
+        @context_menu.prepare(@child('menu_icon'))
+        ready()
       
   load: (@filename, @model) ->
     meta = @mode.from_filename(@filename)
@@ -21,10 +22,9 @@ class CodeEditorView extends Integrant
     CodeMirror.autoLoadMode(@editor, meta.mode)
     @ext = meta.ext
     @model.read (source) => @editor.setValue source
-    save = => @model.save @vc.editor.getValue()
-    @vc.editor.on 'blur',   save
-    @vc.editor.on 'change', save
-
+    save = => @model.write @editor.getValue()
+    @editor.on 'blur',   save
+    @editor.on 'change', save
     
   contents: -> @editor.getValue()
    

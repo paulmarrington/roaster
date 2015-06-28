@@ -9,6 +9,7 @@ module.exports = (container, opt_list..., ready) ->
   opts[ca.name] = ca.value for ca in container.attributes
   type = opts.vc
   base = if type[0] is '/' then '' else "/client/vc/"
+  base += type
 
   activate = ->
     return false if not (Integrant = vc_cache[type])
@@ -26,13 +27,13 @@ module.exports = (container, opt_list..., ready) ->
       container.appendChild vc.host
     vc.host.vc = vc
 
-    needing_fill = [].slice.call vc.host.getElementsByClassName("fill_parent")
-    needing_fill.push(vc.host) if vc.fill_parent ? opts.fill_parent
-    for fill in needing_fill
-      fill.classList.remove("fill_parent")
-      wrapper = relative_div.cloneNode()
-      fill.parentNode.insertBefore(wrapper, fill)
-      wrapper.appendChild(fill)
+    #needing_fill = [].slice.call vc.host.getElementsByClassName("fill_parent")
+    #needing_fill.push(vc.host) if vc.fill_parent ? opts.fill_parent
+    #for fill in needing_fill
+    #  fill.classList.remove("fill_parent")
+    #  wrapper = relative_div.cloneNode()
+    #  fill.parentNode.insertBefore(wrapper, fill)
+    #  wrapper.appendChild(fill)
 
     ############
     inner_integrants = (done) ->
@@ -55,13 +56,12 @@ module.exports = (container, opt_list..., ready) ->
     inner_integrants -> instance_init ->
       component_initialisers ->
         container.classList.remove 'invisible'
-        ready(null, vc)
+        ready(vc)
     return true
 
   return if activate()
 
   # come here if vc not loaded from server
-  base = "#{base}#{type}"
   require.css "#{base}.css"
   vc_cache[type] = require base[1..-1]
   html = require.resource "#{base}.html"
@@ -80,14 +80,14 @@ module.exports = (container, opt_list..., ready) ->
   div.classList.add(type)
   vc_cache[type]::view_node = div
 
-  has_fill = (el) -> el.classList.contains('fill_parent')
-  if has_fill(div) or has_fill(vc_cache[type]::templates)
-    vc_cache[type]::fill_parent = true
+  #has_fill = (el) -> el.classList.contains('fill_parent')
+  #if has_fill(div) or has_fill(vc_cache[type]::templates)
+  #  vc_cache[type]::fill_parent = true
 
   activate()
 
 module.exports.find = (name) -> return vcs[name]
 
 empty_div = document.createElement("div")
-relative_div = empty_div.cloneNode()
-relative_div.classList.add('fill', 'parent')
+#relative_div = empty_div.cloneNode()
+#relative_div.classList.add('fill_parent')

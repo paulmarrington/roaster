@@ -21,17 +21,23 @@ html, body {
   transform-origin: @origin;
 }
 
-.fill.parent {
-  position: relative;
-  height: 100%;
+.fill_100 {
   width: 100%;
-  & > table {
-    height: 100%;
-    width: 100%;
+  height: 100%;
+}
+
+.absolute{
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 0; right: 0;
+}
+
+.fill, .app {
+  position: relative;
+  .fill_100;
+
+  & > div:not(.fill):not(.clear) {
+    .absolute;
   }
-  & > div {
-    position: absolute;
-    top: 0; bottom: 0;
-    left: 0; right: 0;
-  }
+  & > table { .fill_100 }
 }

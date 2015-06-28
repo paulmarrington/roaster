@@ -1,7 +1,10 @@
 /* Copyright (C) 2014-15 paul@marrington.net, see /GPL license */
 @import "../icons/style";
+@import "../common";
 
 .code_editor {
+  .absolute;
+  border: 1px solid #b6b6b6;
   .hint {
     float:       right;
     color:       #bbb;
@@ -9,8 +12,9 @@
     margin-left: 1em;
   }
   .menu_icon {
-    position: fixed;
+    position: absolute;
     right:    6px;
+    top:      4px;
     #icons > .image("3-bars");
     height:   19px;
     z-index:  5;
@@ -18,5 +22,8 @@
     &:hover {
       border: thin solid #ddd;
     }
+  }
+  .code_editor_menu {
+    margin: 0;
   }
 }

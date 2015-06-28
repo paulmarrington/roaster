@@ -1,1 +1,1 @@
-#{script};
+(function(window) {  var global, require;  #{script};})(window)

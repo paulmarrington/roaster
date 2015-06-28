@@ -35,6 +35,14 @@ module.exports = (exchange, next, add_driver) ->
       return done(module_path) if slash isnt -1
       node_library.resolve_built_in module_name,
         (err, module_path) -> done module_path
-    catch then npm module_name, (error, module) ->
-      done require.resolve module_name if not error
-      console.log(error); return next(error)
+    catch
+      on_err = ->
+        console.log msg = "Failed to find #{module_name} for client"
+        next msg
+      try
+        process.on 'uncaughtException', on_err
+        npm module_name, (error, module) ->
+          return done require.resolve module_name if not error
+          console.log(error); return next(error)
+      catch err then on_err()
+      finally process.removeListener 'uncaughtException', on_err

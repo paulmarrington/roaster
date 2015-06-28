@@ -34,6 +34,7 @@ class Resize2
         percent = (moved * 100) // @height
         @upper.update moved, percent
         @lower.update -moved, -percent
+        on_completion(@upper, @lower, @height)
       up: =>
         on_completion(@upper, @lower, @height)
             

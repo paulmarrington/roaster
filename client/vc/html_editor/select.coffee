@@ -31,9 +31,9 @@ module.exports = class Select
     @vc.ed.getSelection().selectRanges([range])
     return range
 
-  before: (range) -> @previous null, any_element_parameter
+  before: -> @previous null, any_element_parameter
 
-  after: (range) -> @next null, any_element_parameter
+  after: -> @next null, any_element_parameter
 
   next: (node_name, selector = node_name_comparator) ->
     return @goto selector(node_name),  'next',

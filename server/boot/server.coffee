@@ -21,8 +21,10 @@
 #     user: Object containing details for a guest or logged in user
 #   respond: method to call to send data back to the browser - chaining support
 #   config: Configuration file (<config>.config.coffee)
-process.on 'uncaughtException', (err) ->
-  console.log 'UNCAUGHT', err, err.stack
+
+# Account for the naughty
+#process.on 'uncaughtException', (err) ->
+#  console.log 'UNCAUGHT', err, err.stack
 project_init = require 'boot/project-init'; npm = require "npm"
 system = require 'system'; dirs = require 'dirs'
 

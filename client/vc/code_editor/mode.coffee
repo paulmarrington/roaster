@@ -10,7 +10,7 @@ class Mode
   from_filename: (name) ->
     while name?.length
       return { mode: ext, ext: name } if ext = @map[name]
-      break if not (dot = name.indexOf('.'))
+      break if (dot = name.indexOf('.')) is -1
       name = name[dot+1..]
     return { mode:'text', ext: name }
   
