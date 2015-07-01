@@ -31,18 +31,16 @@ module.exports = class Select
     @vc.ed.getSelection().selectRanges([range])
     return range
 
-  before: -> @previous null, any_element_parameter
+  before: -> @previous null, any_element_parameter, CKEDITOR.POSITION_AFTER_END
 
-  after: -> @next null, any_element_parameter
+  after: -> @next null, any_element_parameter, CKEDITOR.POSITION_AFTER_START
 
-  next: (node_name, selector = node_name_comparator) ->
-    return @goto selector(node_name),  'next',
-    CKEDITOR.POSITION_AFTER_START, (range) =>
+  next: (node_name, selector = node_name_comparator, end = CKEDITOR.POSITION_AFTER_START) ->
+    return @goto selector(node_name),  'next', end, (range) =>
       range.setEndAt(@vc.ed.editable(), CKEDITOR.POSITION_BEFORE_END)
 
-  previous: (node_name, selector = node_name_comparator) ->
-    return @goto selector(node_name),  'previous',
-    CKEDITOR.POSITION_BEFORE_END, (range) =>
+  previous: (node_name, selector = node_name_comparator, end = CKEDITOR.POSITION_BEFORE_END) ->
+    return @goto selector(node_name),  'previous', end, (range) =>
       range.setStartAt(@vc.ed.editable(), CKEDITOR.POSITION_AFTER_START)
       @vc.ed.getSelection().selectRanges([range])
 
@@ -75,7 +73,7 @@ module.exports = class Select
     result = null
     walker = new CKEDITOR.dom.walker( range )
     walker.guard = (node, exiting) =>
-      return true if not selected = selector(node)
+      return true if exiting or not selected = selector(node)
       range.moveToPosition node, end
       @vc.ed.getSelection().selectRanges([range])
       result = {range, node, selected}
