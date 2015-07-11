@@ -1,10 +1,12 @@
 # Copyright (C) 2012,13 paul@marrington.net, see /GPL license
 os = require 'os'; querystring = require 'querystring'
+require 'strings'
 
 # some scripts are platform dependent - so provide a check
 # os.expecting('windows|unix|darwin|linux')
 os.expecting = (system) ->
   runningOn = os.type().toLowerCase()
+  runningOn = 'windows' if runningOn.starts_with('windows')
   system = system.toLowerCase()
   system = 'darwin' if system is 'os x'
   return system is runningOn or
@@ -13,6 +15,11 @@ os.expecting = (system) ->
 # unix systems don't have an extension for executables
 os.executable_extension =
   if os.expecting('windows') then '.exe' else ''
+  
+# script name for each operating system
+os.script = (name) ->
+  return name if os.expecting('windows')
+  return "./#{name}.sh"
     
 # process a command line of the form 'a=b c=d' into a map - with defaults
 os.command_line = ->

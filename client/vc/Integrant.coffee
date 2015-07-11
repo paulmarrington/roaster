@@ -76,13 +76,15 @@ class Integrant extends events.EventEmitter
         
   setAttributes: (node, attributes) ->
     for k, v of attributes
-      node.setAttribute(k, v) if typeof v isnt 'object'
+      if k isnt 'vc' and typeof v isnt 'object'
+        node.setAttribute(k, v)
         
   add: (classes, attributes, ready) ->
     child = @attach_template(attributes.template, attributes.host)
     @children.push child
     class_list = classes.split(' ')
     child.classList.add class_list...
+    child.vc = @
     attributes.name ?= class_list[0]
     @setAttributes child, attributes
     child.contents = @child('container', child) ? child
